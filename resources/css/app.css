@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* ── Core background palette ── */
+  --color-void: #0a0a0a;
+  --color-onyx: #111111;
+  --color-charcoal: #1a1a1a;
+  --color-graphite: #252525;
+  --color-surface: #161616;
+  --color-border: #2a2a2a;
+  --color-border-subtle: #1f1f1f;
+
+  /* ── Metallic copper accent system ── */
+  --color-copper-300: #e8a87c;
+  --color-copper-400: #cd7f32;
+  --color-copper-500: #b87333;
+  --color-copper-600: #9a5f1e;
+  --color-copper-700: #7a4a14;
+
+  /* ── Warm neutrals ── */
+  --color-bone: #e8e0d5;
+  --color-ash: #9ca3af;
+  --color-steel: #6b7280;
+
+  /* ── Typography ── */
+  --font-sans: 'Outfit', 'Inter', system-ui, sans-serif;
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* ── Custom font sizes ── */
+  --font-size-10xl: 10rem;
+  --line-height-10xl: 1;
+  --letter-spacing-10xl: -0.04em;
+
+  /* ── Custom letter spacing ── */
+  --tracking-tightest: -0.06em;
+  --tracking-tighter: -0.04em;
+  --tracking-ultra: 0.5em;
+
+  /* ── Animations ── */
+  --animate-spin-slow: spin 8s linear infinite;
+  --animate-pulse-slow: pulse 4s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-grain: grain 8s steps(1) infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
+  --animate-marquee: marquee 20s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10%  { transform: translate(-5%, -10%); }
+  20%  { transform: translate(-15%, 5%); }
+  30%  { transform: translate(7%, -25%); }
+  40%  { transform: translate(-5%, 25%); }
+  50%  { transform: translate(-15%, 10%); }
+  60%  { transform: translate(15%, 0%); }
+  70%  { transform: translate(0%, 15%); }
+  80%  { transform: translate(3%, 35%); }
+  90%  { transform: translate(-10%, 10%); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@layer base {
+  :root {
+    --canvas-bg: #0a0a0a;
+    --transition-ease: cubic-bezier(0.76, 0, 0.24, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    background-color: #0a0a0a;
+    color: #e8e0d5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #0a0a0a;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar { width: 0px; }
+  ::selection {
+    background-color: rgba(205, 127, 50, 0.3);
+    color: #e8a87c;
+  }
+
+  canvas { background-color: var(--canvas-bg); }
+}
+
+@layer utilities {
+  /* Copper gradient text */
+  .text-copper-gradient {
+    background: linear-gradient(135deg, #cd7f32, #e8a87c, #b87333);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Metallic shimmer text */
+  .text-shimmer {
+    background: linear-gradient(90deg, #cd7f32 0%, #e8a87c 25%, #fff8f0 50%, #e8a87c 75%, #cd7f32 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Copper gradient (for backgrounds) */
+  .bg-copper-gradient {
+    background: linear-gradient(135deg, #cd7f32 0%, #e8a87c 50%, #b87333 100%);
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* Tracking utilities */
+  .tracking-tightest { letter-spacing: -0.06em; }
+  .tracking-ultra    { letter-spacing: 0.5em; }
+
+  /* Marquee */
+  .marquee-track {
+    display: flex;
+    animation: marquee 20s linear infinite;
+  }
+
+  /* Magnetic transition */
+  .magnetic {
+    transition: transform 0.3s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+
+  /* Shadow utilities */
+  .shadow-copper    { box-shadow: 0 0 30px rgba(205,127,50,0.3); }
+  .shadow-copper-lg { box-shadow: 0 0 60px rgba(205,127,50,0.2); }
+
+  /* Film grain overlay */
+  .grain-overlay::after {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.035;
+    pointer-events: none;
+    z-index: 9999;
+    animation: grain 8s steps(1) infinite;
+  }
+
+  /* Text-9xl override for tracking */
+  .text-10xl {
+    font-size: 10rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+}
