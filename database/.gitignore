@@ -1,2 +1,2 @@
-# Allow the empty database file to be committed for Railway deploy
-# !database.sqlite
+# SQLite database files are committed for Railway deployment
+# The database.sqlite file is pre-migrated and tracked in git
