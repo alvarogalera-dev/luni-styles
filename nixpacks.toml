@@ -8,7 +8,7 @@ cmds = [
   "npm run build",
   "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs bootstrap/cache",
   "chmod -R 777 storage bootstrap/cache",
-  "touch database/database.sqlite",
+  "php -r \"file_exists('database/database.sqlite') || (new PDO('sqlite:database/database.sqlite'));\"",
   "php artisan migrate --force",
   "php artisan config:cache",
   "php artisan route:cache",
