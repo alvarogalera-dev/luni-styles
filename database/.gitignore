@@ -1,1 +1,2 @@
-*.sqlite*
+# Allow the empty database file to be committed for Railway deploy
+# !database.sqlite
