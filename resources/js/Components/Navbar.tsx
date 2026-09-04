@@ -1,125 +1,133 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/react';
-import { motion, AnimatePresence } from 'motion/react';
-import FullscreenMenu from './FullscreenMenu';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import BookingModal from './BookingModal';
+import { cn } from '@/lib/utils';
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
-  const [hidden, setHidden] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialService, setInitialService] = useState<'barberia' | 'infantil' | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      setScrolled(currentY > 50);
-      setHidden(currentY > lastScrollY.current && currentY > 200);
-      lastScrollY.current = currentY;
+      setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    const handleOpenModal = (e: any) => {
+      setInitialService(e.detail?.serviceType || null);
+      setIsModalOpen(true);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    document.addEventListener('openBookingModal', handleOpenModal);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('openBookingModal', handleOpenModal);
+    };
   }, []);
 
-  // Prevent body scroll when menu open
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
+  const navLinks = [
+    { label: 'La Barbería', href: '/la-barberia' },
+    { label: 'Peluquería Infantil', href: '/peluqueria-infantil' },
+    { label: 'Quiénes Somos', href: '/quienes-somos' },
+    { label: 'Contacto', href: '/contacto' },
+  ];
 
   return (
     <>
-      <motion.header
-        className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-6"
-        animate={{ y: hidden && !menuOpen ? -100 : 0 }}
-        transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
+      <header
+        className={cn(
+          'fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-out px-4 md:px-10',
+          isScrolled ? 'py-4' : 'py-6 md:py-8'
+        )}
       >
         {/* Backdrop blur when scrolled */}
         <motion.div
-          className="absolute inset-0 border-b border-border-subtle"
-          style={{ backdropFilter: scrolled ? 'blur(20px)' : 'none' }}
-          animate={{
-            backgroundColor: scrolled ? 'rgba(10,10,10,0.8)' : 'rgba(10,10,10,0)',
-          }}
+          className="absolute inset-0 bg-void/80 backdrop-blur-xl border-b border-white/5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isScrolled ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         />
 
-        <nav className="relative flex items-center justify-between max-w-7xl mx-auto">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="group flex items-center gap-3 z-10"
-            onClick={() => setMenuOpen(false)}
-          >
-            {/* Copper diamond mark */}
-            <div className="relative w-8 h-8">
-              <div className="absolute inset-0 rotate-45 bg-copper-gradient rounded-sm" />
-              <div className="absolute inset-[3px] rotate-45 bg-void rounded-sm" />
-            </div>
-            <span className="text-bone font-display font-bold tracking-widest text-sm uppercase">
-              Luni<span className="text-copper-400">.</span>
+        <nav className="relative flex items-center justify-between w-full mx-auto">
+          {/* Logo (Left aligned) */}
+          <Link href="/" className="group flex items-center gap-3 z-10 w-auto lg:w-1/4">
+            <span className="text-bone font-display font-black tracking-widest text-lg md:text-xl uppercase drop-shadow-lg whitespace-nowrap">
+              Luni<span className="text-amber-400">Styles</span>
             </span>
           </Link>
 
-          {/* Nav center links (desktop) */}
-          <div className="hidden lg:flex items-center gap-10">
-            {[
-              { label: 'La Barbería', href: '/la-barberia' },
-              { label: 'Servicios', href: '/servicios' },
-              { label: 'Contacto', href: '/contacto' },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-ash text-sm tracking-wider uppercase hover:text-bone transition-colors duration-300 relative group"
-              >
-                {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-copper-400 transition-all duration-300 group-hover:w-full" />
-              </Link>
-            ))}
+          {/* Nav Links (Desktop Centered) */}
+          <div className="hidden lg:flex flex-1 justify-center items-center">
+            <div className="flex items-center gap-8 bg-black/40 px-8 py-3 rounded-full border border-white/10 backdrop-blur-md">
+              {navLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-bone/80 text-xs tracking-[0.2em] font-bold uppercase hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 transition-colors duration-300 relative group"
+                >
+                  {item.label}
+                  <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-amber-400 transition-all duration-300 group-hover:w-full" />
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* Right side */}
-          <div className="flex items-center gap-4 z-10">
-            {/* Book CTA (desktop) */}
-            <Link
-              href="/reservas"
-              className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 border border-copper-500/40 rounded-full text-copper-400 text-xs tracking-widest uppercase hover:bg-copper-500/10 transition-all duration-300"
-            >
-              Reservar
-            </Link>
-
-            {/* Hamburger */}
+          {/* Book CTA & Mobile Menu Toggle (Right aligned) */}
+          <div className="z-10 w-auto lg:w-1/4 flex justify-end items-center gap-4">
             <button
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-label="Toggle menu"
-              className="relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 group"
+              onClick={() => setIsModalOpen(true)}
+              className="group relative overflow-hidden inline-flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-black/60 backdrop-blur-md border border-white/10 text-bone rounded-full font-display font-bold text-[10px] md:text-xs tracking-widest uppercase hover:bg-amber-400 hover:text-void hover:border-amber-400 transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(251,191,36,0.3)]"
             >
-              <motion.span
-                className="block w-6 h-px bg-bone origin-center"
-                animate={{
-                  rotate: menuOpen ? 45 : 0,
-                  y: menuOpen ? 4 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-              <motion.span
-                className="block w-6 h-px bg-bone origin-center"
-                animate={{
-                  rotate: menuOpen ? -45 : 0,
-                  y: menuOpen ? -4 : 0,
-                  opacity: menuOpen ? 1 : 1,
-                  scaleX: menuOpen ? 1 : 0.7,
-                }}
-                transition={{ duration: 0.3 }}
-              />
+              <span>Reservar</span>
+            </button>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden text-amber-400 p-2 bg-black/60 backdrop-blur-md border border-white/10 hover:bg-amber-400 hover:text-void transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-full"
+            >
+              {isMobileMenuOpen ? <X size={28} strokeWidth={2.5} /> : <Menu size={28} strokeWidth={2.5} />}
             </button>
           </div>
         </nav>
-      </motion.header>
+      </header>
 
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
-        {menuOpen && <FullscreenMenu onClose={() => setMenuOpen(false)} />}
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[90] bg-void/95 backdrop-blur-3xl pt-28 px-6 lg:hidden flex flex-col"
+          >
+            <div className="flex flex-col gap-6">
+              {navLinks.map((item, i) => (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-4xl font-display font-black text-bone uppercase hover:text-amber-400 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
+
+      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} initialServiceType={initialService} />
     </>
   );
 }

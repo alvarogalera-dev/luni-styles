@@ -36,10 +36,10 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { label: 'La Barbería', href: '/la-barberia' },
-                { label: 'Servicios',   href: '/servicios'   },
+                { label: 'Servicios', href: '/servicios' },
                 { label: 'Corte Infantil', href: '/corte-infantil' },
-                { label: 'Reservas',    href: '/reservas'    },
-                { label: 'Contacto',    href: '/contacto'    },
+                { label: 'Reservas', href: '/reservas' },
+                { label: 'Contacto', href: '/contacto' },
               ].map((item) => (
                 <li key={item.href}>
                   <Link
@@ -57,16 +57,16 @@ export default function Footer() {
           <div>
             <p className="text-bone text-xs tracking-widest uppercase mb-5 font-medium">Contacto</p>
             <ul className="space-y-3">
-              <li className="text-steel text-sm">Calle Gran Vía, 42</li>
-              <li className="text-steel text-sm">28013 Madrid</li>
+              <li className="text-steel text-sm">C. Pedro Hernandez Guillamon "El Peseta", 4</li>
+              <li className="text-steel text-sm"> 30820, Alcantarilla(Murcia)</li>
               <li>
-                <a href="tel:+34912345678" className="text-steel text-sm hover:text-copper-400 transition-colors">
-                  +34 912 345 678
+                <a href="tel:+34623599890" className="text-steel text-sm hover:text-copper-400 transition-colors">
+                  +34 623 59 98 90
                 </a>
               </li>
               <li>
-                <a href="mailto:hola@lunistyles.com" className="text-steel text-sm hover:text-copper-400 transition-colors">
-                  hola@lunistyles.com
+                <a href="mailto:contacto@lunistyles.com" className="text-steel text-sm hover:text-copper-400 transition-colors">
+                  contacto@lunistyles.com
                 </a>
               </li>
             </ul>

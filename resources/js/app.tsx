@@ -8,7 +8,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 const appName = 'Luni Styles';
 
 createInertiaApp({
-  title: (title) => `${title} — ${appName}`,
+  title: (title) => title || appName,
   resolve: (name) =>
     resolvePageComponent(
       `./Pages/${name}.tsx`,

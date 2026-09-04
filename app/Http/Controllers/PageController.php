@@ -11,7 +11,7 @@ class PageController extends Controller
     {
         return Inertia::render('Home', [
             'meta' => [
-                'title'       => 'Luni Styles — Barbershop de Precisión',
+                'title'       => 'Luni Styles',
                 'description' => 'Experiencia de barbería premium en el corazón de la ciudad. Cortes, arreglos de barba y tratamientos capilares de alta gama.',
             ],
         ]);
@@ -21,28 +21,28 @@ class PageController extends Controller
     {
         return Inertia::render('LaBarberia', [
             'meta' => [
-                'title'       => 'La Barbería — Luni Styles',
-                'description' => 'Conoce nuestro equipo de maestros barberos y la historia de Luni Styles.',
+                'title'       => 'La Barbería',
+                'description' => 'Servicios de barbería premium: cortes, barba, tratamientos y más.',
             ],
         ]);
     }
 
-    public function servicios(): Response
+    public function peluqueriaInfantil(): Response
     {
-        return Inertia::render('Servicios', [
+        return Inertia::render('PeluqueriaInfantil', [
             'meta' => [
-                'title'       => 'Servicios — Luni Styles',
-                'description' => 'Descubre todos nuestros servicios de barbería premium: cortes, barba, tratamientos y más.',
-            ],
-        ]);
-    }
-
-    public function corteInfantil(): Response
-    {
-        return Inertia::render('CorteInfantil', [
-            'meta' => [
-                'title'       => 'Corte Infantil — Luni Styles',
+                'title'       => 'Peluquería Infantil',
                 'description' => 'Cortes de cabello para los más pequeños en un ambiente cómodo y divertido.',
+            ],
+        ]);
+    }
+
+    public function quienesSomos(): Response
+    {
+        return Inertia::render('QuienesSomos', [
+            'meta' => [
+                'title'       => 'Quiénes Somos',
+                'description' => 'Conoce la historia de Luni Styles y nuestra pasión por el estilo.',
             ],
         ]);
     }
@@ -51,19 +51,49 @@ class PageController extends Controller
     {
         return Inertia::render('Contacto', [
             'meta' => [
-                'title'       => 'Contacto — Luni Styles',
-                'description' => 'Visítanos, llámanos o escríbenos. Estamos aquí para atenderte.',
-            ],
+                'title'       => 'Contacto',
+                'description' => 'Encuéntranos en Madrid. Contacta con nosotros para cualquier duda o consulta.',
+            ]
         ]);
     }
 
-    public function reservas(): Response
+    public function avisoLegal(): Response
     {
-        return Inertia::render('Reservas', [
+        return Inertia::render('Legal/AvisoLegal', [
             'meta' => [
-                'title'       => 'Reservas — Luni Styles',
-                'description' => 'Reserva tu cita online con nuestros maestros barberos. Elige tu servicio, fecha y hora.',
-            ],
+                'title'       => 'Aviso Legal',
+                'description' => 'Aviso Legal y datos registrales de Luni Styles.',
+            ]
+        ]);
+    }
+
+    public function politicaPrivacidad(): Response
+    {
+        return Inertia::render('Legal/PoliticaPrivacidad', [
+            'meta' => [
+                'title'       => 'Política de Privacidad',
+                'description' => 'Política de Privacidad y protección de datos.',
+            ]
+        ]);
+    }
+
+    public function politicaCookies(): Response
+    {
+        return Inertia::render('Legal/PoliticaCookies', [
+            'meta' => [
+                'title'       => 'Política de Cookies',
+                'description' => 'Política de Cookies de nuestra web.',
+            ]
+        ]);
+    }
+
+    public function terminosReserva(): Response
+    {
+        return Inertia::render('Legal/TerminosReserva', [
+            'meta' => [
+                'title'       => 'Términos de Reserva',
+                'description' => 'Condiciones y términos al reservar en Luni Styles.',
+            ]
         ]);
     }
 }

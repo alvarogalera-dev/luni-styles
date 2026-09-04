@@ -96,6 +96,15 @@
     background-color: #0a0a0a;
     overflow-x: hidden;
   }
+  
+  button, 
+  a, 
+  input[type="button"], 
+  input[type="submit"], 
+  input[type="reset"], 
+  [role="button"] {
+    cursor: pointer;
+  }
 
   ::-webkit-scrollbar { width: 0px; }
   ::selection {

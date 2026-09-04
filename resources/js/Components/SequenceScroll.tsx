@@ -138,40 +138,32 @@ export default function SequenceScroll() {
   const scrollIndRef = useRef<HTMLDivElement>(null);
   const overlayRefs  = useRef<(HTMLDivElement | null)[]>([]);
 
-  // All mutable animation state lives in refs — zero React re-renders
-  const bitmapsRef    = useRef<(ImageBitmap | null)[]>(Array(TOTAL_FRAMES).fill(null));
-  const frameRef      = useRef(-1);   // last drawn frame (-1 = nothing drawn yet)
+  const imagesRef     = useRef<(HTMLImageElement | null)[]>(Array(TOTAL_FRAMES).fill(null));
+  const frameRef      = useRef(-1);
   const progressRef   = useRef(0);
-  // Pre-computed draw geometry (set once after first frame loads)
-  const drawGeoRef    = useRef<{ dx: number; dy: number } | null>(null);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  /**
-   * Draw a single pre-scaled bitmap.
-   * All bitmaps are already scaled to cover the canvas — draw is a fast
-   * pixel blit with a simple offset, no per-frame scaling math.
-   */
   const draw = (index: number) => {
     const canvas = canvasRef.current;
     const ctx    = canvas?.getContext('2d', { alpha: false });
     if (!canvas || !ctx) return;
 
-    const bmp = bitmapsRef.current[index];
-    const geo = drawGeoRef.current;
-
+    const img = imagesRef.current[index];
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    if (bmp && geo) {
-      ctx.drawImage(bmp, geo.dx, geo.dy);   // ← no scaling arg = fastest path
+    if (img && img.complete && img.naturalWidth > 0) {
+      // Ultra-fast object-fit: cover equivalent using GPU blit scaling
+      const hRatio = canvas.width / img.naturalWidth;
+      const vRatio = canvas.height / img.naturalHeight;
+      const ratio  = Math.max(hRatio, vRatio);
+      const cx = (canvas.width - img.naturalWidth * ratio) / 2;
+      const cy = (canvas.height - img.naturalHeight * ratio) / 2;  
+      ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, cx, cy, img.naturalWidth * ratio, img.naturalHeight * ratio);
     }
   };
 
-  /**
-   * Update all overlay opacities/transforms via direct DOM mutation.
-   * Called inside the Lenis RAF tick — no React involvement.
-   */
   const updateOverlays = (p: number) => {
     const FADE = 0.07;
     LAYERS.forEach((layer, i) => {
@@ -201,7 +193,6 @@ export default function SequenceScroll() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Initial size + dark fill
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext('2d', { alpha: false })!;
@@ -212,98 +203,47 @@ export default function SequenceScroll() {
       if (!canvas) return;
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
-      // Recompute draw geometry and redraw
-      if (bitmapsRef.current[0]) recomputeGeo(bitmapsRef.current[0]);
       draw(Math.max(0, frameRef.current));
     };
     window.addEventListener('resize', resize, { passive: true });
 
-    /**
-     * Compute pixel-perfect cover offset once, store in drawGeoRef.
-     * All bitmaps are pre-scaled to the SAME cover dimensions,
-     * so this is computed once and reused.
-     */
-    const recomputeGeo = (bmp: ImageBitmap) => {
-      const cW = canvas.width, cH = canvas.height;
-      drawGeoRef.current = {
-        dx: Math.round((cW - bmp.width)  / 2),
-        dy: Math.round((cH - bmp.height) / 2),
-      };
-    };
-
-    /**
-     * Load a frame:
-     * 1. fetch → blob
-     * 2. createImageBitmap with resizeWidth/Height = cover dimensions
-     *    → GPU-decoded, pre-scaled, ready for zero-cost blit
-     */
-    const loadFrame = async (i: number) => {
-      try {
-        const resp = await fetch(framePath(i));
-        if (!resp.ok) return;
-        const blob = await resp.blob();
-
-        // For the very first frame: decode at natural size to get dimensions
-        if (i === 0 && !drawGeoRef.current) {
-          const naturalBmp = await createImageBitmap(blob);
-          const cW = canvas.width, cH = canvas.height;
-          const scale   = Math.max(cW / naturalBmp.width, cH / naturalBmp.height);
-          const scaledW = Math.ceil(naturalBmp.width  * scale);
-          const scaledH = Math.ceil(naturalBmp.height * scale);
-          naturalBmp.close();
-
-          // Store cover offset
-          drawGeoRef.current = {
-            dx: Math.round((cW - scaledW) / 2),
-            dy: Math.round((cH - scaledH) / 2),
-          };
-
-          // Re-decode at exact cover size
-          const coverBmp = await createImageBitmap(blob, {
-            resizeWidth:   scaledW,
-            resizeHeight:  scaledH,
-            resizeQuality: 'high',
-          });
-          bitmapsRef.current[0] = coverBmp;
-          if (frameRef.current === -1) {
+    // Use native browser decoding (much faster/smoother than createImageBitmap for sequences)
+    const loadFrame = (i: number): Promise<void> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        // Request decoding before it's actually drawn to prevent jank
+        img.decoding = 'async';
+        img.onload = () => {
+          imagesRef.current[i] = img;
+          if (i === 0 && frameRef.current === -1) {
             frameRef.current = 0;
             draw(0);
           }
-          return;
-        }
-
-        // For all other frames: use the cover dimensions we already know
-        const geo = drawGeoRef.current;
-        if (!geo) {
-          // Geometry not ready yet — store a naturally-sized fallback
-          bitmapsRef.current[i] = await createImageBitmap(blob);
-          return;
-        }
-
-        const first = bitmapsRef.current[0];
-        if (!first) return;
-        const targetW = first.width;
-        const targetH = first.height;
-
-        bitmapsRef.current[i] = await createImageBitmap(blob, {
-          resizeWidth:   targetW,
-          resizeHeight:  targetH,
-          resizeQuality: 'high',
-        });
-      } catch { /* frame 404 or decode error — skip */ }
+          resolve();
+        };
+        img.onerror = () => resolve(); // Ignore 404s
+        img.src = framePath(i);
+      });
     };
 
-    // Priority loading: [0] first, then [1-4] in parallel, then the rest
-    loadFrame(0).then(() => {
-      const batch1 = [1, 2, 3, 4].map(loadFrame);
-      Promise.all(batch1).then(() => {
-        for (let i = 5; i < TOTAL_FRAMES; i++) loadFrame(i);
-      });
+    // Priority loading: [0] first, then batch load the rest for ultra-fast but smooth performance
+    const loadBatch = async (start: number, end: number) => {
+      const promises = [];
+      for (let i = start; i < Math.min(end, TOTAL_FRAMES); i++) {
+        promises.push(loadFrame(i));
+      }
+      await Promise.all(promises);
+    };
+
+    loadFrame(0).then(async () => {
+      // Load 4 frames at a time
+      for (let i = 1; i < TOTAL_FRAMES; i += 4) {
+        await loadBatch(i, i + 4);
+      }
     });
 
     return () => {
       window.removeEventListener('resize', resize);
-      bitmapsRef.current.forEach(bmp => bmp?.close());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -323,14 +263,20 @@ export default function SequenceScroll() {
         if (range <= 0) return;
 
         const p     = clamp((scroll - top) / range, 0, 1);
-        const frame = Math.round(p * (TOTAL_FRAMES - 1));
+        const targetFrame = Math.round(p * (TOTAL_FRAMES - 1));
 
         progressRef.current = p;
 
+        // Find the closest loaded frame to the target frame (prevents getting stuck if a frame is missing or loading)
+        let drawFrame = targetFrame;
+        while (drawFrame >= 0 && !imagesRef.current[drawFrame]) {
+          drawFrame--;
+        }
+
         // Draw only when frame actually changes — zero redundant work
-        if (frame !== frameRef.current && bitmapsRef.current[frame]) {
-          frameRef.current = frame;
-          draw(frame);          // ← called synchronously inside Lenis RAF tick
+        if (drawFrame >= 0 && drawFrame !== frameRef.current) {
+          frameRef.current = drawFrame;
+          draw(drawFrame);          // ← called synchronously inside Lenis RAF tick
         }
 
         // DOM-mutate overlays — no React, no vdom diff

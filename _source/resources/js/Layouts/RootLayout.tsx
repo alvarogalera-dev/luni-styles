@@ -19,7 +19,7 @@ export default function RootLayout({ children, meta }: RootLayoutProps) {
     <LenisProvider>
       {/* SEO */}
       <Head>
-        <title>{meta?.title ?? 'Luni Styles — Barbershop de Precisión'}</title>
+        <title>{meta?.title ?? 'Luni Styles'}</title>
         <meta
           name="description"
           content={

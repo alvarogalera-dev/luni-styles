@@ -6,9 +6,9 @@ interface Meta { title: string; description: string; }
 interface Props { meta: Meta; }
 
 interface FormData {
-  name:    string;
-  email:   string;
-  phone:   string;
+  name: string;
+  email: string;
+  phone: string;
   subject: string;
   message: string;
 }
@@ -134,10 +134,10 @@ export default function Contacto({ meta }: Props) {
           <div className="space-y-10">
             <div className="space-y-6">
               {[
-                { label: 'Dirección',  value: 'Calle Gran Vía, 42 — 28013 Madrid' },
-                { label: 'Teléfono',   value: '+34 912 345 678' },
-                { label: 'Email',      value: 'hola@lunistyles.com' },
-                { label: 'Horario',    value: 'Lun–Sáb: 9:00 – 20:00' },
+                { label: 'Dirección', value: 'C. Pedro Hernandez Guillamon "El Peseta", 4 — 30820, Alcantarilla(Murcia)' },
+                { label: 'Teléfono', value: '+34 912 345 678' },
+                { label: 'Email', value: 'contacto@lunistyles.com' },
+                { label: 'Horario', value: 'Lun–Vie: 10:00 – 14:00 | 17:00 – 20:00' },
               ].map((item) => (
                 <div key={item.label}>
                   <p className="text-copper-400 text-xs tracking-ultra uppercase mb-1">{item.label}</p>
@@ -150,7 +150,7 @@ export default function Contacto({ meta }: Props) {
             <div className="rounded-2xl overflow-hidden border border-border-subtle h-72">
               <iframe
                 title="Luni Styles en el mapa"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-3.7167%2C40.4179%2C-3.7067%2C40.4229&layer=mapnik&marker=40.4204%2C-3.7117"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243.93433600390372!2d-1.2100495486985499!3d37.97026913801462!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd637fff9423f2bb%3A0x8c79e0cb3be8b953!2sKent%20School%20-%20Alcantarilla!5e1!3m2!1ses!2ses!4v1788524740608!5m2!1ses!2ses"
                 className="w-full h-full"
                 style={{ filter: 'invert(90%) hue-rotate(180deg) saturate(0.5) brightness(0.9)' }}
                 loading="lazy"
@@ -177,11 +177,11 @@ export default function Contacto({ meta }: Props) {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <FloatingInput label="Nombre completo" value={form.name}    onChange={update('name')}    required />
-                <FloatingInput label="Email"           value={form.email}   onChange={update('email')}   type="email" required />
-                <FloatingInput label="Teléfono"        value={form.phone}   onChange={update('phone')}   type="tel" />
-                <FloatingInput label="Asunto"          value={form.subject} onChange={update('subject')} />
-                <FloatingTextarea label="Mensaje"      value={form.message} onChange={update('message')} />
+                <FloatingInput label="Nombre completo" value={form.name} onChange={update('name')} required />
+                <FloatingInput label="Email" value={form.email} onChange={update('email')} type="email" required />
+                <FloatingInput label="Teléfono" value={form.phone} onChange={update('phone')} type="tel" />
+                <FloatingInput label="Asunto" value={form.subject} onChange={update('subject')} />
+                <FloatingTextarea label="Mensaje" value={form.message} onChange={update('message')} />
                 <button
                   type="submit"
                   className="w-full py-5 rounded-xl font-display font-bold text-sm tracking-widest uppercase text-void transition-all duration-300 hover:shadow-copper-lg"
