@@ -48,11 +48,79 @@ const services = [
   },
 ];
 
-const gallery = [
-  'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1200&auto=format&fit=crop',
+// Carrusel: 3 fotos + 1 video, se repiten para scroll infinito
+const CAROUSEL_ITEMS = [
+  {
+    type: 'image' as const,
+    src: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1200&auto=format&fit=crop',
+    alt: 'El local - barbería',
+  },
+  {
+    type: 'image' as const,
+    src: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop',
+    alt: 'El local - corte',
+  },
+  {
+    type: 'image' as const,
+    src: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1200&auto=format&fit=crop',
+    alt: 'El local - barba',
+  },
+  {
+    type: 'video' as const,
+    src: 'https://cdn.pixabay.com/video/2022/09/14/131481-750374874_large.mp4',
+    alt: 'El local - ambiente',
+  },
 ];
+
+// ─── Carrusel automático infinito ─────────────────────────────────────────────
+function GalleryCarousel() {
+  // Duplicamos los items para el truco de scroll infinito sin saltos
+  const items = [...CAROUSEL_ITEMS, ...CAROUSEL_ITEMS];
+
+  return (
+    <div className="relative w-full overflow-hidden flex">
+      {/* Sombras laterales */}
+      <div className="absolute top-0 left-0 w-12 md:w-32 h-full bg-gradient-to-r from-[#111] to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-12 md:w-32 h-full bg-gradient-to-l from-[#111] to-transparent z-10 pointer-events-none" />
+
+      <motion.div
+        animate={{ x: ['0%', '-50%'] }}
+        transition={{
+          duration: 28,
+          ease: 'linear',
+          repeat: Infinity,
+        }}
+        className="flex gap-3 md:gap-5 w-max"
+      >
+        {items.map((item, i) => (
+          <div
+            key={i}
+            className="shrink-0 w-[78vw] sm:w-[55vw] md:w-[38vw] lg:w-[30vw] h-[220px] md:h-[380px] rounded-2xl overflow-hidden relative bg-carbon"
+          >
+            {item.type === 'image' ? (
+              <img
+                src={item.src}
+                alt={item.alt}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <video
+                src={item.src}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-void/10" />
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
 export default function LaBarberia({ meta }: Props) {
   const teamRef = useRef<HTMLDivElement>(null);
@@ -110,7 +178,7 @@ export default function LaBarberia({ meta }: Props) {
         <section className="py-16 md:py-24 px-4 md:px-10 bg-[#111]">
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 md:mb-16">
-              <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Los Chavales</p>
+              <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Los Bareros</p>
               <h2 className="font-display font-black text-3xl md:text-6xl tracking-tighter text-white">El Equipo.</h2>
             </div>
 
@@ -139,24 +207,13 @@ export default function LaBarberia({ meta }: Props) {
           </div>
         </section>
 
-        {/* ── Galería ── */}
+        {/* ── Galería — Carrusel Automático ── */}
         <section className="py-16 md:py-24 overflow-hidden border-t border-white/5 bg-[#111]">
           <div className="max-w-7xl mx-auto px-4 md:px-10 mb-10 md:mb-12 text-center">
             <h2 className="font-display font-black text-3xl md:text-5xl text-white tracking-tighter">El Local.</h2>
-            <p className="text-steel mt-3 text-sm">El sitio donde pasa todo.</p>
+            <p className="text-steel mt-3 text-sm">Nuestro segundo hogar.</p>
           </div>
-          {/* Horizontally scrollable on mobile, natural grid on desktop */}
-          <div className="flex gap-3 md:gap-5 px-4 md:px-10 pb-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
-            {gallery.map((img, i) => (
-              <div
-                key={i}
-                className="min-w-[82vw] sm:min-w-[60vw] md:min-w-[45vw] h-[240px] md:h-[420px] shrink-0 snap-center rounded-2xl overflow-hidden relative"
-              >
-                <img src={img} alt="Galería" className="w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 bg-void/20" />
-              </div>
-            ))}
-          </div>
+          <GalleryCarousel />
         </section>
 
         {/* ── Reserva ── */}

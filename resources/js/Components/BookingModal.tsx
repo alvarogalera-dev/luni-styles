@@ -25,6 +25,7 @@ const BARBERIA_SERVICES = [
     subtitle: 'Corte de pelo · Lavado · Cejas',
     price: 12,
     duration: 30,
+    durationLabel: '30 min',
   },
   {
     id: 'b2',
@@ -32,6 +33,7 @@ const BARBERIA_SERVICES = [
     subtitle: 'Corte de pelo · Lavado · Cejas · Barba',
     price: 15,
     duration: 60,
+    durationLabel: '45–60 min',
   },
   {
     id: 'b3',
@@ -39,6 +41,7 @@ const BARBERIA_SERVICES = [
     subtitle: 'Arreglo de barba',
     price: 4,
     duration: 20,
+    durationLabel: '15–30 min',
   },
 ];
 
@@ -211,7 +214,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 )}
                                 <p className={cn("text-[10px] mt-1 flex items-center gap-1", selectedService?.id === svc.id ? (isKids ? "text-emerald-700" : "text-amber-400") : "text-steel")}>
                                   <Clock className="w-3 h-3 shrink-0" />
-                                  {svc.duration} min
+                                  {(svc as any).durationLabel ?? `${svc.duration} min`}
                                 </p>
                               </div>
                               <div className="font-display font-black text-xl md:text-2xl shrink-0">
@@ -479,7 +482,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <CalendarIcon className="w-4 h-4 text-steel shrink-0" />
                             <div>
                               <p className="text-xs font-bold capitalize">{date && format(date, "EEEE, d 'de' MMMM yyyy", { locale: es })}</p>
-                              <p className="text-[10px] text-steel">A las {time}h · {selectedService?.duration} min</p>
+                              <p className="text-[10px] text-steel">A las {time}h · {selectedService?.durationLabel ?? `${selectedService?.duration} min`}</p>
                             </div>
                           </div>
 
