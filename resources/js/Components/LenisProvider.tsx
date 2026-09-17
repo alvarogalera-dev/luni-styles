@@ -30,13 +30,13 @@ export default function LenisProvider({ children }: LenisProviderProps) {
     window.scrollTo(0, 0);
 
     const lenis = new Lenis({
-      // Snappy but still smooth — perfect for scroll-linked animations
-      duration:        0.6,
-      easing:          (t: number) => 1 - Math.pow(1 - t, 3), // ease-out cubic
+      // Faster, more responsive for mobile scroll-linked animations
+      duration:        0.45,
+      easing:          (t: number) => 1 - Math.pow(1 - t, 4), // ease-out quart — snappier
       orientation:     'vertical',
       smoothWheel:     true,
-      touchMultiplier: 2.0,
-      wheelMultiplier: 0.8,
+      touchMultiplier: 1.5,  // reduced to avoid over-shooting on mobile
+      wheelMultiplier: 1.0,  // 1:1 wheel feel
     });
 
     lenisInstance = lenis;
