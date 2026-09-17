@@ -163,7 +163,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                     {/* STEP 1: ELECCIÓN SECCIÓN */}
                     {step === 1 && (
                       <div className="space-y-5 text-bone">
-                        <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-6">¿Qué necesitas hoy?</h3>
+                        <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-6">¿Qué deseas reservar?</h3>
                         <div className="grid grid-cols-2 gap-3">
                           <button
                             onClick={() => { setServiceType('barberia'); setSelectedService(null); nextStep(); }}
@@ -173,7 +173,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             )}
                           >
                             <Scissors className="w-9 h-9" />
-                            <span className="font-display font-bold tracking-wider text-sm text-center">LA BARBERÍA</span>
+                            <span className="font-display font-bold tracking-wider text-sm text-center">BARBERÍA</span>
                           </button>
                           <button
                             onClick={() => { setServiceType('infantil'); setSelectedService(null); nextStep(); }}
@@ -183,7 +183,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             )}
                           >
                             <Baby className="w-9 h-9" />
-                            <span className="font-display font-bold tracking-wider text-sm text-center">INFANTIL</span>
+                            <span className="font-display font-bold tracking-wider text-sm text-center">CORTE INFANTIL</span>
                           </button>
                         </div>
                       </div>
@@ -429,7 +429,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} className="w-4 h-4 accent-amber-400" />
                             <div className="flex-1">
                               <p className="font-bold text-bone text-sm">Bizum</p>
-                              <p className="text-xs text-steel">Pago rápido al 600 000 000</p>
+                              <p className="text-xs text-steel">Pago rápido al +34 623 59 98 90</p>
                             </div>
                             <CreditCard className="text-steel w-4 h-4 shrink-0" />
                           </label>

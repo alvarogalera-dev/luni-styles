@@ -42,8 +42,9 @@ export default function Home({ meta }: Props) {
             {/* Video abstracto elegante */}
             <source src="https://cdn.pixabay.com/video/2015/10/24/1109-143167194_large.mp4" type="video/mp4" />
           </video>
-          {/* Degradado sobre el video: oscuro a la izquierda, blanco/claro a la derecha */}
-          <div className="absolute inset-0 bg-gradient-to-r from-void via-void/80 to-white/90" />
+          {/* Degradado sobre el video: oscuro a la izquierda, transición a blanco, terminando en verde claro (KIDS) a la derecha */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-white to-emerald-100/90 mix-blend-multiply opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-emerald-50/80" />
         </motion.div>
 
         {/* ── Hero Content ── */}
@@ -55,14 +56,14 @@ export default function Home({ meta }: Props) {
             className="space-y-4 md:space-y-6 max-w-4xl bg-black/40 backdrop-blur-md p-6 md:p-16 rounded-3xl border border-white/20 shadow-2xl mx-4"
           >
             <p className="text-amber-400 font-bold tracking-[0.3em] uppercase text-[10px] md:text-sm drop-shadow-md">
-              Desde Alcantarilla, Murcia
+              Tradición y Pasión
             </p>
             <h1 className="font-display font-black text-4xl md:text-7xl lg:text-8xl tracking-tighter text-bone drop-shadow-2xl leading-[1.1]">
               <span className="text-white">DOS</span> MUNDOS.<br />
-              <span className="text-emerald-400">UN</span> <span className="text-amber-400">ESTILO</span>.
+              <span className="text-emerald-400">UNA</span> <span className="text-amber-400">FAMILIA</span>.
             </h1>
             <p className="text-white/90 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-              La barbería de los 19 años. Cortes fresh, fades limpios y cero tonterías. Y justo al lado, el paraíso para que tu peque se corte el pelo sin dramas y jugando.
+              Un proyecto nacido del amor por nuestro trabajo. Una peluquería infantil y una barbería clásica, unidas en un mismo espacio en Alcantarilla, Murcia.
             </p>
           </motion.div>
         </div>
@@ -74,7 +75,6 @@ export default function Home({ meta }: Props) {
           transition={{ delay: 1.5, duration: 1 }}
           className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-white drop-shadow-md font-bold">Baja</span>
           <div className="w-[2px] h-8 md:h-12 bg-gradient-to-b from-amber-400 via-emerald-400 to-transparent rounded-full" />
         </motion.div>
       </div>
@@ -83,10 +83,10 @@ export default function Home({ meta }: Props) {
       <section className="py-16 md:py-24 px-6 md:px-10 bg-white relative z-20">
         <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
           <h2 className="font-display font-black text-3xl md:text-5xl text-slate-900 tracking-tighter">
-            No somos la típica barbería.
+            Nuestra Historia.
           </h2>
           <p className="text-slate-600 text-base md:text-lg leading-relaxed px-4">
-            Empezamos jóvenes en Alcantarilla y hemos reventado el concepto. En un lado tienes el rollo urbano, cortes limpios y musiquita guapa con los chavales. En el otro, un mundo de luz y juguetes donde la jefa corta el pelo a los más pequeños con paciencia nivel dios. Dos mundos, cero estrés.
+            Somos un negocio familiar impulsado por dos generaciones. Una madre venezolana con años de experiencia y verdadera vocación por la peluquería infantil, y su hijo de 19 años, dedicado en cuerpo y alma al arte de la barbería. A él se le suma un gran amigo y compañero, también venezolano, para ofrecer el mejor servicio de barbería en nuestro centro. Dos mundos que se encuentran para ofrecer una experiencia única para todas las edades.
           </p>
         </div>
       </section>
@@ -114,10 +114,10 @@ export default function Home({ meta }: Props) {
                 </h2>
                 <div className="w-12 h-1 bg-amber-400 mx-auto rounded-full" />
                 <p className="text-ash text-sm md:text-base leading-relaxed">
-                  Degradados al milímetro, texturas y el rollo fresco que buscas. Si vienes a arreglarte la barba o a marcarte un fade, estás en casa.
+                  Cortes clásicos, degradados precisos y arreglo de barba profesional. Un espacio dedicado al cuidado masculino, donde la técnica y la dedicación marcan la diferencia en cada servicio.
                 </p>
                 <span className="inline-block mt-4 px-8 py-3 md:py-4 bg-white/5 group-hover:bg-white/15 border border-white/10 rounded-full text-bone text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-lg">
-                  Pide tu Fade
+                  Reservar Cita
                 </span>
               </div>
             </Link>
@@ -142,10 +142,10 @@ export default function Home({ meta }: Props) {
                 </h2>
                 <div className="w-12 h-1 bg-emerald-400 mx-auto rounded-full" />
                 <p className="text-[#475569] text-sm md:text-base leading-relaxed">
-                  El rincón donde llorar no es opción. Sonrisas, juguetes y el tacto que necesitan los nenes para salir guapísimos sin liarla parda.
+                  Un entorno seguro y divertido diseñado especialmente para los más pequeños. Con la paciencia y el cariño que requieren, convertimos el corte de pelo en una experiencia positiva y agradable.
                 </p>
                 <span className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#0f172a] group-hover:bg-[#1e293b] text-white rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-xl shadow-slate-200">
-                  Reservar para el peque
+                  Reservar Cita
                 </span>
               </div>
             </Link>

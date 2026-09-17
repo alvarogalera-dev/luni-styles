@@ -40,7 +40,7 @@ const services = [
     img: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop',
   },
   {
-    name: 'Solo Barba',
+    name: 'Barba',
     price: '4€',
     duration: '15–30 min',
     includes: 'Arreglo de barba',
@@ -174,8 +174,64 @@ export default function LaBarberia({ meta }: Props) {
           </div>
         </section>
 
+        {/* ── La Tienda ── */}
+        <section className="py-16 md:py-24 px-4 md:px-10 bg-[#0a0a0a] border-t border-white/5">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 md:mb-16 text-center">
+              <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Nuestro Escaparate</p>
+              <h2 className="font-display font-black text-3xl md:text-6xl tracking-tighter text-white">La Tienda.</h2>
+            </div>
+            
+            <div className="flex flex-col md:grid md:grid-cols-2 gap-5 md:gap-8 max-w-4xl mx-auto">
+              {/* Producto Rojo */}
+              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
+                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
+                  <img
+                    src="/products/redone-red.png"
+                    alt="RedOne Aqua Hair Wax Roja"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Aqua Hair Wax</h3>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
+                  </div>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera Roja</p>
+                  <p className="text-ash text-xs md:text-sm leading-relaxed">
+                    Fijación extrema y brillo duradero. Fórmula a base de agua ideal para peinados que necesitan máxima sujeción sin dejar residuos.
+                  </p>
+                </div>
+              </div>
+
+              {/* Producto Negro */}
+              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
+                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
+                  <img
+                    src="/products/redone-black.png"
+                    alt="RedOne Black Gel Wax"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Black Gel Wax</h3>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
+                  </div>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Wax Negro</p>
+                  <p className="text-ash text-xs md:text-sm leading-relaxed">
+                    Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── El Equipo ── */}
-        <section className="py-16 md:py-24 px-4 md:px-10 bg-[#111]">
+        <section className="py-16 md:py-24 px-4 md:px-10 bg-[#111] border-t border-white/5">
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 md:mb-16">
               <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Los Bareros</p>
