@@ -101,21 +101,26 @@ export default function Home({ meta }: Props) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center justify-center p-10 lg:p-24 bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-white/5 relative group overflow-hidden"
+            className="h-full flex flex-col"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-carbon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <div className="relative z-10 text-center max-w-sm space-y-6">
-              <h2 className="font-display font-black text-4xl md:text-5xl text-bone tracking-tighter uppercase">
-                La Barbería
-              </h2>
-              <div className="w-12 h-1 bg-amber-400 mx-auto rounded-full" />
-              <p className="text-ash text-sm md:text-base leading-relaxed">
-                Degradados al milímetro, texturas y el rollo fresco que buscas. Si vienes a arreglarte la barba o a marcarte un fade, estás en casa.
-              </p>
-              <Link href="/la-barberia" className="inline-block mt-4 px-8 py-3 md:py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-bone text-xs font-bold tracking-widest uppercase transition-all duration-300">
-                Pide tu Fade
-              </Link>
-            </div>
+            <Link 
+              href="/la-barberia"
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-white/5 relative group overflow-hidden cursor-pointer text-center transition-colors duration-300"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-carbon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative z-10 text-center max-w-sm space-y-6">
+                <h2 className="font-display font-black text-4xl md:text-5xl text-bone tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
+                  La Barbería
+                </h2>
+                <div className="w-12 h-1 bg-amber-400 mx-auto rounded-full" />
+                <p className="text-ash text-sm md:text-base leading-relaxed">
+                  Degradados al milímetro, texturas y el rollo fresco que buscas. Si vienes a arreglarte la barba o a marcarte un fade, estás en casa.
+                </p>
+                <span className="inline-block mt-4 px-8 py-3 md:py-4 bg-white/5 group-hover:bg-white/15 border border-white/10 rounded-full text-bone text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-lg">
+                  Pide tu Fade
+                </span>
+              </div>
+            </Link>
           </motion.div>
 
           {/* Lado Infantil (Claro) */}
@@ -124,27 +129,33 @@ export default function Home({ meta }: Props) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden"
+            className="h-full flex flex-col"
           >
-            <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <div className="relative z-10 text-center max-w-sm space-y-6">
-              <h2 className="font-display font-black text-4xl md:text-5xl text-[#0f172a] tracking-tighter uppercase">
-                Infantil
-              </h2>
-              <div className="w-12 h-1 bg-emerald-400 mx-auto rounded-full" />
-              <p className="text-[#475569] text-sm md:text-base leading-relaxed">
-                El rincón donde llorar no es opción. Sonrisas, juguetes y el tacto que necesitan los nenes para salir guapísimos sin liarla parda.
-              </p>
-              <Link href="/peluqueria-infantil" className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#0f172a] hover:bg-[#1e293b] text-white rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-xl shadow-slate-200">
-                Reservar para el peque
-              </Link>
-            </div>
+            <Link 
+              href="/peluqueria-infantil"
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300"
+            >
+              <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative z-10 text-center max-w-sm space-y-6">
+                <h2 className="font-display font-black text-4xl md:text-5xl text-[#0f172a] tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
+                  Infantil
+                </h2>
+                <div className="w-12 h-1 bg-emerald-400 mx-auto rounded-full" />
+                <p className="text-[#475569] text-sm md:text-base leading-relaxed">
+                  El rincón donde llorar no es opción. Sonrisas, juguetes y el tacto que necesitan los nenes para salir guapísimos sin liarla parda.
+                </p>
+                <span className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#0f172a] group-hover:bg-[#1e293b] text-white rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-xl shadow-slate-200">
+                  Reservar para el peque
+                </span>
+              </div>
+            </Link>
           </motion.div>
 
         </div>
       </section>
 
-      {/* ── Carrusel de Reseñas ── */}
+      {/* ── Carrusel de Reseñas (Oculto temporalmente hasta la apertura del martes 22 de septiembre) ── */}
+      {/*
       <section className="py-20 md:py-32 bg-[#0a0a0a] text-bone border-t border-white/5 overflow-hidden flex flex-col items-center">
         <div className="max-w-7xl mx-auto w-full px-6 mb-12">
           <h2 className="text-center font-display font-black text-3xl md:text-5xl mb-4">Lo que dice la calle</h2>
@@ -152,11 +163,9 @@ export default function Home({ meta }: Props) {
         </div>
 
         <div className="relative w-full overflow-hidden flex">
-          {/* Sombra en los bordes para fundido */}
           <div className="absolute top-0 left-0 w-24 md:w-64 h-full bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
           <div className="absolute top-0 right-0 w-24 md:w-64 h-full bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
           
-          {/* Doble renderizado para scroll infinito sin saltos */}
           <motion.div 
             animate={{ x: ["0%", "-50%"] }}
             transition={{ duration: 30, ease: "linear", repeat: Infinity }}
@@ -192,6 +201,7 @@ export default function Home({ meta }: Props) {
           </motion.div>
         </div>
       </section>
+      */}
       
     </RootLayout>
   );

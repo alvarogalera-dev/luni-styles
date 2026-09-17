@@ -86,12 +86,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-border-subtle pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-steel text-xs tracking-wider">
+        <div className="border-t border-border-subtle pt-8 flex items-center justify-center">
+          <p className="text-steel text-xs tracking-wider text-center">
             © {year} Luni Styles. Todos los derechos reservados.
-          </p>
-          <p className="text-steel/50 text-xs tracking-wider">
-            Precision. Power. Style.
           </p>
         </div>
       </div>
