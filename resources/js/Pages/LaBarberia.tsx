@@ -30,7 +30,7 @@ const services = [
     price: '12€',
     duration: '30 min',
     includes: 'Corte de pelo · Lavado · Cejas',
-    img: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=800&auto=format&fit=crop',
+    img: '/images/fade.webp',
   },
   {
     name: 'Corte + Barba',
@@ -44,7 +44,7 @@ const services = [
     price: '4€',
     duration: '15–30 min',
     includes: 'Arreglo de barba',
-    img: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=800&auto=format&fit=crop',
+    img: '/images/barba.avif',
   },
 ];
 
@@ -238,6 +238,71 @@ export default function LaBarberia({ meta }: Props) {
                   <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Fijador &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
                     Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.
+                  </p>
+              </div>
+
+              {/* Gafas 1 */}
+              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
+                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
+                  <img
+                    src="/images/gafas1.png"
+                    alt="Gafas Classic Blue"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Classic Blue</h3>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">25€</span>
+                  </div>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
+                  <p className="text-ash text-xs md:text-sm leading-relaxed">
+                    Montura clásica de acetato negro con cristales tintados en azul para un look atemporal.
+                  </p>
+                </div>
+              </div>
+
+              {/* Gafas 2 */}
+              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
+                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
+                  <img
+                    src="/images/gafas2.jpg"
+                    alt="Gafas Clear Ice"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Clear Ice</h3>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">25€</span>
+                  </div>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
+                  <p className="text-ash text-xs md:text-sm leading-relaxed">
+                    Diseño moderno con montura transparente y cristales azules, perfectas para destacar.
+                  </p>
+                </div>
+              </div>
+
+              {/* Gafas 3 */}
+              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
+                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
+                  <img
+                    src="/images/gafas3.png"
+                    alt="Gafas Retro Amber"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Retro Amber</h3>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">25€</span>
+                  </div>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
+                  <p className="text-ash text-xs md:text-sm leading-relaxed">
+                    Estilo vintage de montura negra y cristales ámbar, protegiendo tus ojos con elegancia y carácter.
                   </p>
                 </div>
               </div>
