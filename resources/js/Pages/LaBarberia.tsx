@@ -239,6 +239,7 @@ export default function LaBarberia({ meta }: Props) {
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
                     Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.
                   </p>
+                </div>
               </div>
 
               {/* Gafas 1 */}
