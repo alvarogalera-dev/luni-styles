@@ -148,9 +148,9 @@ export default function LaBarberia({ meta }: Props) {
                 // Map service index to modal service id
                 const serviceIds = ['b1', 'b2', 'b3'];
                 const BARBERIA_SERVICES = [
-                  { id: 'b1', name: 'Corte Normal', subtitle: 'Corte de pelo, lavado y arreglo de cejas. El esencial del día a día.', duration: 30, durationLabel: '30 min', price: 12 },
+                  { id: 'b1', name: 'Corte Normal', subtitle: 'Corte de pelo, lavado y arreglo de cejas.', duration: 30, durationLabel: '30 min', price: 12 },
                   { id: 'b2', name: 'Corte + Barba', subtitle: 'Corte completo más arreglo y perfilado de barba con navaja y productos premium.', duration: 60, durationLabel: '45–60 min', price: 15 },
-                  { id: 'b3', name: 'Solo Barba', subtitle: 'Arreglo, perfilado y acabado de barba. Ideal para mantenimiento rápido.', duration: 20, durationLabel: '15–30 min', price: 4 },
+                  { id: 'b3', name: 'Solo Barba', subtitle: 'Arreglo, perfilado y acabado de barba.', duration: 20, durationLabel: '15–30 min', price: 4 },
                 ];
                 const modalSvc = BARBERIA_SERVICES[i];
                 return (

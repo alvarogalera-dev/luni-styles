@@ -22,7 +22,7 @@ const BARBERIA_SERVICES = [
   {
     id: 'b1',
     name: 'Corte Normal',
-    subtitle: 'Corte de pelo, lavado y arreglo de cejas. El esencial del día a día.',
+    subtitle: 'Corte de pelo, lavado y arreglo de cejas.',
     duration: 30,
     durationLabel: '30 min',
     price: 12,
@@ -38,7 +38,7 @@ const BARBERIA_SERVICES = [
   {
     id: 'b3',
     name: 'Solo Barba',
-    subtitle: 'Arreglo, perfilado y acabado de barba. Ideal para mantenimiento rápido.',
+    subtitle: 'Arreglo, perfilado y acabado de barba.',
     duration: 20,
     durationLabel: '15–30 min',
     price: 4,

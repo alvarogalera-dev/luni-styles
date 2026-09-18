@@ -91,6 +91,12 @@ export default function KidsScrollAnimation() {
             />
           ))}
         </div>
+
+        {/* Indicador de SCROLL */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-emerald-500/80 z-20">
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase">Scroll</span>
+          <div className="w-[1px] h-12 md:h-16 bg-gradient-to-b from-emerald-500 to-transparent" />
+        </div>
       </div>
     </div>
   );
