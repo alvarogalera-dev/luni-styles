@@ -15,20 +15,23 @@ const services = [
   {
     name: 'Corte Infantil',
     duration: '30 – 60 min',
-    desc: 'Corte profesional para niños, niñas y adolescentes. Adaptado a cada edad y tipo de cabello, con la paciencia que el momento requiere.',
+    desc: 'Corte profesional para niños, niñas y adolescentes.',
     img: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop',
+    serviceId: 'k1',
   },
   {
     name: 'Peinados',
     duration: '30 – 60 min',
-    desc: 'Trenzas, coletas, ondas y peinados especiales para niñas. Perfectos para el día a día, comuniones, fiestas y cualquier ocasión especial.',
+    desc: 'Trenzas, coletas, ondas y peinados especiales para niñas.',
     img: 'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=800&auto=format&fit=crop',
+    serviceId: 'k2',
   },
   {
     name: 'Accesorios',
     duration: '15 – 30 min',
-    desc: 'Coletas, lazos, broches, brillos y todo tipo de accesorios para terminar el look con ese toque especial que las pequeñas adoran.',
+    desc: 'Coletas, lazos, broches y brillos para el look de las pequeñas.',
     img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800&auto=format&fit=crop',
+    serviceId: 'k3',
   },
 ];
 
@@ -59,20 +62,33 @@ export default function PeluqueriaInfantil({ meta }: Props) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {services.map((svc, i) => (
-                <div key={i} className="group relative bg-white border border-emerald-100 rounded-2xl overflow-hidden hover:border-emerald-300 transition-colors shadow-sm hover:shadow-xl hover:shadow-emerald-100/50">
-                  <div className="h-48 md:h-64 overflow-hidden bg-slate-100">
-                    <img src={svc.img} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  </div>
-                  <div className="p-6 md:p-8">
-                    <h3 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">{svc.name}</h3>
-                    <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase tracking-wider mb-4 font-bold">
-                      <Clock className="w-3 h-3" /> {svc.duration}
+              {services.map((svc, i) => {
+                const INFANTIL_SERVICES = [
+                  { id: 'k1', name: 'Corte Infantil', subtitle: 'Corte profesional para niños, niñas y adolescentes.', duration: 45, durationLabel: '30 – 60 min' },
+                  { id: 'k2', name: 'Peinados', subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas.', duration: 45, durationLabel: '30 – 60 min' },
+                  { id: 'k3', name: 'Accesorios', subtitle: 'Coletas, lazos, broches y brillos para el look de las pequeñas.', duration: 20, durationLabel: '15 – 30 min' },
+                ];
+                const modalSvc = INFANTIL_SERVICES[i];
+                return (
+                  <button
+                    key={i}
+                    onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil', preSelectedService: modalSvc } }))}
+                    className="group relative bg-white border border-emerald-100 rounded-2xl overflow-hidden hover:border-emerald-300 transition-colors shadow-sm hover:shadow-xl hover:shadow-emerald-100/50 text-left w-full"
+                  >
+                    <div className="h-48 md:h-64 overflow-hidden bg-slate-100">
+                      <img src={svc.img} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     </div>
-                    <p className="text-slate-600 text-sm md:text-base leading-relaxed">{svc.desc}</p>
-                  </div>
-                </div>
-              ))}
+                    <div className="p-6 md:p-8">
+                      <h3 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">{svc.name}</h3>
+                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase tracking-wider mb-4 font-bold">
+                        <Clock className="w-3 h-3" /> {svc.duration}
+                      </div>
+                      <p className="text-slate-600 text-sm md:text-base leading-relaxed">{svc.desc}</p>
+                      <span className="mt-4 inline-block text-[10px] font-bold tracking-widest uppercase text-emerald-500/60 group-hover:text-emerald-500 transition-colors">Reservar →</span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>

@@ -144,32 +144,47 @@ export default function LaBarberia({ meta }: Props) {
 
             {/* Mobile: vertical stack | Tablet+: grid 3 cols */}
             <div className="flex flex-col md:grid md:grid-cols-3 gap-5 md:gap-8">
-              {services.map((svc, i) => (
-                <div key={i} className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors">
-                  <div className="h-44 md:h-56 overflow-hidden">
-                    <img
-                      src={svc.img}
-                      alt={svc.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-5 md:p-7">
-                    {/* Name & price on same row */}
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg md:text-2xl font-display font-bold leading-tight">{svc.name}</h3>
-                      <span className="text-xl md:text-2xl font-black text-amber-400 shrink-0 ml-2">{svc.price}</span>
+              {services.map((svc, i) => {
+                // Map service index to modal service id
+                const serviceIds = ['b1', 'b2', 'b3'];
+                const BARBERIA_SERVICES = [
+                  { id: 'b1', name: 'Corte Normal', subtitle: 'Corte de pelo, lavado y arreglo de cejas. El esencial del día a día.', duration: 30, durationLabel: '30 min', price: 12 },
+                  { id: 'b2', name: 'Corte + Barba', subtitle: 'Corte completo más arreglo y perfilado de barba con navaja y productos premium.', duration: 60, durationLabel: '45–60 min', price: 15 },
+                  { id: 'b3', name: 'Solo Barba', subtitle: 'Arreglo, perfilado y acabado de barba. Ideal para mantenimiento rápido.', duration: 20, durationLabel: '15–30 min', price: 4 },
+                ];
+                const modalSvc = BARBERIA_SERVICES[i];
+                return (
+                  <button
+                    key={i}
+                    onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'barberia', preSelectedService: modalSvc } }))}
+                    className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors text-left w-full"
+                  >
+                    <div className="h-44 md:h-56 overflow-hidden">
+                      <img
+                        src={svc.img}
+                        alt={svc.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        loading="lazy"
+                      />
                     </div>
-                    {/* Duration */}
-                    <div className="flex items-center gap-1.5 text-steel text-[10px] uppercase tracking-wider mb-3">
-                      <Clock className="w-3 h-3 shrink-0" />
-                      {svc.duration}
+                    <div className="p-5 md:p-7">
+                      {/* Name & price on same row */}
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg md:text-2xl font-display font-bold leading-tight">{svc.name}</h3>
+                        <span className="text-xl md:text-2xl font-black text-amber-400 shrink-0 ml-2">{svc.price}</span>
+                      </div>
+                      {/* Duration */}
+                      <div className="flex items-center gap-1.5 text-steel text-[10px] uppercase tracking-wider mb-3">
+                        <Clock className="w-3 h-3 shrink-0" />
+                        {svc.duration}
+                      </div>
+                      {/* Includes */}
+                      <p className="text-ash text-xs md:text-sm leading-relaxed">{svc.includes}</p>
+                      <span className="mt-4 inline-block text-[10px] font-bold tracking-widest uppercase text-amber-400/60 group-hover:text-amber-400 transition-colors">Reservar →</span>
                     </div>
-                    {/* Includes */}
-                    <p className="text-ash text-xs md:text-sm leading-relaxed">{svc.includes}</p>
-                  </div>
-                </div>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -198,7 +213,7 @@ export default function LaBarberia({ meta }: Props) {
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Aqua Hair Wax</h3>
                     <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
                   </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera</p>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
                     Fijación extrema y brillo duradero. Fórmula a base de agua ideal para peinados que necesitan máxima sujeción sin dejar residuos.
                   </p>
@@ -220,7 +235,7 @@ export default function LaBarberia({ meta }: Props) {
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Black Gel Wax</h3>
                     <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
                   </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Fijador</p>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Fijador &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
                     Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.
                   </p>

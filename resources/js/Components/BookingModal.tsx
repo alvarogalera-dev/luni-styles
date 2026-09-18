@@ -46,21 +46,21 @@ const INFANTIL_SERVICES = [
   {
     id: 'k1',
     name: 'Corte Infantil',
-    subtitle: 'Corte profesional para niños, niñas y adolescentes adaptado a cada edad y tipo de cabello.',
+    subtitle: 'Corte profesional para niños, niñas y adolescentes.',
     duration: 45,
     durationLabel: '30 – 60 min',
   },
   {
     id: 'k2',
     name: 'Peinados',
-    subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas. Perfectos para el día a día o cualquier ocasión.',
+    subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas.',
     duration: 45,
     durationLabel: '30 – 60 min',
   },
   {
     id: 'k3',
     name: 'Accesorios',
-    subtitle: 'Coletas, lazos, broches y brillos para dar el toque final y especial al look de las pequeñas.',
+    subtitle: 'Coletas, lazos, broches y brillos para el look de las pequeñas.',
     duration: 20,
     durationLabel: '15 – 30 min',
   },
@@ -95,6 +95,26 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
       }
     }
   }, [isOpen, initialServiceType]);
+
+  // Handle preSelectedService from service cards
+  React.useEffect(() => {
+    const handleOpen = (e: any) => {
+      const { serviceType: sType, preSelectedService } = e.detail || {};
+      if (preSelectedService) {
+        setServiceType(sType);
+        setSelectedService(preSelectedService);
+        setDate(undefined);
+        setTime(null);
+        setContactData({ name: '', lastName: '', email: '', phone: '' });
+        setTermsAccepted(false);
+        setShowTermsError(false);
+        setPaymentMethod('local');
+        setStep(3); // skip to date/time step
+      }
+    };
+    document.addEventListener('openBookingModal', handleOpen);
+    return () => document.removeEventListener('openBookingModal', handleOpen);
+  }, []);
 
   const nextStep = () => setStep((s) => Math.min(s + 1, 6));
   const prevStep = () => {
@@ -254,7 +274,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 </p>
                               </div>
                               {(svc as any).price != null && (
-                                <div className="font-display font-black text-xl md:text-2xl shrink-0">
+                                <div className="font-display font-black text-xl md:text-2xl shrink-0 text-amber-400">
                                   {(svc as any).price}€
                                 </div>
                               )}
@@ -467,7 +487,8 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} className="w-4 h-4 accent-amber-400" />
                             <div className="flex-1">
                               <p className="font-bold text-bone text-sm">Bizum</p>
-                              <p className="text-xs text-steel">Pago rápido al +34 613 16 90 33</p>
+                              <p className="text-xs text-steel">Barbería: +34 623 59 98 90</p>
+                              <p className="text-xs text-steel">Pelu. Infantil: +34 613 16 90 33</p>
                             </div>
                             <CreditCard className="text-steel w-4 h-4 shrink-0" />
                           </label>

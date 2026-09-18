@@ -98,9 +98,9 @@ export default function Home({ meta }: Props) {
             transition={{ duration: 0.6 }}
             className="h-full flex flex-col"
           >
-            <Link 
-              href="/la-barberia"
-              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-white/5 relative group overflow-hidden cursor-pointer text-center transition-colors duration-300"
+            <button
+              onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'barberia' } }))}
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-white/5 relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-carbon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="relative z-10 text-center max-w-sm space-y-6">
@@ -115,7 +115,7 @@ export default function Home({ meta }: Props) {
                   Reservar Cita
                 </span>
               </div>
-            </Link>
+            </button>
           </motion.div>
 
           {/* Lado Infantil (Claro) */}
@@ -126,9 +126,9 @@ export default function Home({ meta }: Props) {
             transition={{ duration: 0.6 }}
             className="h-full flex flex-col"
           >
-            <Link 
-              href="/peluqueria-infantil"
-              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300"
+            <button
+              onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil' } }))}
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full"
             >
               <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="relative z-10 text-center max-w-sm space-y-6">
@@ -143,7 +143,7 @@ export default function Home({ meta }: Props) {
                   Reservar Cita
                 </span>
               </div>
-            </Link>
+            </button>
           </motion.div>
 
         </div>
