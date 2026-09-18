@@ -8,7 +8,7 @@ interface Meta { title: string; description: string; }
 interface Props { meta: Meta; }
 
 const team = [
-  { name: 'Mariely', role: 'Peluquera', years: '5+ años', specialty: 'Especialista en corte y peinado infantil' },
+  { name: 'Mariely', role: 'CEO & PELUQUERA', years: '40 años', specialty: 'CORTES INFANTILES', initial: 'M' },
 ];
 
 const services = [
@@ -101,23 +101,24 @@ export default function PeluqueriaInfantil({ meta }: Props) {
               <h2 className="font-display font-black text-4xl md:text-6xl tracking-tighter text-slate-900">La Peluquera.</h2>
             </div>
 
-            <div ref={teamRef} className="max-w-xl">
+            <div ref={teamRef} className="grid grid-cols-1 gap-4 md:gap-6 max-w-sm mx-auto">
               {team.map((member, i) => (
                 <motion.div
                   key={member.name}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={teamInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-                  className="group flex flex-col sm:flex-row gap-6 bg-emerald-50 rounded-3xl border border-emerald-100 p-6 md:p-8 hover:border-emerald-300 transition-all duration-500 items-center sm:items-start text-center sm:text-left"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={teamInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.76, 0, 0.24, 1] }}
+                  className="group flex flex-col items-center text-center gap-4 bg-white rounded-2xl border border-emerald-400 p-6 hover:border-emerald-500 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-emerald-100/50"
                 >
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-white rounded-2xl flex items-center justify-center font-display font-black text-5xl sm:text-6xl text-emerald-200 group-hover:text-emerald-400 transition-colors shadow-inner">
-                    {member.name[0]}
+                  {/* Avatar */}
+                  <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 bg-emerald-50 rounded-full flex items-center justify-center font-display font-black text-4xl md:text-5xl text-emerald-200 group-hover:text-emerald-400/50 transition-colors border border-emerald-100">
+                    {member.initial}
                   </div>
-                  <div className="flex flex-col justify-center">
-                    <h3 className="font-display font-bold text-2xl md:text-3xl text-slate-900 tracking-tight">{member.name}</h3>
-                    <p className="text-emerald-600 font-bold text-[10px] tracking-widest uppercase mt-1 mb-2">{member.role}</p>
-                    <p className="text-slate-600 text-sm">{member.specialty}</p>
-                    <p className="text-slate-500 text-xs mt-2 italic">{member.years} de experiencia.</p>
+                  <div>
+                    <h3 className="font-display font-bold text-xl md:text-2xl text-slate-900 tracking-tight">{member.name}</h3>
+                    <p className="text-emerald-600 font-bold text-[10px] tracking-widest uppercase mt-1">{member.role}</p>
+                    <p className="text-slate-600 text-xs mt-2 tracking-wide font-medium">{member.specialty}</p>
+                    <p className="text-slate-500 text-xs mt-1">{member.years}</p>
                   </div>
                 </motion.div>
               ))}

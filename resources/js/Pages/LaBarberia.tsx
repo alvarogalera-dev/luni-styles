@@ -10,14 +10,14 @@ interface Props { meta: Meta; }
 const team = [
   {
     name: 'Luis',
-    role: 'CEO & Barber',
+    role: 'CEO & BARBERO',
     age: '19 años',
     specialty: 'Fades · Barba',
     initial: 'L',
   },
   {
     name: 'Carlos',
-    role: 'Barber',
+    role: 'BARBERO',
     age: '19 años',
     specialty: 'Fades · Barba',
     initial: 'C',
@@ -211,7 +211,7 @@ export default function LaBarberia({ meta }: Props) {
                 <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Aqua Hair Wax</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
                   </div>
                   <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
@@ -233,7 +233,7 @@ export default function LaBarberia({ meta }: Props) {
                 <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Black Gel Wax</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
+                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
                   </div>
                   <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Fijador &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
@@ -249,7 +249,7 @@ export default function LaBarberia({ meta }: Props) {
         <section className="py-16 md:py-24 px-4 md:px-10 bg-[#111] border-t border-white/5">
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 md:mb-16">
-              <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Los Bareros</p>
+              <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Los Barberos</p>
               <h2 className="font-display font-black text-3xl md:text-6xl tracking-tighter text-white">El Equipo.</h2>
             </div>
 
@@ -269,8 +269,8 @@ export default function LaBarberia({ meta }: Props) {
                   <div>
                     <h3 className="font-display font-bold text-xl md:text-2xl text-bone tracking-tight">{member.name}</h3>
                     <p className="text-amber-400 text-[10px] tracking-widest uppercase mt-1">{member.role}</p>
-                    <p className="text-steel text-xs mt-2">{member.age}</p>
-                    <p className="text-ash text-xs mt-1 tracking-wide">{member.specialty}</p>
+                    <p className="text-ash text-xs mt-2 tracking-wide">{member.specialty}</p>
+                    <p className="text-steel text-xs mt-1">{member.age}</p>
                   </div>
                 </motion.div>
               ))}

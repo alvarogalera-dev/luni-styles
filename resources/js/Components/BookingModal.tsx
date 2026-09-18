@@ -239,7 +239,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             )}
                           >
                             <Baby className="w-9 h-9" />
-                            <span className="font-display font-bold tracking-wider text-sm text-center">CORTE INFANTIL</span>
+                            <span className="font-display font-bold tracking-wider text-sm text-center">PELUQUERÍA INFANTIL</span>
                           </button>
                         </div>
                       </div>
@@ -487,8 +487,11 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} className="w-4 h-4 accent-amber-400" />
                             <div className="flex-1">
                               <p className="font-bold text-bone text-sm">Bizum</p>
-                              <p className="text-xs text-steel">Barbería: +34 623 59 98 90</p>
-                              <p className="text-xs text-steel">Pelu. Infantil: +34 613 16 90 33</p>
+                              {isKids ? (
+                                <p className="text-xs text-steel">Pelu. Infantil: +34 613 16 90 33</p>
+                              ) : (
+                                <p className="text-xs text-steel">Barbería: +34 623 59 98 90</p>
+                              )}
                             </div>
                             <CreditCard className="text-steel w-4 h-4 shrink-0" />
                           </label>
