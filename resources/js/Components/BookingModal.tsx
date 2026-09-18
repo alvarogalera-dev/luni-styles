@@ -25,6 +25,7 @@ const BARBERIA_SERVICES = [
     subtitle: 'Corte de pelo, lavado y arreglo de cejas. El esencial del día a día.',
     duration: 30,
     durationLabel: '30 min',
+    price: 12,
   },
   {
     id: 'b2',
@@ -32,6 +33,7 @@ const BARBERIA_SERVICES = [
     subtitle: 'Corte completo más arreglo y perfilado de barba con navaja y productos premium.',
     duration: 60,
     durationLabel: '45–60 min',
+    price: 15,
   },
   {
     id: 'b3',
@@ -39,6 +41,7 @@ const BARBERIA_SERVICES = [
     subtitle: 'Arreglo, perfilado y acabado de barba. Ideal para mantenimiento rápido.',
     duration: 20,
     durationLabel: '15–30 min',
+    price: 4,
   },
 ];
 
@@ -533,10 +536,12 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 <p className="text-xs text-ash mt-0.5">{selectedService.subtitle}</p>
                               )}
                             </div>
-                            <div className="text-right shrink-0 ml-3">
-                              <p className="text-[10px] text-steel uppercase tracking-widest mb-0.5">Total</p>
-                              <p className="font-bold text-amber-400 text-lg">{selectedService?.price}€</p>
-                            </div>
+                            {!isKids && selectedService?.price != null && (
+                              <div className="text-right shrink-0 ml-3">
+                                <p className="text-[10px] text-steel uppercase tracking-widest mb-0.5">Total</p>
+                                <p className="font-bold text-amber-400 text-lg">{selectedService.price}€</p>
+                              </div>
+                            )}
                           </div>
 
                           {/* Date + time */}

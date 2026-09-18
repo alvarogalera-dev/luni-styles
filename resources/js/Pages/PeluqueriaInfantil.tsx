@@ -101,7 +101,7 @@ export default function PeluqueriaInfantil({ meta }: Props) {
               <h2 className="font-display font-black text-4xl md:text-6xl tracking-tighter text-slate-900">La Peluquera.</h2>
             </div>
 
-            <div ref={teamRef} className="grid grid-cols-1 gap-4 md:gap-6 max-w-sm mx-auto">
+            <div ref={teamRef} className="grid grid-cols-1 gap-4 md:gap-6 max-w-sm">
               {team.map((member, i) => (
                 <motion.div
                   key={member.name}
