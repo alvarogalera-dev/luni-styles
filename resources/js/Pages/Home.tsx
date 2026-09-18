@@ -98,12 +98,12 @@ export default function Home({ meta }: Props) {
             transition={{ duration: 0.6 }}
             className="h-full flex flex-col"
           >
-            <button
-              onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'barberia' } }))}
-              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-white/5 relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full"
+            <Link
+              href="/la-barberia"
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-white/5 relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full block"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-carbon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="relative z-10 text-center max-w-sm space-y-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-carbon/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="relative z-10 text-center max-w-sm space-y-6 mx-auto">
                 <h2 className="font-display font-black text-4xl md:text-5xl text-bone tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
                   La Barbería
                 </h2>
@@ -111,11 +111,18 @@ export default function Home({ meta }: Props) {
                 <p className="text-ash text-sm md:text-base leading-relaxed">
                   Cortes clásicos, degradados precisos y arreglo de barba profesional. Un espacio dedicado al cuidado masculino, donde la técnica y la dedicación marcan la diferencia en cada servicio.
                 </p>
-                <span className="inline-block mt-4 px-8 py-3 md:py-4 bg-white/5 group-hover:bg-white/15 border border-white/10 rounded-full text-bone text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-lg">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'barberia' } }));
+                  }}
+                  className="inline-block mt-4 px-8 py-3 md:py-4 bg-white/5 hover:bg-white/15 border border-white/10 rounded-full text-bone text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-lg relative z-20"
+                >
                   Reservar Cita
-                </span>
+                </button>
               </div>
-            </button>
+            </Link>
           </motion.div>
 
           {/* Lado Infantil (Claro) */}
@@ -126,12 +133,12 @@ export default function Home({ meta }: Props) {
             transition={{ duration: 0.6 }}
             className="h-full flex flex-col"
           >
-            <button
-              onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil' } }))}
-              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full"
+            <Link
+              href="/peluqueria-infantil"
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full block"
             >
-              <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="relative z-10 text-center max-w-sm space-y-6">
+              <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="relative z-10 text-center max-w-sm space-y-6 mx-auto">
                 <h2 className="font-display font-black text-4xl md:text-5xl text-[#0f172a] tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
                   Peluquería Infantil
                 </h2>
@@ -139,11 +146,18 @@ export default function Home({ meta }: Props) {
                 <p className="text-[#475569] text-sm md:text-base leading-relaxed">
                   Un entorno seguro y divertido diseñado especialmente para los más pequeños. Con la paciencia y el cariño que requieren, convertimos el corte de pelo en una experiencia positiva y agradable.
                 </p>
-                <span className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#0f172a] group-hover:bg-[#1e293b] text-white rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-xl shadow-slate-200">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil' } }));
+                  }}
+                  className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#0f172a] hover:bg-[#1e293b] text-white rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-xl shadow-slate-200 relative z-20"
+                >
                   Reservar Cita
-                </span>
+                </button>
               </div>
-            </button>
+            </Link>
           </motion.div>
 
         </div>

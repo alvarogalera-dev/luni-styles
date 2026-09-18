@@ -8,7 +8,7 @@ interface Meta { title: string; description: string; }
 interface Props { meta: Meta; }
 
 const team = [
-  { name: 'Mariely', role: 'CEO & PELUQUERA', years: '40 años', specialty: 'CORTES INFANTILES', initial: 'M' },
+  { name: 'Mariely', role: 'CEO & PELUQUERA', years: '50 años', specialty: 'CORTES INFANTILES', initial: 'M' },
 ];
 
 const services = [
@@ -16,21 +16,21 @@ const services = [
     name: 'Corte Infantil',
     duration: '30 – 60 min',
     desc: 'Corte profesional para niños, niñas y adolescentes.',
-    img: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop',
+    img: '/images/corte.webp',
     serviceId: 'k1',
   },
   {
     name: 'Peinados',
     duration: '30 – 60 min',
     desc: 'Trenzas, coletas, ondas y peinados especiales para niñas.',
-    img: 'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=800&auto=format&fit=crop',
+    img: '/images/peinados.jpg',
     serviceId: 'k2',
   },
   {
     name: 'Accesorios',
     duration: '15 – 30 min',
     desc: 'Coletas, lazos, broches y brillos para el look de las pequeñas.',
-    img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800&auto=format&fit=crop',
+    img: '/images/coleta.jpg',
     serviceId: 'k3',
   },
 ];
