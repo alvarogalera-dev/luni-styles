@@ -69,6 +69,9 @@ export default function Home({ meta }: Props) {
         </div>
 
 
+        {/* Clickable zones: left half -> Barberia, right half -> Infantil */}
+        <Link href="/la-barberia" className="absolute left-0 top-0 w-1/2 h-full z-[5] cursor-pointer" aria-label="Ir a La Barbería" />
+        <Link href="/peluqueria-infantil" className="absolute right-0 top-0 w-1/2 h-full z-[5] cursor-pointer" aria-label="Ir a Peluquería Infantil" />
       </div>
 
       {/* ── Intro Text (White Block) ── */}
@@ -130,7 +133,7 @@ export default function Home({ meta }: Props) {
               <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="relative z-10 text-center max-w-sm space-y-6">
                 <h2 className="font-display font-black text-4xl md:text-5xl text-[#0f172a] tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
-                  Infantil
+                  Peluquería Infantil
                 </h2>
                 <div className="w-12 h-1 bg-emerald-400 mx-auto rounded-full" />
                 <p className="text-[#475569] text-sm md:text-base leading-relaxed">

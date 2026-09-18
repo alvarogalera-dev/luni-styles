@@ -82,10 +82,9 @@ export default function Footer() {
                   +34 623 59 98 90
                 </a>
               </li>
-              <li className="pt-2">
-                <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-1">Peluquería Infantil</span>
-                <a href="tel:+34623599890" className="text-steel text-sm hover:text-amber-400 transition-colors">
-                  +34 623 59 98 90
+              <li>
+                <a href="tel:+34613169033" className="text-steel text-sm hover:text-amber-400 transition-colors">
+                  +34 613 16 90 33
                 </a>
               </li>
               <li>
@@ -99,18 +98,13 @@ export default function Footer() {
               {[
                 { 
                   name: 'Instagram', 
-                  href: '#',
+                  href: 'https://www.instagram.com/luni_styles/',
                   svg: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                 },
                 { 
                   name: 'TikTok', 
-                  href: '#',
+                  href: 'https://www.tiktok.com/@luni_styles',
                   svg: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-                },
-                { 
-                  name: 'YouTube', 
-                  href: '#',
-                  svg: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 7.1C2.1 8.4 2 10.2 2 12s.1 3.6.5 4.9c.5 1.5 1.7 2.7 3.2 3.1 1.6.4 5.2.5 6.3.5s4.7-.1 6.3-.5c1.5-.4 2.7-1.6 3.2-3.1.4-1.3.5-3.1.5-4.9s-.1-3.6-.5-4.9c-.5-1.5-1.7-2.7-3.2-3.1C16.7 3.6 13.1 3.5 12 3.5s-4.7.1-6.3.5c-1.5.4-2.7 1.6-3.2 3.1z"/><path d="m10 15 5-3-5-3z"/></svg>
                 },
               ].map((s) => (
                 <a
