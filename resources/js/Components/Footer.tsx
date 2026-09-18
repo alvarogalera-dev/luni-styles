@@ -88,7 +88,8 @@ export default function Footer() {
                   +34 613 16 90 33
                 </a>
               </li>
-              <li>
+              <li className="pt-2">
+                <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block mb-1">Correo Electrónico</span>
                 <a href="mailto:contacto@lunistyles.com" className="text-steel text-sm hover:text-amber-400 transition-colors">
                   contacto@lunistyles.com
                 </a>

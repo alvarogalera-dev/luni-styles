@@ -43,8 +43,27 @@ const BARBERIA_SERVICES = [
 ];
 
 const INFANTIL_SERVICES = [
-  { id: 'k1', name: 'Corte Infantil (hasta 12 años)', subtitle: '', price: 12, duration: 30 },
-  { id: 'k2', name: 'Primer Corte (Incluye diploma)', subtitle: '', price: 15, duration: 40 },
+  {
+    id: 'k1',
+    name: 'Corte Infantil',
+    subtitle: 'Corte profesional para niños, niñas y adolescentes adaptado a cada edad y tipo de cabello.',
+    duration: 45,
+    durationLabel: '30 – 60 min',
+  },
+  {
+    id: 'k2',
+    name: 'Peinados',
+    subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas. Perfectos para el día a día o cualquier ocasión.',
+    duration: 45,
+    durationLabel: '30 – 60 min',
+  },
+  {
+    id: 'k3',
+    name: 'Accesorios',
+    subtitle: 'Coletas, lazos, broches y brillos para dar el toque final y especial al look de las pequeñas.',
+    duration: 20,
+    durationLabel: '15 – 30 min',
+  },
 ];
 
 const TIME_SLOTS = [
@@ -163,7 +182,17 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                         <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-6">¿Qué deseas reservar?</h3>
                         <div className="grid grid-cols-2 gap-3">
                           <button
-                            onClick={() => { setServiceType('barberia'); setSelectedService(null); nextStep(); }}
+                            onClick={() => {
+                              setServiceType('barberia');
+                              setSelectedService(null);
+                              setDate(undefined);
+                              setTime(null);
+                              setContactData({ name: '', lastName: '', email: '', phone: '' });
+                              setTermsAccepted(false);
+                              setShowTermsError(false);
+                              setPaymentMethod('local');
+                              nextStep();
+                            }}
                             className={cn(
                               "p-5 border-2 rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 active:scale-95",
                               serviceType === 'barberia' ? "border-amber-400 bg-void text-bone" : "border-carbon hover:border-amber-400/50 hover:bg-carbon text-ash"
@@ -173,7 +202,17 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <span className="font-display font-bold tracking-wider text-sm text-center">BARBERÍA</span>
                           </button>
                           <button
-                            onClick={() => { setServiceType('infantil'); setSelectedService(null); nextStep(); }}
+                            onClick={() => {
+                              setServiceType('infantil');
+                              setSelectedService(null);
+                              setDate(undefined);
+                              setTime(null);
+                              setContactData({ name: '', lastName: '', email: '', phone: '' });
+                              setTermsAccepted(false);
+                              setShowTermsError(false);
+                              setPaymentMethod('local');
+                              nextStep();
+                            }}
                             className={cn(
                               "p-5 border-2 rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 active:scale-95",
                               serviceType === 'infantil' ? "border-emerald-400 bg-emerald-50 text-emerald-900" : "border-carbon hover:border-emerald-400/50 hover:bg-carbon text-ash"
@@ -214,9 +253,11 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                   {(svc as any).durationLabel ?? `${svc.duration} min`}
                                 </p>
                               </div>
-                              <div className="font-display font-black text-xl md:text-2xl shrink-0">
-                                {svc.price}€
-                              </div>
+                              {(svc as any).price != null && (
+                                <div className="font-display font-black text-xl md:text-2xl shrink-0">
+                                  {(svc as any).price}€
+                                </div>
+                              )}
                             </button>
                           ))}
                         </div>

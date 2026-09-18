@@ -109,20 +109,33 @@ export default function PeluqueriaInfantil({ meta }: Props) {
           </div>
         </section>
 
-        {/* ── Galería (Carrusel horizontal animado como La Barbería) ── */}
+        {/* ── Galería (Carrusel animado como La Barbería) ── */}
         <section className="py-20 md:py-24 overflow-hidden border-t border-emerald-100 bg-emerald-50/30">
           <div className="max-w-7xl mx-auto px-4 md:px-10 mb-12 text-center">
             <h2 className="font-display font-black text-4xl md:text-5xl text-slate-900 tracking-tighter">El Local.</h2>
             <p className="text-slate-500 mt-4 text-sm">Nuestro segundo hogar.</p>
           </div>
-          <div className="flex gap-4 md:gap-6 px-4 md:px-10 pb-8 overflow-x-auto snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {gallery.map((img, i) => (
-              <div key={i} className="min-w-[85vw] md:min-w-[50vw] h-[300px] md:h-[500px] shrink-0 snap-center rounded-3xl overflow-hidden relative shadow-lg">
-                <img src={img} alt="Galería" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-emerald-900/10" />
-              </div>
-            ))}
+
+          {/* Marquee infinito */}
+          <div className="relative w-full overflow-hidden">
+            {/* Sombra fundido bordes */}
+            <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-emerald-50/30 to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-emerald-50/30 to-transparent z-10 pointer-events-none" />
+
+            <motion.div
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
+              className="flex gap-4 md:gap-6 w-max"
+            >
+              {[...gallery, ...gallery].map((img, i) => (
+                <div
+                  key={i}
+                  className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
+                >
+                  <img src={img} alt="Galería" className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </motion.div>
           </div>
         </section>
 

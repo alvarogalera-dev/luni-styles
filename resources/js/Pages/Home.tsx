@@ -47,13 +47,13 @@ export default function Home({ meta }: Props) {
           <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-emerald-50/80" />
         </motion.div>
 
-        {/* ── Hero Content (card non-clickable, on top) ── */}
+        {/* ── Hero Content (card blocks links below it via pointer-events) ── */}
         <div className="relative z-[20] flex flex-col items-center justify-center h-full px-4 text-center mt-8 md:mt-0 pointer-events-none">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
-            className="space-y-4 md:space-y-6 max-w-4xl bg-black/40 backdrop-blur-md p-6 md:p-16 rounded-3xl border border-white/20 shadow-2xl mx-4"
+            className="pointer-events-auto space-y-4 md:space-y-6 max-w-4xl bg-black/40 backdrop-blur-md p-6 md:p-16 rounded-3xl border border-white/20 shadow-2xl mx-4"
           >
             <p className="text-amber-400 font-bold tracking-[0.3em] uppercase text-[10px] md:text-sm drop-shadow-md">
               Tradición y Pasión
