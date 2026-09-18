@@ -82,7 +82,8 @@ export default function Footer() {
                   +34 623 59 98 90
                 </a>
               </li>
-              <li>
+              <li className="pt-2">
+                <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-1">Peluquería Infantil</span>
                 <a href="tel:+34613169033" className="text-steel text-sm hover:text-amber-400 transition-colors">
                   +34 613 16 90 33
                 </a>

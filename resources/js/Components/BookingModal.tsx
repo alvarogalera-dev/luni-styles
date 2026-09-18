@@ -22,24 +22,21 @@ const BARBERIA_SERVICES = [
   {
     id: 'b1',
     name: 'Corte Normal',
-    subtitle: 'Corte de pelo · Lavado · Cejas',
-    price: 12,
+    subtitle: 'Corte de pelo, lavado y arreglo de cejas. El esencial del día a día.',
     duration: 30,
     durationLabel: '30 min',
   },
   {
     id: 'b2',
     name: 'Corte + Barba',
-    subtitle: 'Corte de pelo · Lavado · Cejas · Barba',
-    price: 15,
+    subtitle: 'Corte completo más arreglo y perfilado de barba con navaja y productos premium.',
     duration: 60,
     durationLabel: '45–60 min',
   },
   {
     id: 'b3',
     name: 'Solo Barba',
-    subtitle: 'Arreglo de barba',
-    price: 4,
+    subtitle: 'Arreglo, perfilado y acabado de barba. Ideal para mantenimiento rápido.',
     duration: 20,
     durationLabel: '15–30 min',
   },
@@ -429,7 +426,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} className="w-4 h-4 accent-amber-400" />
                             <div className="flex-1">
                               <p className="font-bold text-bone text-sm">Bizum</p>
-                              <p className="text-xs text-steel">Pago rápido al +34 623 59 98 90</p>
+                              <p className="text-xs text-steel">Pago rápido al +34 613 16 90 33</p>
                             </div>
                             <CreditCard className="text-steel w-4 h-4 shrink-0" />
                           </label>

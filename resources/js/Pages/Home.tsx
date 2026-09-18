@@ -47,8 +47,8 @@ export default function Home({ meta }: Props) {
           <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-emerald-50/80" />
         </motion.div>
 
-        {/* ── Hero Content ── */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center mt-8 md:mt-0">
+        {/* ── Hero Content (card non-clickable, on top) ── */}
+        <div className="relative z-[20] flex flex-col items-center justify-center h-full px-4 text-center mt-8 md:mt-0 pointer-events-none">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -69,9 +69,9 @@ export default function Home({ meta }: Props) {
         </div>
 
 
-        {/* Clickable zones: left half -> Barberia, right half -> Infantil */}
-        <Link href="/la-barberia" className="absolute left-0 top-0 w-1/2 h-full z-[5] cursor-pointer" aria-label="Ir a La Barbería" />
-        <Link href="/peluqueria-infantil" className="absolute right-0 top-0 w-1/2 h-full z-[5] cursor-pointer" aria-label="Ir a Peluquería Infantil" />
+        {/* Clickable zones: left -> Barberia, right -> Infantil. z-[4] so card stays above them */}
+        <Link href="/la-barberia" className="absolute left-0 top-0 w-1/2 h-full z-[4] cursor-pointer" aria-label="Ir a La Barbería" />
+        <Link href="/peluqueria-infantil" className="absolute right-0 top-0 w-1/2 h-full z-[4] cursor-pointer" aria-label="Ir a Peluquería Infantil" />
       </div>
 
       {/* ── Intro Text (White Block) ── */}
