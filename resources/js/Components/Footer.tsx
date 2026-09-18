@@ -22,7 +22,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-steel text-sm leading-relaxed max-w-sm">
-              Barbería premium y peluquería infantil en Alcantarilla, Murcia. El espacio perfecto que aúna el grooming de lujo y un entorno divertido para los más pequeños.
+              Barbería tradicional y peluquería infantil en Alcantarilla, Murcia. Un espacio único diseñado para ofrecer el mejor cuidado masculino y un entorno adaptado para los más pequeños.
             </p>
           </div>
 

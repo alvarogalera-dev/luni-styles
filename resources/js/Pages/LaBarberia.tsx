@@ -187,7 +187,7 @@ export default function LaBarberia({ meta }: Props) {
               <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
                 <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
                   <img
-                    src="/products/redone-red.png"
+                    src="/products/redone-aqua-hair-red.png"
                     alt="RedOne Aqua Hair Wax Roja"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
@@ -198,7 +198,7 @@ export default function LaBarberia({ meta }: Props) {
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Aqua Hair Wax</h3>
                     <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
                   </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera Roja</p>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera</p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
                     Fijación extrema y brillo duradero. Fórmula a base de agua ideal para peinados que necesitan máxima sujeción sin dejar residuos.
                   </p>
@@ -209,7 +209,7 @@ export default function LaBarberia({ meta }: Props) {
               <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
                 <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
                   <img
-                    src="/products/redone-black.png"
+                    src="/products/redone-aqua-hair-black.png"
                     alt="RedOne Black Gel Wax"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
@@ -220,7 +220,7 @@ export default function LaBarberia({ meta }: Props) {
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Black Gel Wax</h3>
                     <span className="text-xl font-black text-amber-400 shrink-0 ml-2">4€</span>
                   </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Wax Negro</p>
+                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Fijador</p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
                     Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.
                   </p>

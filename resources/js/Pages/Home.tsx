@@ -68,15 +68,7 @@ export default function Home({ meta }: Props) {
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <div className="w-[2px] h-8 md:h-12 bg-gradient-to-b from-amber-400 via-emerald-400 to-transparent rounded-full" />
-        </motion.div>
+
       </div>
 
       {/* ── Intro Text (White Block) ── */}

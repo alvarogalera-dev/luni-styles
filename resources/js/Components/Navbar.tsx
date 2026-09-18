@@ -81,7 +81,7 @@ export default function Navbar() {
           {/* Book CTA & Mobile Menu Toggle (Right aligned) */}
           <div className="z-10 w-auto lg:w-1/4 flex justify-end items-center gap-4">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => { setInitialService(null); setIsModalOpen(true); }}
               className="group relative overflow-hidden inline-flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-black/60 backdrop-blur-md border border-white/10 text-bone rounded-full font-display font-bold text-[10px] md:text-xs tracking-widest uppercase hover:bg-amber-400 hover:text-void hover:border-amber-400 transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(251,191,36,0.3)]"
             >
               <span>Reservar</span>
