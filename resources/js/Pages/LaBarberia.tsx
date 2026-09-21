@@ -255,7 +255,7 @@ export default function LaBarberia({ meta }: Props) {
                 <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Classic Blue</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">25€</span>
+                    <span class="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
                   </div>
                   <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
@@ -277,7 +277,7 @@ export default function LaBarberia({ meta }: Props) {
                 <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Clear Ice</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">25€</span>
+                    <span class="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
                   </div>
                   <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">
@@ -299,7 +299,7 @@ export default function LaBarberia({ meta }: Props) {
                 <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Retro Amber</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">25€</span>
+                    <span class="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
                   </div>
                   <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
                   <p className="text-ash text-xs md:text-sm leading-relaxed">

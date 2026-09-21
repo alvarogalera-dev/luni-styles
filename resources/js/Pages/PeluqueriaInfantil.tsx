@@ -80,9 +80,12 @@ export default function PeluqueriaInfantil({ meta }: Props) {
                     </div>
                     <div className="p-6 md:p-8">
                       <h3 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">{svc.name}</h3>
-                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase tracking-wider mb-4 font-bold">
+                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase tracking-wider mb-2 font-bold">
                         <Clock className="w-3 h-3" /> {svc.duration}
                       </div>
+                      <p className="text-emerald-600/80 text-[10px] uppercase tracking-wider mb-3 font-bold">
+                        Precio &nbsp;<span className="text-slate-300">·</span>&nbsp; <span className="text-slate-400">Consultar precio por teléfono</span>
+                      </p>
                       <p className="text-slate-600 text-sm md:text-base leading-relaxed">{svc.desc}</p>
                       <span className="mt-4 inline-block text-[10px] font-bold tracking-widest uppercase text-emerald-500/60 group-hover:text-emerald-500 transition-colors">Reservar →</span>
                     </div>

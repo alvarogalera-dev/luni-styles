@@ -49,7 +49,7 @@ export default function CookieBanner() {
                   onClick={acceptCookies}
                   className="flex-1 bg-amber-400 text-void font-bold text-xs tracking-widest uppercase py-3 rounded-lg hover:bg-amber-300 transition-colors"
                 >
-                  Aceptar Todo
+                  Aceptar
                 </button>
                 <button
                   onClick={rejectCookies}
