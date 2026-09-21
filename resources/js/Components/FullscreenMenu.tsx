@@ -70,7 +70,7 @@ export default function FullscreenMenu({ onClose }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a]/95 backdrop-blur-md"
+      className="fixed top-0 left-0 w-full h-[100dvh] z-[100] flex flex-col bg-[#0a0a0a]/95 backdrop-blur-md"
       variants={bgVariants}
       initial="hidden"
       animate="visible"
@@ -137,7 +137,7 @@ export default function FullscreenMenu({ onClose }: Props) {
 
       {/* Footer absolute pinned to bottom */}
       <motion.div 
-        className="absolute bottom-6 left-0 w-full px-8 md:px-20 flex flex-col items-center gap-4 pointer-events-auto"
+        className="absolute bottom-8 left-0 w-full px-8 md:px-20 flex flex-col items-center gap-4 pointer-events-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0, transition: { delay: 0.6 } }}
         exit={{ opacity: 0 }}
