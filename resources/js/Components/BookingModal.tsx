@@ -69,15 +69,15 @@ const INFANTIL_SERVICES = [
 ];
 
 const COUNTRY_CODES = [
-  { code: '+34', flag: '🇪🇸', maxLength: 9, isOther: false },
-  { code: '+33', flag: '🇫🇷', maxLength: 9, isOther: false },
-  { code: '+351', flag: '🇵🇹', maxLength: 9, isOther: false },
-  { code: '+44', flag: '🇬🇧', maxLength: 10, isOther: false },
-  { code: '+1', flag: '🇺🇸', maxLength: 10, isOther: false },
-  { code: '+54', flag: '🇦🇷', maxLength: 10, isOther: false },
-  { code: '+57', flag: '🇨🇴', maxLength: 10, isOther: false },
-  { code: '+52', flag: '🇲🇽', maxLength: 10, isOther: false },
-  { code: 'Otro', flag: '🌍', maxLength: 15, isOther: true },
+  { code: '+34', iso: 'es', maxLength: 9, isOther: false },
+  { code: '+33', iso: 'fr', maxLength: 9, isOther: false },
+  { code: '+351', iso: 'pt', maxLength: 9, isOther: false },
+  { code: '+44', iso: 'gb', maxLength: 10, isOther: false },
+  { code: '+1', iso: 'us', maxLength: 10, isOther: false },
+  { code: '+54', iso: 'ar', maxLength: 10, isOther: false },
+  { code: '+57', iso: 'co', maxLength: 10, isOther: false },
+  { code: '+52', iso: 'mx', maxLength: 10, isOther: false },
+  { code: 'Otro', iso: 'other', maxLength: 15, isOther: true },
 ];
 
 const TIME_SLOTS = [
@@ -97,6 +97,10 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const [acceptedTerms, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'local' | 'bizum' | 'stripe'>('local');
+  const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
+
+  const isEmailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(contactData.email);
+  const showEmailErrorRealtime = contactData.email.length > 0 && !isEmailValid;
 
   React.useEffect(() => {
     if (isOpen) {
@@ -465,23 +469,61 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               type="email"
                               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                               title="Debe ser un correo electrónico válido, ej: nombre@dominio.com"
-                              className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                              className={cn("w-full bg-carbon border rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none transition-colors", showEmailErrorRealtime ? "border-red-500 focus:border-red-500" : "border-onyx focus:border-amber-400")}
                             />
+                            {showEmailErrorRealtime && (
+                              <div className="mt-2 flex items-start gap-2 text-red-400 bg-red-950/30 p-2.5 rounded-lg border border-red-900/50">
+                                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                                <p className="text-xs">Formato no válido. Debe incluir un dominio real (ej: @gmail.com)</p>
+                              </div>
+                            )}
                           </div>
                           <div>
                             <label className="block text-[10px] uppercase tracking-wider text-steel mb-1.5">Teléfono</label>
                             <div className="flex gap-2">
-                              <select 
-                                value={contactData.phonePrefix}
-                                onChange={(e) => {
-                                  setContactData({...contactData, phonePrefix: e.target.value, customPrefix: '', phone: ''});
-                                }}
-                                className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 appearance-none text-center shrink-0"
-                              >
-                                {COUNTRY_CODES.map((c) => (
-                                  <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
-                                ))}
-                              </select>
+                              <div className="relative shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
+                                  className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 flex items-center justify-center gap-2"
+                                >
+                                  {contactData.phonePrefix === 'Otro' ? (
+                                    <span>🌍 Otro</span>
+                                  ) : (
+                                    <>
+                                      <img src={`https://flagcdn.com/w20/${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
+                                      <span>{contactData.phonePrefix}</span>
+                                    </>
+                                  )}
+                                </button>
+                                {showPhoneDropdown && (
+                                  <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setShowPhoneDropdown(false)} />
+                                    <div className="absolute top-full mt-1 left-0 w-32 max-h-48 overflow-y-auto bg-carbon border border-onyx rounded-xl shadow-xl z-50 py-1">
+                                      {COUNTRY_CODES.map((c) => (
+                                        <button
+                                          key={c.code}
+                                          type="button"
+                                          onClick={() => {
+                                            setContactData({...contactData, phonePrefix: c.code, customPrefix: '', phone: ''});
+                                            setShowPhoneDropdown(false);
+                                          }}
+                                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-bone hover:bg-white/5 transition-colors"
+                                        >
+                                          {c.isOther ? (
+                                            <span>🌍 Otro</span>
+                                          ) : (
+                                            <>
+                                              <img src={`https://flagcdn.com/w20/${c.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
+                                              <span>{c.code}</span>
+                                            </>
+                                          )}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
                               {contactData.phonePrefix === 'Otro' && (
                                 <input
                                   required
@@ -507,7 +549,13 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           </div>
                           <div className="flex justify-between mt-6 pt-4 border-t border-white/10">
                             <button type="button" onClick={prevStep} className="px-5 py-2 text-steel hover:text-bone transition-colors text-sm">Volver</button>
-                            <button type="submit" className="px-6 py-2.5 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-colors text-sm active:scale-95">Continuar</button>
+                            <button 
+                            type="submit" 
+                            disabled={showEmailErrorRealtime}
+                            className="disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2.5 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-colors text-sm active:scale-95"
+                          >
+                            Continuar
+                          </button>
                           </div>
                         </form>
                       </div>
