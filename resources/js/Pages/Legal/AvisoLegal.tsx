@@ -39,8 +39,8 @@ export default function AvisoLegal({ meta }: Props) {
             <Section number="1" title="Datos Identificativos del Titular">
               <p>En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico, se informa al usuario de los siguientes datos identificativos del titular de la presente página web:</p>
               <ul className="list-none space-y-2 mt-3 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                <li><strong>Titular / Responsable:</strong> Mariely [APELLIDOS] <span className="text-xs text-amber-600">(completar con apellidos)</span></li>
-                <li><strong>NIF:</strong> [NIF del titular] <span className="text-xs text-amber-600">(completar con DNI/NIE del autónomo)</span></li>
+                <li><strong>Titular / Responsable:</strong> Mariely Ericeida Farías Velasquez</li>
+                <li><strong>NIF:</strong> Z2550383X</li>
                 <li><strong>Nombre comercial:</strong> Luni Styles</li>
                 <li><strong>Actividad:</strong> Peluquería y Barbería (CNAE 9602)</li>
                 <li><strong>Domicilio social:</strong> C. Pedro Hernández Guillamón "El Peseta", 5, 30820 Alcantarilla, Murcia, España</li>

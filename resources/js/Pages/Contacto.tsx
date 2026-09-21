@@ -46,7 +46,10 @@ export default function Contacto({ meta }: Props) {
                 <MapPin className="text-amber-400 shrink-0 mt-1" />
                 <div>
                   <p className="font-bold mb-1">Dónde estamos</p>
-                  <p className="text-steel">C. Pedro Hernandez Guillamon "El Peseta", 4<br/>30820, Alcantarilla (Murcia)</p>
+                  <p className="text-steel leading-relaxed">
+                    C. Pedro Hernández Guillamón "El Peseta", 5<br/>
+                    30820 Alcantarilla, Murcia
+                  </p>
                 </div>
               </div>
               
@@ -194,7 +197,7 @@ export default function Contacto({ meta }: Props) {
           <div className="h-[600px] rounded-3xl overflow-hidden shadow-2xl bg-slate-100 border border-slate-200">
             {/* Mapa interactivo */}
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243.93433600390372!2d-1.2100495486985499!3d37.97026913801462!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd637fff9423f2bb%3A0x8c79e0cb3be8b953!2sKent%20School%20-%20Alcantarilla!5e1!3m2!1ses!2ses!4v1788524740608!5m2!1ses!2ses" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d786.3234516300157!2d-1.2105969303449573!3d37.97027215547939!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd637f007f220c1b%3A0x3efbfe67ec17fe64!2sLuni%20Styles!5e0!3m2!1ses!2ses!4v1789993724849!5m2!1ses!2ses" 
               width="100%"  
               height="100%" 
               style={{ border: 0 }} 

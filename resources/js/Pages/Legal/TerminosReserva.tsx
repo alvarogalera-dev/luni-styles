@@ -42,7 +42,7 @@ export default function TerminosReserva({ meta }: Props) {
             </div>
 
             <Section number="1" title="Identificación del Prestador del Servicio">
-              <p>Los presentes Términos y Condiciones de Reserva son aplicables a las reservas de cita realizadas a través del sitio web de <strong>Luni Styles</strong>, cuya titular es Mariely [APELLIDOS], con domicilio en C. Pedro Hernández Guillamón "El Peseta", 5, 30820 Alcantarilla, Murcia (España), y correo electrónico de contacto: contacto@lunistyles.com.</p>
+              <p>Los presentes T\u00e9rminos y Condiciones de Reserva son aplicables a las reservas de cita realizadas a trav\u00e9s del sitio web de <strong>Luni Styles</strong>, cuya titular es Mariely Ericeida Far\u00edas Velasquez, con domicilio en C. Pedro Hern\u00e1ndez Guillamón "El Peseta", 5, 30820 Alcantarilla, Murcia (Espa\u00f1a), y correo electr\u00f3nico de contacto: contacto@lunistyles.com.</p>
             </Section>
 
             <Section number="2" title="Objeto">

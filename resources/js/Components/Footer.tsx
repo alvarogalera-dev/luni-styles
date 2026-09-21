@@ -74,8 +74,8 @@ export default function Footer() {
           <div className="md:col-span-3">
             <p className="text-bone text-xs tracking-widest uppercase mb-5 font-bold">Contacto</p>
             <ul className="space-y-3">
-              <li className="text-steel text-sm">C. Pedro Hernandez Guillamon "El Peseta", 4</li>
-              <li className="text-steel text-sm">30820, Alcantarilla (Murcia)</li>
+              <li className="text-steel text-sm">C. Pedro Hernández Guillamón "El Peseta", 5</li>
+              <li className="text-steel text-sm">30820 Alcantarilla, Murcia</li>
               <li>
                 <span className="text-ash font-bold text-xs uppercase tracking-wider block mb-1">Barbería</span>
                 <a href="tel:+34623599890" className="text-steel text-sm hover:text-amber-400 transition-colors">
