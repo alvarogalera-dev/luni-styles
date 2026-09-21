@@ -175,7 +175,8 @@ export default function PoliticaCookies({ meta }: Props) {
               <p>Para cualquier consulta relativa a esta Política de Cookies o al ejercicio de sus derechos en materia de privacidad, puede contactar con nosotros en:</p>
               <ul className="list-none space-y-1 mt-2 bg-slate-50 rounded-xl p-4 border border-slate-100">
                 <li><strong>Correo electrónico:</strong> contacto@lunistyles.com</li>
-                <li><strong>Teléfono:</strong> +34 623 59 98 90</li>
+                <li><strong>Teléfono Barbería:</strong> +34 623 59 98 90</li>
+                <li><strong>Teléfono Peluquería Infantil:</strong> +34 675 37 28 13</li>
                 <li><strong>Domicilio:</strong> C. Pedro Hernández Guillamón "El Peseta", 5, 30820 Alcantarilla, Murcia</li>
               </ul>
             </Section>

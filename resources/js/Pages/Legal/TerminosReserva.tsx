@@ -76,7 +76,7 @@ export default function TerminosReserva({ meta }: Props) {
                 <li><strong>Elección del servicio concreto:</strong> el usuario selecciona el tratamiento deseado.</li>
                 <li><strong>Selección de fecha y hora:</strong> el usuario elige la franja horaria disponible de su preferencia.</li>
                 <li><strong>Datos personales de contacto:</strong> el usuario facilita su nombre completo y número de teléfono.</li>
-                <li><strong>Selección del método de pago:</strong> el usuario elige entre efectivo o Bizum en el establecimiento.</li>
+                <li><strong>Selección del método de pago:</strong> el usuario elige entre efectivo (Peluquería Infantil) o efectivo/Bizum (Barbería) en el establecimiento.</li>
                 <li><strong>Confirmación:</strong> el usuario revisa los datos de la reserva y la confirma.</li>
               </ol>
               <p>Una vez enviado el formulario, Luni Styles procederá a contactar con el usuario a través del número de teléfono facilitado para confirmar la disponibilidad y la cita. La reserva <strong>no se considerará definitivamente confirmada</strong> hasta que el usuario reciba comunicación expresa de confirmación por parte de Luni Styles.</p>
@@ -92,6 +92,7 @@ export default function TerminosReserva({ meta }: Props) {
               <p>Para cancelar o modificar una reserva, el usuario debe ponerse en contacto con Luni Styles con la mayor antelación posible a través de:</p>
               <ul className="list-disc list-inside space-y-1 mt-2">
                 <li>Teléfono Barbería: <strong>+34 623 59 98 90</strong></li>
+                <li>Teléfono Peluquería Infantil: <strong>+34 675 37 28 13</strong></li>
                 <li>Correo: <strong>contacto@lunistyles.com</strong></li>
                 <li>Redes sociales: <strong>@luni_styles</strong></li>
               </ul>
@@ -100,8 +101,8 @@ export default function TerminosReserva({ meta }: Props) {
             <Section number="5" title="Pago de los Servicios">
               <p>El pago de los servicios de Luni Styles se realiza <strong>en el momento de la prestación del servicio en el establecimiento físico</strong>, no se realizan cobros anticipados a través de la web (salvo indicación expresa en contrario por parte de Luni Styles). Los métodos de pago aceptados actualmente son:</p>
               <ul className="list-disc list-inside space-y-1 mt-2">
-                <li><strong>Efectivo</strong></li>
-                <li><strong>Bizum</strong></li>
+                <li><strong>Efectivo</strong> (para todos los servicios)</li>
+                <li><strong>Bizum</strong> (actualmente solo para Barbería, próximamente en Peluquería Infantil)</li>
               </ul>
               <p>Los precios indicados en el sitio web incluyen el IVA correspondiente según la legislación vigente. Luni Styles se reserva el derecho de modificar los precios de sus servicios en cualquier momento, sin perjuicio de lo acordado para reservas ya confirmadas.</p>
               <p>En el futuro podrá habilitarse el pago online con tarjeta de crédito o débito. Cualquier nuevo método de pago será comunicado a través del sitio web.</p>

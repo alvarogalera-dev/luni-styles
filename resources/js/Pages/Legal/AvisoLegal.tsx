@@ -46,6 +46,7 @@ export default function AvisoLegal({ meta }: Props) {
                 <li><strong>Domicilio social:</strong> C. Pedro Hernández Guillamón "El Peseta", 5, 30820 Alcantarilla, Murcia, España</li>
                 <li><strong>Correo electrónico de contacto:</strong> contacto@lunistyles.com</li>
                 <li><strong>Teléfono Barbería:</strong> +34 623 59 98 90</li>
+                <li><strong>Teléfono Peluquería Infantil:</strong> +34 675 37 28 13</li>
                 <li><strong>Instagram:</strong> @luni_styles</li>
                 <li><strong>TikTok:</strong> @luni_styles</li>
                 <li><strong>Web:</strong> https://luni-styles-production.up.railway.app</li>

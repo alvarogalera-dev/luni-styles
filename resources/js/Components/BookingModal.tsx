@@ -479,19 +479,22 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <input type="radio" name="payment" value="local" checked={paymentMethod === 'local'} onChange={() => setPaymentMethod('local')} className="w-4 h-4 accent-amber-400" />
                             <div className="flex-1">
                               <p className="font-bold text-bone text-sm">Pago en el local</p>
-                              <p className="text-xs text-steel">Efectivo o Tarjeta tras el servicio</p>
+                              <p className="text-xs text-steel">{isKids ? 'Efectivo tras el servicio' : 'Efectivo o Tarjeta tras el servicio'}</p>
                             </div>
                           </label>
 
                           <label className={cn(
-                            "flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all active:scale-[0.99]",
-                            paymentMethod === 'bizum' ? "border-amber-400 bg-amber-400/10" : "border-onyx hover:border-steel bg-carbon"
+                            "flex items-center gap-4 p-4 border rounded-xl transition-all",
+                            isKids ? "border-onyx/30 bg-[#0a0a0a] opacity-50 cursor-not-allowed" : (paymentMethod === 'bizum' ? "border-amber-400 bg-amber-400/10 cursor-pointer active:scale-[0.99]" : "border-onyx hover:border-steel bg-carbon cursor-pointer active:scale-[0.99]")
                           )}>
-                            <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} className="w-4 h-4 accent-amber-400" />
+                            <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} disabled={isKids} className={cn("w-4 h-4", !isKids && "accent-amber-400")} />
                             <div className="flex-1">
-                              <p className="font-bold text-bone text-sm">Bizum</p>
+                              <p className="font-bold text-bone text-sm flex items-center gap-2">
+                                Bizum
+                                {isKids && <span className="bg-amber-400 text-void text-[9px] uppercase font-bold px-1.5 py-0.5 rounded">Próximamente</span>}
+                              </p>
                               {isKids ? (
-                                <p className="text-xs text-steel">Pelu. Infantil: +34 613 16 90 33</p>
+                                <p className="text-xs text-steel">Pelu. Infantil: +34 675 37 28 13</p>
                               ) : (
                                 <p className="text-xs text-steel">Barbería: +34 623 59 98 90</p>
                               )}
@@ -568,7 +571,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <div>
                               <p className="text-xs font-bold">Forma de pago</p>
                               <p className="text-[10px] text-steel capitalize">
-                                {paymentMethod === 'local' ? 'Pago en el local (Efectivo/Tarjeta)' : paymentMethod}
+                                {paymentMethod === 'local' ? (isKids ? 'Pago en el local (Efectivo)' : 'Pago en el local (Efectivo/Tarjeta)') : paymentMethod}
                               </p>
                             </div>
                           </div>
