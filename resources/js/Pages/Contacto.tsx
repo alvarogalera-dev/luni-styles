@@ -145,7 +145,7 @@ export default function Contacto({ meta }: Props) {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-steel mb-2">Nombre</label>
-                  <input type="text" maxLength={50} required className="w-full bg-carbon border border-onyx rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 transition-colors" />
+                  <input type="text" maxLength={50} required className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-steel mb-2">Teléfono</label>
@@ -156,17 +156,17 @@ export default function Contacto({ meta }: Props) {
                     required 
                     onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
                     placeholder="Ej. 600000000"
-                    className="w-full bg-carbon border border-onyx rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 transition-colors" 
+                    className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" 
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Correo electrónico</label>
-                <input type="email" maxLength={100} required className="w-full bg-carbon border border-onyx rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 transition-colors" />
+                <input type="email" maxLength={100} required className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Asunto (Opcional)</label>
-                <select className="w-full bg-carbon border border-onyx rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 transition-colors">
+                <select className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
                   <option>Duda General</option>
                   <option>Sobre La Barbería</option>
                   <option>Sobre Peluquería Infantil</option>
@@ -175,7 +175,7 @@ export default function Contacto({ meta }: Props) {
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Mensaje</label>
-                <textarea rows={4} maxLength={500} required className="w-full bg-carbon border border-onyx rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 transition-colors resize-none" />
+                <textarea rows={4} maxLength={500} required className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all resize-none" />
               </div>
               <button type="submit" className="w-full py-4 bg-bone text-void font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-amber-400 transition-colors">
                 Enviar Mensaje

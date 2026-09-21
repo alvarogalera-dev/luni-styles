@@ -446,7 +446,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 value={contactData.name}
                                 onChange={e => setContactData({...contactData, name: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')})}
                                 type="text"
-                                className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                                className="w-full bg-carbon border border-amber-400/40 rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
                               />
                             </div>
                             <div>
@@ -456,7 +456,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 value={contactData.lastName}
                                 onChange={e => setContactData({...contactData, lastName: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')})}
                                 type="text"
-                                className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                                className="w-full bg-carbon border border-amber-400/40 rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
                               />
                             </div>
                           </div>
@@ -469,7 +469,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               type="email"
                               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                               title="Debe ser un correo electrónico válido, ej: nombre@dominio.com"
-                              className={cn("w-full bg-carbon border rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none transition-colors", showEmailErrorRealtime ? "border-red-500 focus:border-red-500" : "border-onyx focus:border-amber-400")}
+                              className={cn("w-full bg-carbon border rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none transition-all", showEmailErrorRealtime ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500" : "border-amber-400/40 focus:border-amber-400 focus:ring-1 focus:ring-amber-400")}
                             />
                             {showEmailErrorRealtime && (
                               <div className="mt-2 flex items-start gap-2 text-red-400 bg-red-950/30 p-2.5 rounded-lg border border-red-900/50">
@@ -484,7 +484,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               <button
                                 type="button"
                                 onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
-                                className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 flex items-center justify-center gap-2 shrink-0"
+                                className="w-24 md:w-28 bg-carbon border border-amber-400/40 rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 flex items-center justify-center gap-2 shrink-0 transition-all"
                               >
                                 {contactData.phonePrefix === 'Otro' ? (
                                   <span>🌍 Otro</span>
@@ -503,7 +503,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 maxLength={contactData.phonePrefix === 'Otro' ? 15 : COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}
                                 title={contactData.phonePrefix === 'Otro' ? "El número debe tener entre 8 y 15 dígitos (estándar internacional)" : `El número debe tener ${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9} dígitos para ${contactData.phonePrefix}`}
                                 onChange={e => setContactData({...contactData, phone: e.target.value.replace(/[^0-9]/g, '')})}
-                                className="flex-1 min-w-0 bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                                className="flex-1 min-w-0 bg-carbon border border-amber-400/40 rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
                               />
                             </div>
                             {showPhoneDropdown && (
@@ -540,7 +540,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                   placeholder="+XX"
                                   maxLength={5}
                                   onChange={e => setContactData({...contactData, customPrefix: e.target.value.replace(/[^0-9+]/g, '')})}
-                                  className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                                  className="w-full bg-carbon border border-amber-400/40 rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
                                 />
                               </div>
                             )}

@@ -104,7 +104,7 @@ export default function FullscreenMenu({ onClose }: Props) {
 
       {/* Nav links */}
       <motion.nav
-        className="flex-1 flex flex-col justify-center px-8 md:px-20"
+        className="flex-1 flex flex-col justify-center px-8 md:px-20 pb-28"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -135,11 +135,11 @@ export default function FullscreenMenu({ onClose }: Props) {
         ))}
       </motion.nav>
 
-      {/* Footer social + info */}
-      <motion.div
-        className="px-8 md:px-20 py-4 flex flex-col items-center gap-3 shrink-0"
+      {/* Footer absolute pinned to bottom */}
+      <motion.div 
+        className="absolute bottom-6 left-0 w-full px-8 md:px-20 flex flex-col items-center gap-4 pointer-events-auto"
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
+        animate={{ opacity: 1, y: 0, transition: { delay: 0.6 } }}
         exit={{ opacity: 0 }}
       >
         <div className="flex gap-6 justify-center">
@@ -153,20 +153,14 @@ export default function FullscreenMenu({ onClose }: Props) {
             </a>
           ))}
         </div>
-      </motion.div>
-
-      <motion.div 
-        className="px-8 md:px-20 pb-6 pt-2 shrink-0 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 0.6 } }}
-        exit={{ opacity: 0 }}
-      >
-        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-left w-full md:w-auto">
-          © {new Date().getFullYear()} Luni Styles
-        </p>
-        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-right w-full md:w-auto">
-          Developed by <span className="text-bone font-bold">CodeOS</span>
-        </p>
+        <div className="flex flex-col md:flex-row items-center justify-between w-full gap-2">
+          <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-left w-full md:w-auto">
+            © {new Date().getFullYear()} Luni Styles
+          </p>
+          <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-right w-full md:w-auto">
+            Developed by <span className="text-bone font-bold">CodeOS</span>
+          </p>
+        </div>
       </motion.div>
     </motion.div>
   );
