@@ -158,8 +158,21 @@ export default function FullscreenMenu({ onClose }: Props) {
         </div>
         <div className="flex flex-col items-start md:items-end gap-1">
           <p className="text-steel text-xs tracking-widest uppercase">Horario</p>
-          <p className="text-ash text-sm">Lun — Sáb: 9:00 — 20:00</p>
+          <div className="flex flex-col gap-1 mt-2 md:mt-0">
+            <p className="text-ash text-sm tracking-wider">Lun - Vie: 10:00 - 14:00 | 17:00 - 20:00</p>
+            <p className="text-ash text-sm tracking-wider md:text-right">Sáb - Dom: Cerrado</p>
+          </div>
         </div>
+      </motion.div>
+      <motion.div 
+        className="px-8 md:px-20 pb-8 flex justify-center md:justify-end"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { delay: 0.6 } }}
+        exit={{ opacity: 0 }}
+      >
+        <p className="text-steel/70 text-[10px] tracking-widest uppercase">
+          Developed by <span className="text-bone font-bold">CodeOS</span>
+        </p>
       </motion.div>
     </motion.div>
   );

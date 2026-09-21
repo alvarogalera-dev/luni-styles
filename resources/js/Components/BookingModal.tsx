@@ -425,7 +425,15 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                     {step === 4 && (
                       <div className="space-y-4 text-bone">
                         <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-5">Tus datos</h3>
-                        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); nextStep(); }}>
+                        <form className="space-y-3" onSubmit={(e) => { 
+                          e.preventDefault(); 
+                          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                          if (!emailRegex.test(contactData.email)) {
+                            alert("Por favor, introduce un correo electrónico válido, incluyendo el dominio (ej: @gmail.com)");
+                            return;
+                          }
+                          nextStep(); 
+                        }}>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <label className="block text-[10px] uppercase tracking-wider text-steel mb-1.5">Nombre</label>
@@ -581,6 +589,12 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               <div className="text-right shrink-0 ml-3">
                                 <p className="text-[10px] text-steel uppercase tracking-widest mb-0.5">Total</p>
                                 <p className="font-bold text-amber-400 text-lg">{selectedService.price}€</p>
+                              </div>
+                            )}
+                            {isKids && (
+                              <div className="text-right shrink-0 ml-3">
+                                <p className="text-[10px] text-amber-400 uppercase tracking-widest mb-0.5">Consultar precio</p>
+                                <a href="tel:+34675372813" className="font-bold text-emerald-400 text-sm hover:text-emerald-300 transition-colors">+34 675 37 28 13</a>
                               </div>
                             )}
                           </div>
