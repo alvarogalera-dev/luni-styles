@@ -499,7 +499,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 {showPhoneDropdown && (
                                   <>
                                     <div className="fixed inset-0 z-40" onClick={() => setShowPhoneDropdown(false)} />
-                                    <div className="absolute top-full mt-1 left-0 w-32 max-h-48 overflow-y-auto bg-carbon border border-onyx rounded-xl shadow-xl z-50 py-1">
+                                    <div className="absolute bottom-full mb-1 left-0 w-32 max-h-48 overflow-y-auto bg-carbon border border-onyx rounded-xl shadow-xl z-50 py-1">
                                       {COUNTRY_CODES.map((c) => (
                                         <button
                                           key={c.code}

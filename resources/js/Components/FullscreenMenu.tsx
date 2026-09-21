@@ -70,7 +70,7 @@ export default function FullscreenMenu({ onClose }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col"
+      className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a]/95 backdrop-blur-md overflow-y-auto"
       variants={bgVariants}
       initial="hidden"
       animate="visible"
@@ -165,12 +165,15 @@ export default function FullscreenMenu({ onClose }: Props) {
         </div>
       </motion.div>
       <motion.div 
-        className="px-8 md:px-20 pb-8 flex justify-center md:justify-end"
+        className="px-8 md:px-20 pb-8 pt-4 md:pt-0 mt-8 md:mt-0 flex flex-col md:flex-row items-center justify-between gap-4 border-t md:border-t-0 border-white/10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { delay: 0.6 } }}
         exit={{ opacity: 0 }}
       >
-        <p className="text-steel/70 text-[10px] tracking-widest uppercase">
+        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-left">
+          © {new Date().getFullYear()} Luni Styles
+        </p>
+        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-right">
           Developed by <span className="text-bone font-bold">CodeOS</span>
         </p>
       </motion.div>
