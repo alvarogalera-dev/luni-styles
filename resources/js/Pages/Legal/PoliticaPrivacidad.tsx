@@ -44,7 +44,7 @@ export default function PoliticaPrivacidad({ meta }: Props) {
             <Section number="1" title="Responsable del Tratamiento">
               <p>En cumplimiento del artículo 13 del RGPD, se facilitan los datos del responsable del tratamiento:</p>
               <ul className="list-none space-y-1 mt-2">
-                <li><strong>Titular:</strong> Mariely Ericeida Far\u00edas Velasquez</li>
+                <li><strong>Titular:</strong> Mariely Ericeida Farías Velasquez</li>
                 <li><strong>Actividad:</strong> Peluquería y Barbería · Luni Styles</li>
                 <li><strong>Domicilio:</strong> C. Pedro Hernández Guillamón "El Peseta", 5, 30820 Alcantarilla, Murcia</li>
                 <li><strong>Correo electrónico:</strong> contacto@lunistyles.com</li>

@@ -1,17 +1,20 @@
 import RootLayout from '@/Layouts/RootLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Mail, Phone, Plus, Minus } from 'lucide-react';
+import { MapPin, Mail, Phone, Plus, Minus, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 interface Meta { title: string; description: string; }
 interface Props { meta: Meta; }
 
 const faqs = [
-  { q: '¿Necesito cita previa?', a: 'Sí, recomendamos reservar cita previa a través de nuestra web para asegurar tu plaza y evitar esperas, tanto en la barbería como en la peluquería infantil.' },
-  { q: '¿Qué métodos de pago aceptáis?', a: 'Actualmente aceptamos pago en efectivo, tarjeta de crédito/débito y Bizum en el local.' },
-  { q: '¿A partir de qué edad cortáis el pelo a niños?', a: 'Atendemos a niños desde sus primeros meses. Tenemos experiencia en el "primer corte" de bebés y mucha paciencia para que sea una buena experiencia.' },
-  { q: '¿Vendéis productos para el cuidado en casa?', a: 'Sí, disponemos de una selección premium de ceras, aceites para barba, y también productos suaves y sin lágrimas para los más pequeños.' },
-  { q: '¿Puedo cancelar o modificar mi cita?', a: 'Puedes modificar o cancelar tu cita desde el enlace que recibirás en tu correo de confirmación, con al menos 24 horas de antelación.' },
+  { q: '¿Necesito cita previa?', a: 'Sí, recomendamos reservar cita previa a través de nuestra web para garantizar tu plaza y evitar esperas, tanto en la barbería como en la peluquería infantil. Puedes reservar en cualquier momento desde el botón "Reservar" de la web.' },
+  { q: '¿Qué métodos de pago aceptáis?', a: 'Actualmente aceptamos pago en efectivo y Bizum directamente en el local. Próximamente habilitaremos el pago con tarjeta.' },
+  { q: '¿A partir de qué edad cortáis el pelo a niños?', a: 'Atendemos a niños desde los primeros meses de vida. Tenemos experiencia en el primer corte de bebés y contamos con el material y la paciencia necesaria para que sea una experiencia tranquila y agradable.' },
+  { q: '¿Vendéis productos para el cuidado en casa?', a: 'Sí. En nuestra tienda física disponemos de una selección de productos de barbería (ceras, geles de fijación) y también gafas de sol. Puedes consultarnos directamente en el local.' },
+  { q: '¿Puedo cancelar o modificar mi cita?', a: 'Sí. Para cancelar o modificar una cita, por favor contáctanos con al menos 24 horas de antelación por teléfono o por mensaje a nuestras redes sociales. Consulta nuestros Términos de Reserva para más información.' },
+  { q: '¿Cuáles son vuestro horario de apertura?', a: 'Abrimos de lunes a viernes de 10:00 a 14:00 y de 17:00 a 20:00. Los sábados y domingos permanecemos cerrados. En épocas especiales (verano, festivos) podemos ajustar el horario; te recomendamos consultarlo antes de venir.' },
+  { q: '¿Ofrecéis servicios para toda la familia?', a: 'Sí. Luni Styles combina barbería para adultos y peluquería infantil en el mismo espacio, por lo que puedes reservar cita para ti y para tus hijos en la misma visita sin necesidad de desplazarte a otro establecimiento.' },
+  { q: '¿Cómo puedo llegar al local?', a: 'Estamos ubicados en C. Pedro Hernández Guillamón "El Peseta", 5, en Alcantarilla (Murcia). Dispones de aparcamiento en las calles del entorno. Puedes ver la ubicación exacta en el mapa de esta misma página.' },
 ];
 
 export default function Contacto({ meta }: Props) {
@@ -24,7 +27,7 @@ export default function Contacto({ meta }: Props) {
       <section className="pt-32 pb-16 px-6 md:px-10 bg-[#111] text-center border-b border-white/5">
         <p className="text-amber-400 text-xs tracking-[0.3em] uppercase mb-4">Contacto</p>
         <h1 className="font-display font-black text-5xl md:text-7xl tracking-tighter text-bone mb-6">
-          Hablemos.
+          Contáctanos.
         </h1>
       </section>
 
@@ -37,11 +40,12 @@ export default function Contacto({ meta }: Props) {
             <div>
               <h2 className="font-display font-bold text-3xl mb-6">Información General</h2>
               <p className="text-ash leading-relaxed mb-8">
-                Tienes dudas sobre nuestros servicios, quieres colaborar o simplemente decir hola. Estamos aquí para escucharte.
+                Si tienes alguna consulta sobre nuestros servicios, precios u horarios, no dudes en ponerte en contacto con nosotros. Estaremos encantados de atenderte.
               </p>
             </div>
 
             <div className="space-y-8">
+              {/* Dirección */}
               <div className="flex gap-4 items-start">
                 <MapPin className="text-amber-400 shrink-0 mt-1" />
                 <div>
@@ -50,9 +54,19 @@ export default function Contacto({ meta }: Props) {
                     C. Pedro Hernández Guillamón "El Peseta", 5<br/>
                     30820 Alcantarilla, Murcia
                   </p>
+                  <a
+                    href="https://maps.app.goo.gl/teJ2BCwoX7fQ4rJaA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-amber-400 text-sm hover:text-amber-300 transition-colors font-medium"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Ver en Google Maps
+                  </a>
                 </div>
               </div>
               
+              {/* Email */}
               <div className="flex gap-4 items-start">
                 <Mail className="text-amber-400 shrink-0 mt-1" />
                 <div>
@@ -61,15 +75,29 @@ export default function Contacto({ meta }: Props) {
                 </div>
               </div>
 
+              {/* Teléfonos */}
               <div className="flex gap-4 items-start">
                 <Phone className="text-amber-400 shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold mb-1">Teléfonos de contacto</p>
-                  <p className="text-steel"><span className="text-ash font-bold">Barbería:</span> +34 623 59 98 90</p>
-                  <p className="text-steel"><span className="text-emerald-400 font-bold">Peluquería Infantil:</span> +34 613 16 90 33</p>
+                  <p className="font-bold mb-3">Teléfonos de contacto</p>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-ash font-bold text-xs uppercase tracking-wider block mb-0.5">Barbería</span>
+                      <a href="tel:+34623599890" className="text-steel hover:text-amber-400 transition-colors">
+                        +34 623 59 98 90
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-0.5">Peluquería Infantil</span>
+                      <a href="tel:+34613169033" className="text-steel hover:text-emerald-400 transition-colors">
+                        +34 613 16 90 33
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              {/* Horario */}
               <div className="flex gap-4 items-start">
                 <div className="text-amber-400 shrink-0 mt-1">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -78,16 +106,19 @@ export default function Contacto({ meta }: Props) {
                   <p className="font-bold mb-3">Horario</p>
                   <div className="space-y-1">
                     {[
-                      { day: 'Lunes', color: 'text-amber-400' },
-                      { day: 'Martes', color: 'text-amber-400' },
-                      { day: 'Miércoles', color: 'text-amber-400' },
-                      { day: 'Jueves', color: 'text-amber-400' },
-                      { day: 'Viernes', color: 'text-amber-400' },
+                      { day: 'Lunes' },
+                      { day: 'Martes' },
+                      { day: 'Miércoles' },
+                      { day: 'Jueves' },
+                      { day: 'Viernes' },
                     ].map((d) => (
                       <p key={d.day} className="text-steel text-sm">
-                        <span className={`${d.color} font-bold inline-block w-20`}>{d.day}:</span> 10:00 – 14:00 | 17:00 – 20:00
+                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 10:00 – 14:00 | 17:00 – 20:00
                       </p>
                     ))}
+                    <p className="text-steel text-sm">
+                      <span className="text-steel/50 font-bold inline-block w-24">Sáb – Dom:</span> Cerrado
+                    </p>
                   </div>
                 </div>
               </div>
@@ -98,10 +129,8 @@ export default function Contacto({ meta }: Props) {
               <p className="font-bold mb-4">Síguenos</p>
               <div className="flex gap-4">
                 <a href="https://www.instagram.com/luni_styles/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-carbon flex items-center justify-center text-bone hover:bg-amber-400 hover:text-void transition-colors">
-                  {/* Instagram SVG */}
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                 </a>
-                {/* TikTok SVG */}
                 <a href="https://www.tiktok.com/@luni_styles" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-carbon flex items-center justify-center text-bone hover:bg-amber-400 hover:text-void transition-colors">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
                 </a>
@@ -157,7 +186,7 @@ export default function Contacto({ meta }: Props) {
         </div>
       </section>
 
-      {/* ── Mapa y FAQs (Transición a Claro) ── */}
+      {/* ── Mapa y FAQs ── */}
       <section className="py-24 px-6 md:px-10 bg-white text-slate-800 border-t border-white/5">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16">
           
@@ -169,10 +198,10 @@ export default function Contacto({ meta }: Props) {
                 <div key={i} className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50">
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between p-6 text-left"
+                    className="w-full flex items-center justify-between p-5 md:p-6 text-left gap-4"
                   >
-                    <span className="font-bold text-slate-800">{faq.q}</span>
-                    {openFaq === i ? <Minus className="text-slate-400 shrink-0" /> : <Plus className="text-slate-400 shrink-0" />}
+                    <span className="font-bold text-slate-800 text-sm md:text-base">{faq.q}</span>
+                    {openFaq === i ? <Minus className="text-slate-400 shrink-0 w-4 h-4" /> : <Plus className="text-slate-400 shrink-0 w-4 h-4" />}
                   </button>
                   <AnimatePresence>
                     {openFaq === i && (
@@ -182,7 +211,7 @@ export default function Contacto({ meta }: Props) {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <p className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-slate-200/50 mt-2">
+                        <p className="px-5 md:px-6 pb-5 md:pb-6 text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 text-sm md:text-base">
                           {faq.a}
                         </p>
                       </motion.div>
@@ -194,16 +223,15 @@ export default function Contacto({ meta }: Props) {
           </div>
 
           {/* Mapa */}
-          <div className="h-[600px] rounded-3xl overflow-hidden shadow-2xl bg-slate-100 border border-slate-200">
-            {/* Mapa interactivo */}
+          <div className="h-[500px] md:h-[700px] rounded-3xl overflow-hidden shadow-2xl bg-slate-100 border border-slate-200">
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d786.3234516300157!2d-1.2105969303449573!3d37.97027215547939!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd637f007f220c1b%3A0x3efbfe67ec17fe64!2sLuni%20Styles!5e0!3m2!1ses!2ses!4v1789993724849!5m2!1ses!2ses" 
               width="100%"  
               height="100%" 
               style={{ border: 0 }} 
               allowFullScreen={false} 
-              loading="eager"
-              fetchpriority="high"
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
             />
           </div>
 
