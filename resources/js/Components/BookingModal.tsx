@@ -59,20 +59,6 @@ const INFANTIL_SERVICES = [
     subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas.',
     duration: 45,
   },
-];
-
-const COUNTRY_CODES = [
-  { code: '+34', flag: '🇪🇸', maxLength: 9 },
-  { code: '+33', flag: '🇫🇷', maxLength: 9 },
-  { code: '+351', flag: '🇵🇹', maxLength: 9 },
-  { code: '+44', flag: '🇬🇧', maxLength: 10 },
-  { code: '+1', flag: '🇺🇸', maxLength: 10 },
-  { code: '+54', flag: '🇦🇷', maxLength: 10 },
-  { code: '+57', flag: '🇨🇴', maxLength: 10 },
-  { code: '+52', flag: '🇲🇽', maxLength: 10 },
-];
-    durationLabel: '30 – 60 min',
-  },
   {
     id: 'k3',
     name: 'Accesorios',
@@ -80,6 +66,18 @@ const COUNTRY_CODES = [
     duration: 20,
     durationLabel: '15 – 30 min',
   },
+];
+
+const COUNTRY_CODES = [
+  { code: '+34', flag: '🇪🇸', maxLength: 9, isOther: false },
+  { code: '+33', flag: '🇫🇷', maxLength: 9, isOther: false },
+  { code: '+351', flag: '🇵🇹', maxLength: 9, isOther: false },
+  { code: '+44', flag: '🇬🇧', maxLength: 10, isOther: false },
+  { code: '+1', flag: '🇺🇸', maxLength: 10, isOther: false },
+  { code: '+54', flag: '🇦🇷', maxLength: 10, isOther: false },
+  { code: '+57', flag: '🇨🇴', maxLength: 10, isOther: false },
+  { code: '+52', flag: '🇲🇽', maxLength: 10, isOther: false },
+  { code: 'Otro', flag: '🌍', maxLength: 15, isOther: true },
 ];
 
 const TIME_SLOTS = [
@@ -95,7 +93,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const [selectedService, setSelectedService] = useState<any>(null);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | null>(null);
-  const [contactData, setContactData] = useState({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
+  const [contactData, setContactData] = useState({ name: '', lastName: '', email: '', phonePrefix: '+34', customPrefix: '', phone: '' });
   const [acceptedTerms, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'local' | 'bizum' | 'stripe'>('local');
@@ -468,23 +466,34 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               <select 
                                 value={contactData.phonePrefix}
                                 onChange={(e) => {
-                                  setContactData({...contactData, phonePrefix: e.target.value, phone: ''});
+                                  setContactData({...contactData, phonePrefix: e.target.value, customPrefix: '', phone: ''});
                                 }}
-                                className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 appearance-none text-center"
+                                className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 appearance-none text-center shrink-0"
                               >
                                 {COUNTRY_CODES.map((c) => (
                                   <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
                                 ))}
                               </select>
+                              {contactData.phonePrefix === 'Otro' && (
+                                <input
+                                  required
+                                  value={contactData.customPrefix}
+                                  type="text"
+                                  placeholder="+XX"
+                                  maxLength={5}
+                                  onChange={e => setContactData({...contactData, customPrefix: e.target.value.replace(/[^0-9+]/g, '')})}
+                                  className="w-16 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 text-center shrink-0"
+                                />
+                              )}
                               <input
                                 required
                                 value={contactData.phone}
                                 type="tel"
-                                pattern={`[0-9]{${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}}`}
-                                maxLength={COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}
-                                title={`El número debe tener ${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9} dígitos para ${contactData.phonePrefix}`}
+                                pattern={contactData.phonePrefix === 'Otro' ? `[0-9]{8,15}` : `[0-9]{${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}}`}
+                                maxLength={contactData.phonePrefix === 'Otro' ? 15 : COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}
+                                title={contactData.phonePrefix === 'Otro' ? "El número debe tener entre 8 y 15 dígitos (estándar internacional)" : `El número debe tener ${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9} dígitos para ${contactData.phonePrefix}`}
                                 onChange={e => setContactData({...contactData, phone: e.target.value.replace(/[^0-9]/g, '')})}
-                                className="flex-1 bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                                className="flex-1 min-w-0 bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
                               />
                             </div>
                           </div>
@@ -590,7 +599,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <User className="w-4 h-4 text-steel shrink-0" />
                             <div>
                               <p className="text-xs font-bold">{contactData.name} {contactData.lastName}</p>
-                              <p className="text-[10px] text-steel">{contactData.email} · {contactData.phonePrefix} {contactData.phone}</p>
+                              <p className="text-[10px] text-steel">{contactData.email} · {contactData.phonePrefix === 'Otro' ? contactData.customPrefix : contactData.phonePrefix} {contactData.phone}</p>
                             </div>
                           </div>
 
