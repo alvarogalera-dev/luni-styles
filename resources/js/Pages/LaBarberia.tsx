@@ -246,7 +246,7 @@ export default function LaBarberia({ meta }: Props) {
               <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
                 <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
                   <img
-                    src="/images/gafas1.png"
+                    src="/images/gafas2.jpg"
                     alt="Gafas Classic Blue"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
@@ -268,7 +268,7 @@ export default function LaBarberia({ meta }: Props) {
               <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
                 <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
                   <img
-                    src="/images/gafas2.jpg"
+                    src="/images/gafas1.png"
                     alt="Gafas Clear Ice"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"

@@ -58,6 +58,19 @@ const INFANTIL_SERVICES = [
     name: 'Peinados',
     subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas.',
     duration: 45,
+  },
+];
+
+const COUNTRY_CODES = [
+  { code: '+34', flag: '🇪🇸', maxLength: 9 },
+  { code: '+33', flag: '🇫🇷', maxLength: 9 },
+  { code: '+351', flag: '🇵🇹', maxLength: 9 },
+  { code: '+44', flag: '🇬🇧', maxLength: 10 },
+  { code: '+1', flag: '🇺🇸', maxLength: 10 },
+  { code: '+54', flag: '🇦🇷', maxLength: 10 },
+  { code: '+57', flag: '🇨🇴', maxLength: 10 },
+  { code: '+52', flag: '🇲🇽', maxLength: 10 },
+];
     durationLabel: '30 – 60 min',
   },
   {
@@ -82,7 +95,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const [selectedService, setSelectedService] = useState<any>(null);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | null>(null);
-  const [contactData, setContactData] = useState({ name: '', lastName: '', email: '', phone: '' });
+  const [contactData, setContactData] = useState({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
   const [acceptedTerms, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'local' | 'bizum' | 'stripe'>('local');
@@ -108,7 +121,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
         setSelectedService(preSelectedService);
         setDate(undefined);
         setTime(null);
-        setContactData({ name: '', lastName: '', email: '', phone: '' });
+        setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
         setTermsAccepted(false);
         setShowTermsError(false);
         setPaymentMethod('local');
@@ -134,7 +147,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
     setSelectedService(null);
     setDate(undefined);
     setTime(null);
-    setContactData({ name: '', lastName: '', email: '', phone: '' });
+    setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
     setTermsAccepted(false);
     setShowTermsError(false);
     setPaymentMethod('local');
@@ -210,7 +223,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               setSelectedService(null);
                               setDate(undefined);
                               setTime(null);
-                              setContactData({ name: '', lastName: '', email: '', phone: '' });
+                              setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
                               setTermsAccepted(false);
                               setShowTermsError(false);
                               setPaymentMethod('local');
@@ -230,7 +243,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               setSelectedService(null);
                               setDate(undefined);
                               setTime(null);
-                              setContactData({ name: '', lastName: '', email: '', phone: '' });
+                              setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
                               setTermsAccepted(false);
                               setShowTermsError(false);
                               setPaymentMethod('local');
@@ -421,7 +434,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               <input
                                 required
                                 value={contactData.name}
-                                onChange={e => setContactData({...contactData, name: e.target.value})}
+                                onChange={e => setContactData({...contactData, name: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')})}
                                 type="text"
                                 className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
                               />
@@ -431,7 +444,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               <input
                                 required
                                 value={contactData.lastName}
-                                onChange={e => setContactData({...contactData, lastName: e.target.value})}
+                                onChange={e => setContactData({...contactData, lastName: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')})}
                                 type="text"
                                 className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
                               />
@@ -444,20 +457,36 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               value={contactData.email}
                               onChange={e => setContactData({...contactData, email: e.target.value})}
                               type="email"
+                              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                              title="Debe ser un correo electrónico válido, ej: nombre@dominio.com"
                               className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
                             />
                           </div>
                           <div>
                             <label className="block text-[10px] uppercase tracking-wider text-steel mb-1.5">Teléfono</label>
-                            <input
-                              required
-                              value={contactData.phone}
-                              type="tel"
-                              pattern="[0-9]{9}"
-                              maxLength={9}
-                              onChange={e => setContactData({...contactData, phone: e.target.value.replace(/[^0-9]/g, '')})}
-                              className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
-                            />
+                            <div className="flex gap-2">
+                              <select 
+                                value={contactData.phonePrefix}
+                                onChange={(e) => {
+                                  setContactData({...contactData, phonePrefix: e.target.value, phone: ''});
+                                }}
+                                className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 appearance-none text-center"
+                              >
+                                {COUNTRY_CODES.map((c) => (
+                                  <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
+                                ))}
+                              </select>
+                              <input
+                                required
+                                value={contactData.phone}
+                                type="tel"
+                                pattern={`[0-9]{${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}}`}
+                                maxLength={COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9}
+                                title={`El número debe tener ${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.maxLength || 9} dígitos para ${contactData.phonePrefix}`}
+                                onChange={e => setContactData({...contactData, phone: e.target.value.replace(/[^0-9]/g, '')})}
+                                className="flex-1 bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                              />
+                            </div>
                           </div>
                           <div className="flex justify-between mt-6 pt-4 border-t border-white/10">
                             <button type="button" onClick={prevStep} className="px-5 py-2 text-steel hover:text-bone transition-colors text-sm">Volver</button>
@@ -561,7 +590,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <User className="w-4 h-4 text-steel shrink-0" />
                             <div>
                               <p className="text-xs font-bold">{contactData.name} {contactData.lastName}</p>
-                              <p className="text-[10px] text-steel">{contactData.email} · {contactData.phone}</p>
+                              <p className="text-[10px] text-steel">{contactData.email} · {contactData.phonePrefix} {contactData.phone}</p>
                             </div>
                           </div>
 
