@@ -481,60 +481,20 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           <div>
                             <label className="block text-[10px] uppercase tracking-wider text-steel mb-1.5">Teléfono</label>
                             <div className="flex gap-2">
-                              <div className="relative shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
-                                  className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 flex items-center justify-center gap-2"
-                                >
-                                  {contactData.phonePrefix === 'Otro' ? (
-                                    <span>🌍 Otro</span>
-                                  ) : (
-                                    <>
-                                      <img src={`https://flagcdn.com/w20/${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
-                                      <span>{contactData.phonePrefix}</span>
-                                    </>
-                                  )}
-                                </button>
-                                {showPhoneDropdown && (
+                              <button
+                                type="button"
+                                onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
+                                className="w-24 md:w-28 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 flex items-center justify-center gap-2 shrink-0"
+                              >
+                                {contactData.phonePrefix === 'Otro' ? (
+                                  <span>🌍 Otro</span>
+                                ) : (
                                   <>
-                                    <div className="fixed inset-0 z-40" onClick={() => setShowPhoneDropdown(false)} />
-                                    <div className="absolute bottom-full mb-1 left-0 w-32 max-h-48 overflow-y-auto bg-carbon border border-onyx rounded-xl shadow-xl z-50 py-1">
-                                      {COUNTRY_CODES.map((c) => (
-                                        <button
-                                          key={c.code}
-                                          type="button"
-                                          onClick={() => {
-                                            setContactData({...contactData, phonePrefix: c.code, customPrefix: '', phone: ''});
-                                            setShowPhoneDropdown(false);
-                                          }}
-                                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-bone hover:bg-white/5 transition-colors"
-                                        >
-                                          {c.isOther ? (
-                                            <span>🌍 Otro</span>
-                                          ) : (
-                                            <>
-                                              <img src={`https://flagcdn.com/w20/${c.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
-                                              <span>{c.code}</span>
-                                            </>
-                                          )}
-                                        </button>
-                                      ))}
-                                    </div>
+                                    <img src={`https://flagcdn.com/w20/${COUNTRY_CODES.find(c => c.code === contactData.phonePrefix)?.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
+                                    <span>{contactData.phonePrefix}</span>
                                   </>
                                 )}
-                              </div>
-                              {contactData.phonePrefix === 'Otro' && (
-                                <input
-                                  required
-                                  value={contactData.customPrefix}
-                                  type="text"
-                                  placeholder="+XX"
-                                  maxLength={5}
-                                  onChange={e => setContactData({...contactData, customPrefix: e.target.value.replace(/[^0-9+]/g, '')})}
-                                  className="w-16 bg-carbon border border-onyx rounded-xl px-2 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 text-center shrink-0"
-                                />
-                              )}
+                              </button>
                               <input
                                 required
                                 value={contactData.phone}
@@ -546,6 +506,44 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 className="flex-1 min-w-0 bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
                               />
                             </div>
+                            {showPhoneDropdown && (
+                              <div className="mt-2 w-full max-h-40 overflow-y-auto bg-[#111] border border-onyx rounded-xl p-1.5 grid grid-cols-2 sm:grid-cols-3 gap-1.5 custom-scrollbar">
+                                {COUNTRY_CODES.map((c) => (
+                                  <button
+                                    key={c.code}
+                                    type="button"
+                                    onClick={() => {
+                                      setContactData({...contactData, phonePrefix: c.code, customPrefix: '', phone: ''});
+                                      setShowPhoneDropdown(false);
+                                    }}
+                                    className="flex items-center gap-2 px-2.5 py-2 text-xs md:text-sm text-bone hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                                  >
+                                    {c.isOther ? (
+                                      <span>🌍 Otro</span>
+                                    ) : (
+                                      <>
+                                        <img src={`https://flagcdn.com/w20/${c.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
+                                        <span>{c.code}</span>
+                                      </>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {contactData.phonePrefix === 'Otro' && (
+                              <div className="mt-3">
+                                <label className="block text-[10px] uppercase tracking-wider text-steel mb-1.5">Prefijo Manual</label>
+                                <input
+                                  required
+                                  value={contactData.customPrefix}
+                                  type="text"
+                                  placeholder="+XX"
+                                  maxLength={5}
+                                  onChange={e => setContactData({...contactData, customPrefix: e.target.value.replace(/[^0-9+]/g, '')})}
+                                  className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                            )}
                           </div>
                           <div className="flex justify-between mt-6 pt-4 border-t border-white/10">
                             <button type="button" onClick={prevStep} className="px-5 py-2 text-steel hover:text-bone transition-colors text-sm">Volver</button>

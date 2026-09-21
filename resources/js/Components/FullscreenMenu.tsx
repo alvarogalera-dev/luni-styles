@@ -70,7 +70,7 @@ export default function FullscreenMenu({ onClose }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a]/95 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0a]/95 backdrop-blur-md"
       variants={bgVariants}
       initial="hidden"
       animate="visible"
@@ -137,43 +137,34 @@ export default function FullscreenMenu({ onClose }: Props) {
 
       {/* Footer social + info */}
       <motion.div
-        className="px-8 md:px-20 py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        className="px-8 md:px-20 py-4 flex flex-col items-center gap-3 shrink-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
         exit={{ opacity: 0 }}
       >
-        <div className="flex flex-col gap-1">
-          <p className="text-steel text-xs tracking-widest uppercase">Síguenos</p>
-          <div className="flex gap-6 mt-2">
-            {['Instagram', 'Facebook', 'TikTok'].map((s) => (
-              <a
-                key={s}
-                href="#"
-                className="text-ash text-sm hover:text-copper-400 transition-colors tracking-wider"
-              >
-                {s}
-              </a>
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col items-start md:items-end gap-1">
-          <p className="text-steel text-xs tracking-widest uppercase">Horario</p>
-          <div className="flex flex-col gap-1 mt-2 md:mt-0">
-            <p className="text-ash text-sm tracking-wider">Lun - Vie: 10:00 - 14:00 | 17:00 - 20:00</p>
-            <p className="text-ash text-sm tracking-wider md:text-right">Sáb - Dom: Cerrado</p>
-          </div>
+        <div className="flex gap-6 justify-center">
+          {['Instagram', 'Facebook', 'TikTok'].map((s) => (
+            <a
+              key={s}
+              href="#"
+              className="text-ash text-xs hover:text-copper-400 transition-colors tracking-wider"
+            >
+              {s}
+            </a>
+          ))}
         </div>
       </motion.div>
+
       <motion.div 
-        className="px-8 md:px-20 pb-8 pt-4 md:pt-0 mt-8 md:mt-0 flex flex-col md:flex-row items-center justify-between gap-4 border-t md:border-t-0 border-white/10"
+        className="px-8 md:px-20 pb-6 pt-2 shrink-0 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { delay: 0.6 } }}
         exit={{ opacity: 0 }}
       >
-        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-left">
+        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-left w-full md:w-auto">
           © {new Date().getFullYear()} Luni Styles
         </p>
-        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-right">
+        <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-right w-full md:w-auto">
           Developed by <span className="text-bone font-bold">CodeOS</span>
         </p>
       </motion.div>
