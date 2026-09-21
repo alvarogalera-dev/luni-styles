@@ -103,7 +103,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[90] bg-void/95 backdrop-blur-3xl pt-28 px-6 lg:hidden flex flex-col"
+            className="fixed top-0 left-0 w-full h-[100dvh] z-[90] bg-void/95 backdrop-blur-3xl pt-28 px-6 lg:hidden flex flex-col"
           >
             <div className="flex flex-col gap-6">
               {navLinks.map((item, i) => (
@@ -123,6 +123,20 @@ export default function Navbar() {
                 </motion.div>
               ))}
             </div>
+
+            <motion.div 
+              className="absolute bottom-8 left-0 w-full px-6 flex flex-col items-center gap-2 pointer-events-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0, transition: { delay: 0.3 } }}
+              exit={{ opacity: 0 }}
+            >
+              <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center w-full">
+                © {new Date().getFullYear()} Luni Styles
+              </p>
+              <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center w-full">
+                Developed by <span className="text-bone font-bold">CodeOS</span>
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
