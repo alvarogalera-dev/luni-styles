@@ -130,10 +130,10 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0, transition: { delay: 0.3 } }}
               exit={{ opacity: 0 }}
             >
-              <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center w-full">
-                © {new Date().getFullYear()} Luni Styles
+              <p className="text-steel text-xs tracking-wider text-center w-full">
+                © {new Date().getFullYear()} Luni Styles. Todos los derechos reservados.
               </p>
-              <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center w-full">
+              <p className="text-steel text-xs tracking-wider text-center w-full">
                 Developed by <span className="text-bone font-bold">CodeOS</span>
               </p>
             </motion.div>

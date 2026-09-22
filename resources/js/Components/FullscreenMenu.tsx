@@ -154,10 +154,10 @@ export default function FullscreenMenu({ onClose }: Props) {
           ))}
         </div>
         <div className="flex flex-col md:flex-row items-center justify-between w-full gap-2">
-          <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-left w-full md:w-auto">
-            © {new Date().getFullYear()} Luni Styles
+          <p className="text-steel text-xs tracking-wider text-center md:text-left w-full md:w-auto">
+            © {new Date().getFullYear()} Luni Styles. Todos los derechos reservados.
           </p>
-          <p className="text-steel/70 text-[10px] tracking-widest uppercase text-center md:text-right w-full md:w-auto">
+          <p className="text-steel text-xs tracking-wider text-center md:text-right w-full md:w-auto">
             Developed by <span className="text-bone font-bold">CodeOS</span>
           </p>
         </div>
