@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { ExternalLink } from 'lucide-react';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -76,6 +77,17 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="text-steel text-sm">C. Pedro Hernández Guillamón "El Peseta", 5</li>
               <li className="text-steel text-sm">30820 Alcantarilla, Murcia</li>
+              <li className="pt-1 pb-1">
+                <a 
+                  href="https://maps.app.goo.gl/teJ2BCwoX7fQ4rJaA" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-1.5 text-amber-400 text-sm font-semibold hover:text-amber-300 transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Ver en Google Maps
+                </a>
+              </li>
               <li>
                 <span className="text-ash font-bold text-xs uppercase tracking-wider block mb-1">Barbería</span>
                 <a href="tel:+34623599890" className="text-steel text-sm hover:text-amber-400 transition-colors">
