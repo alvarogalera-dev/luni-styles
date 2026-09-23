@@ -14,6 +14,8 @@ class Appointment extends Model
         'client_id',
         'appointment_date',
         'service_type',
+        'service_name',
+        'employee_id',
         'price',
         'observations',
         'status',
