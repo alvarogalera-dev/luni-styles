@@ -294,7 +294,6 @@ export default function Contacto({ meta }: Props) {
                     </div>
                   )}
                 </div>
-              </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Correo electrónico</label>
                   <input 
