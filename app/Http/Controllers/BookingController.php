@@ -27,18 +27,25 @@ class BookingController extends Controller
         ]);
 
         try {
-            // 1. Identity Resolution (Match Cruzado + Lógica Difusa)
-            $client = Client::where('email', $validated['email'])->first();
+            // 1. Identity Resolution (Match Histórico Cruzado + Lógica Difusa)
+            $inputEmail = $validated['email'];
+            $inputPhone = $validated['telefono'];
+            $inputName = strtolower(trim($validated['nombre'] . ' ' . $validated['apellidos']));
 
+            // Buscar por email principal o en el historial de emails
+            $client = Client::where('email', $inputEmail)
+                ->orWhere('known_emails', 'LIKE', '%' . $inputEmail . '%')
+                ->first();
+
+            // Buscar por teléfono principal o en el historial de teléfonos
             if (!$client) {
-                $client = Client::where('phone', $validated['telefono'])->first();
+                $client = Client::where('phone', $inputPhone)
+                    ->orWhere('known_phones', 'LIKE', '%' . $inputPhone . '%')
+                    ->first();
             }
 
             if (!$client) {
                 // Fuzzy match by name and surname
-                $inputName = strtolower(trim($validated['nombre'] . ' ' . $validated['apellidos']));
-                
-                // Fetch all clients to compare (In a huge DB this would be slow, but fine for a local shop)
                 $allClients = Client::all();
                 $bestMatch = null;
                 $highestSimilarity = 0;
@@ -59,21 +66,38 @@ class BookingController extends Controller
             }
 
             if (!$client) {
+                // Crear cliente nuevo
                 $client = Client::create([
-                    'email' => $validated['email'],
+                    'email' => $inputEmail,
+                    'known_emails' => $inputEmail,
                     'name' => trim($validated['nombre']),
                     'surname' => trim($validated['apellidos']),
-                    'phone' => trim($validated['telefono']),
+                    'phone' => $inputPhone,
+                    'known_phones' => $inputPhone,
                     'total_appointments' => 1,
                     'loyalty_points' => 0,
                     'penalty_flag' => false,
                 ]);
             } else {
+                // Actualizar cliente existente y su memoria histórica
+                $knownEmails = $client->known_emails ? explode(',', $client->known_emails) : [$client->email];
+                if (!in_array($inputEmail, $knownEmails)) {
+                    $knownEmails[] = $inputEmail;
+                }
+
+                $knownPhones = $client->known_phones ? explode(',', $client->known_phones) : [$client->phone];
+                if (!in_array($inputPhone, $knownPhones)) {
+                    $knownPhones[] = $inputPhone;
+                }
+
                 $client->update([
-                    'email' => $validated['email'],
+                    // Mantenemos el email/teléfono principal con el último que ha usado, pero guardamos el historial
+                    'email' => $inputEmail,
+                    'known_emails' => implode(',', $knownEmails),
                     'name' => trim($validated['nombre']),
                     'surname' => trim($validated['apellidos']),
-                    'phone' => trim($validated['telefono']),
+                    'phone' => $inputPhone,
+                    'known_phones' => implode(',', $knownPhones),
                     'total_appointments' => $client->total_appointments + 1,
                 ]);
             }

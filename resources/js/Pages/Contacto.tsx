@@ -227,8 +227,7 @@ export default function Contacto({ meta }: Props) {
                   <input type="text" maxLength={50} required value={formData.apellidos} onChange={e => setFormData({...formData, apellidos: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="relative">
+              <div className="relative">
                   <label className="block text-xs uppercase tracking-wider text-steel mb-2">Teléfono</label>
                   <div className="flex gap-2">
                     <button
@@ -295,8 +294,9 @@ export default function Contacto({ meta }: Props) {
                     </div>
                   )}
                 </div>
-                <div>
-                  <label className="block text-xs uppercase tracking-wider text-steel mb-2">Correo electrónico</label>
+              </div>
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-steel mb-2">Correo electrónico</label>
                   <input 
                     type="email" 
                     maxLength={100} 
@@ -314,7 +314,6 @@ export default function Contacto({ meta }: Props) {
                     </div>
                   )}
                 </div>
-              </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Asunto (Opcional)</label>
                 <select value={formData.asunto} onChange={e => setFormData({...formData, asunto: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">

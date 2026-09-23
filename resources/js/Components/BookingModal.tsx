@@ -110,6 +110,34 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const showEmailErrorRealtime = contactData.email.length > 0 && !isEmailValid;
 
   React.useEffect(() => {
+    if (date && serviceType && selectedService) {
+      const fetchSlots = async () => {
+        setIsLoadingSlots(true);
+        try {
+          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+          const res = await fetch('/api/available-slots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '' },
+            body: JSON.stringify({
+              date: format(date, 'yyyy-MM-dd'),
+              service_type: serviceType,
+              duration: selectedService?.duration || 30
+            })
+          });
+          const data = await res.json();
+          setAvailableSlots(data.available_slots || []);
+        } catch (e) {
+          console.error(e);
+          setAvailableSlots([]);
+        } finally {
+          setIsLoadingSlots(false);
+        }
+      };
+      fetchSlots();
+    }
+  }, [date, serviceType, selectedService]);
+
+  React.useEffect(() => {
     if (isOpen) {
       if (initialServiceType) {
         setServiceType(initialServiceType);
@@ -397,31 +425,10 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           <DayPicker
                             mode="single"
                             selected={date}
-                            onSelect={async (d) => { 
+                            onSelect={(d) => { 
                               setDate(d); 
                               setTime(null); 
-                              if (d) {
-                                setIsLoadingSlots(true);
-                                try {
-                                  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                                  const res = await fetch('/api/available-slots', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '' },
-                                    body: JSON.stringify({
-                                      date: format(d, 'yyyy-MM-dd'),
-                                      service_type: serviceType,
-                                      duration: selectedService?.duration || 30
-                                    })
-                                  });
-                                  const data = await res.json();
-                                  setAvailableSlots(data.available_slots || []);
-                                } catch (e) {
-                                  console.error(e);
-                                  setAvailableSlots([]);
-                                } finally {
-                                  setIsLoadingSlots(false);
-                                }
-                              } else {
+                              if (!d) {
                                 setAvailableSlots([]);
                               }
                             }}
@@ -464,14 +471,17 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                         disabled={!isAvailable}
                                         onClick={() => setTime(t)}
                                         className={cn(
-                                          "py-2.5 rounded-lg text-xs font-medium transition-all duration-200 border",
-                                          isAvailable ? "active:scale-95 cursor-pointer" : "opacity-30 cursor-not-allowed bg-[#0a0a0a] border-transparent text-steel",
+                                          "relative flex items-center justify-center py-2.5 rounded-lg text-xs font-medium transition-all duration-200 border",
+                                          isAvailable ? "active:scale-95 cursor-pointer" : "opacity-40 cursor-not-allowed bg-[#0a0a0a] border-onyx text-steel/50",
                                           time === t
                                             ? "bg-amber-400 text-void border-amber-400"
                                             : (isAvailable ? "bg-[#111] text-ash border-onyx hover:border-steel" : "")
                                         )}
                                       >
-                                        {isAvailable ? t : <X className="w-3.5 h-3.5 mx-auto" />}
+                                        <span className={cn(isAvailable ? "" : "line-through")}>{t}</span>
+                                        {!isAvailable && (
+                                          <X className="w-3.5 h-3.5 absolute right-2 text-steel/40" />
+                                        )}
                                       </button>
                                     );
                                   })}
@@ -499,11 +509,23 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                       <div className="space-y-4 text-bone">
                         <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-5">Tus datos</h3>
                         
-                        <div className="bg-blue-950/40 border border-blue-900/50 rounded-xl p-3.5 mb-5 flex items-start gap-3">
-                          <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                          <p className="text-xs text-blue-200/80 leading-relaxed">
-                            <strong className="text-blue-300">Tus cortes gratis se asocian a tu Email o Teléfono.</strong> Asegúrate de usar siempre los mismos. Si tienes dudas o te equivocaste, contáctanos a soporte@lunistyles.com o llámanos.
-                          </p>
+                        <div className="bg-blue-950/40 border border-blue-900/50 rounded-xl p-4 mb-6 relative overflow-hidden">
+                          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 rounded-l-xl" />
+                          <div className="flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                            <div className="text-xs text-blue-200/90 leading-relaxed space-y-2">
+                              <p>
+                                <strong className="text-blue-300 font-bold block mb-0.5">💈 Fidelidad Inteligente (¡Tu 10º corte es GRATIS!)</strong>
+                                Tus citas acumuladas se guardan automáticamente y están vinculadas a los datos que pongas aquí. 
+                              </p>
+                              <p className="opacity-80">
+                                <strong className="text-blue-300">Da igual si te equivocas:</strong> Si alguna vez cambias de teléfono o email, el sistema recordará tus datos antiguos y asociará tus citas si el nombre es similar o coincide algo de tu perfil.
+                              </p>
+                              <p className="text-[10px] uppercase tracking-wider font-bold text-blue-400 pt-1">
+                                ¿Dudas? → soporte@lunistyles.com
+                              </p>
+                            </div>
+                          </div>
                         </div>
                         <form className="space-y-3" onSubmit={(e) => { 
                           e.preventDefault(); 
