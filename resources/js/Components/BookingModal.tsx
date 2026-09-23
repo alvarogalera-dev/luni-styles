@@ -98,7 +98,12 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const [showTermsError, setShowTermsError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'local' | 'bizum' | 'stripe'>('local');
   const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
-
+  
+  const [observations, setObservations] = useState("");
+  const [loyaltyData, setLoyaltyData] = useState<{exists: boolean, loyalty_points: number, penalty_flag: boolean} | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState("");
   const isEmailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(contactData.email);
   const showEmailErrorRealtime = contactData.email.length > 0 && !isEmailValid;
 
@@ -134,7 +139,26 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
     return () => document.removeEventListener('openBookingModal', handleOpen);
   }, []);
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 6));
+  const nextStep = async () => {
+    if (step === 4) {
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const res = await fetch('/api/check-loyalty', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken || ''
+          },
+          body: JSON.stringify({ email: contactData.email })
+        });
+        const data = await res.json();
+        setLoyaltyData(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    setStep((s) => Math.min(s + 1, 6));
+  };
   const prevStep = () => {
     if (step === 2 && initialServiceType) {
       onClose();
@@ -149,10 +173,14 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
     setSelectedService(null);
     setDate(undefined);
     setTime(null);
-    setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', phone: '' });
+    setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', customPrefix: '', phone: '' });
     setTermsAccepted(false);
     setShowTermsError(false);
     setPaymentMethod('local');
+    setObservations("");
+    setLoyaltyData(null);
+    setSubmitStatus('idle');
+    setSubmitError("");
     onClose();
   };
 
@@ -634,7 +662,11 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             {!isKids && selectedService?.price != null && (
                               <div className="text-right shrink-0 ml-3">
                                 <p className="text-[10px] text-steel uppercase tracking-widest mb-0.5">Total</p>
-                                <p className="font-bold text-amber-400 text-lg">{selectedService.price}€</p>
+                                {loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9 ? (
+                                  <p className="font-bold text-emerald-400 text-lg">Gratis</p>
+                                ) : (
+                                  <p className="font-bold text-amber-400 text-lg">{selectedService.price}€</p>
+                                )}
                               </div>
                             )}
                             {isKids && (
@@ -675,6 +707,43 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           </div>
                         </div>
 
+                          {/* Loyalty Banner */}
+                          {loyaltyData?.exists && !isKids && (
+                            <div className={cn(
+                              "p-4 rounded-xl border",
+                              loyaltyData.loyalty_points >= 9 
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" 
+                                : "bg-amber-400/10 border-amber-400/30 text-amber-400"
+                            )}>
+                              <div className="flex items-start gap-3">
+                                <Scissors className="w-5 h-5 shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="font-bold text-sm">
+                                    {loyaltyData.loyalty_points >= 9 
+                                      ? "🎉 ¡Enhorabuena! Este es tu 10º corte." 
+                                      : `💈 ¡Llevas ${loyaltyData.loyalty_points} cortes acumulados!`}
+                                  </p>
+                                  <p className="text-xs opacity-90 mt-1">
+                                    {loyaltyData.loyalty_points >= 9
+                                      ? "Al ir al local, el corte te saldrá totalmente GRATIS."
+                                      : `Te faltan ${9 - loyaltyData.loyalty_points} para tu corte gratis.`}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Observations */}
+                          <div>
+                            <label className="block text-[10px] uppercase tracking-wider text-steel mb-1.5">Observaciones (Opcional)</label>
+                            <textarea
+                              value={observations}
+                              onChange={(e) => setObservations(e.target.value)}
+                              placeholder="Ej: Prefiero corte a tijera, o cualquier otra indicación..."
+                              className="w-full bg-carbon border border-onyx rounded-xl px-3.5 py-3 text-bone text-sm focus:outline-none focus:border-amber-400 transition-all resize-none h-20 custom-scrollbar"
+                            />
+                          </div>
+
                         {/* Legal */}
                         <div className={cn(
                           "p-4 rounded-xl border transition-colors",
@@ -706,18 +775,102 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                         </div>
 
                         <div className="flex justify-between mt-2">
-                          <button onClick={prevStep} className="px-5 py-2 text-steel hover:text-bone transition-colors text-sm">Volver</button>
+                          <button onClick={prevStep} disabled={isSubmitting} className="disabled:opacity-50 px-5 py-2 text-steel hover:text-bone transition-colors text-sm">Volver</button>
                           <button
-                            onClick={() => {
+                            disabled={isSubmitting}
+                            onClick={async () => {
                               if (!acceptedTerms) { setShowTermsError(true); return; }
-                              alert('¡Reserva confirmada con éxito!');
-                              resetAndClose();
+                              setIsSubmitting(true);
+                              setSubmitError("");
+                              
+                              try {
+                                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                                const res = await fetch('/api/booking', {
+                                  method: 'POST',
+                                  headers: { 
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken || ''
+                                  },
+                                  body: JSON.stringify({
+                                    nombre: contactData.name,
+                                    apellidos: contactData.lastName,
+                                    email: contactData.email,
+                                    telefono: (contactData.phonePrefix === 'Otro' ? contactData.customPrefix : contactData.phonePrefix) + ' ' + contactData.phone,
+                                    fecha: date ? format(date, 'yyyy-MM-dd') : '',
+                                    hora: time,
+                                    servicio: selectedService?.name,
+                                    tipo_servicio: serviceType,
+                                    precio: (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9) ? 'Gratis' : (selectedService?.price?.toString() || 'Variable'),
+                                    observaciones: observations
+                                  })
+                                });
+
+                                const data = await res.json();
+                                if (res.ok && data.success) {
+                                  setSubmitStatus('success');
+                                } else {
+                                  setSubmitStatus('error');
+                                  setSubmitError(data.message || 'Error al procesar la reserva.');
+                                }
+                              } catch (err) {
+                                setSubmitStatus('error');
+                                setSubmitError('Fallo de conexión. Inténtalo de nuevo.');
+                              } finally {
+                                setIsSubmitting(false);
+                              }
                             }}
-                            className="px-7 py-3 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-amber-400/20 text-sm"
+                            className="disabled:opacity-50 disabled:cursor-not-allowed px-7 py-3 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-amber-400/20 text-sm flex items-center gap-2"
                           >
-                            CONFIRMAR CITA
+                            {isSubmitting ? (
+                              <>
+                                <span className="w-4 h-4 border-2 border-void/30 border-t-void rounded-full animate-spin" />
+                                PROCESANDO...
+                              </>
+                            ) : (
+                              'CONFIRMAR CITA'
+                            )}
                           </button>
                         </div>
+                      </div>
+                    )}
+                    
+                    {/* STEP 7: RESULTADO DE LA CITA */}
+                    {submitStatus !== 'idle' && step === 6 && (
+                      <div className="absolute inset-0 bg-[#0a0a0a] z-50 flex flex-col items-center justify-center p-6 text-center rounded-3xl">
+                        {submitStatus === 'success' ? (
+                          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
+                            <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
+                              <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-void">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            </div>
+                            <h3 className="text-2xl font-display font-bold text-bone mb-2">¡Cita confirmada!</h3>
+                            <p className="text-steel mb-8">Te esperamos el {date && format(date, "d 'de' MMMM", { locale: es })} a las {time}h.</p>
+                            <button onClick={resetAndClose} className="px-8 py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                              Cerrar
+                            </button>
+                          </motion.div>
+                        ) : (
+                          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
+                            <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
+                              <div className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center text-white">
+                                <X className="w-8 h-8" strokeWidth={3} />
+                              </div>
+                            </div>
+                            <h3 className="text-2xl font-display font-bold text-bone mb-2">Error al reservar</h3>
+                            <p className="text-red-400 mb-8">{submitError}</p>
+                            <div className="flex gap-4">
+                              <button onClick={() => setSubmitStatus('idle')} className="px-6 py-3 border border-onyx text-bone font-bold rounded-xl hover:bg-white/5 transition-colors">
+                                Intentar de nuevo
+                              </button>
+                              <button onClick={resetAndClose} className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                                Cerrar
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
                       </div>
                     )}
 

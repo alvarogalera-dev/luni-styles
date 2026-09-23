@@ -19,6 +19,42 @@ const faqs = [
 
 export default function Contacto({ meta }: Props) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [formData, setFormData] = useState({ nombre: '', apellidos: '', telefono: '', email: '', asunto: 'Duda General', mensaje: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken || ''
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setSubmitStatus('success');
+        setFormData({ nombre: '', apellidos: '', telefono: '', email: '', asunto: 'Duda General', mensaje: '' });
+      } else {
+        setSubmitStatus('error');
+        setSubmitError(data.message || 'Error al enviar el mensaje.');
+      }
+    } catch (err) {
+      setSubmitStatus('error');
+      setSubmitError('Fallo de conexión. Inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <RootLayout meta={meta}>
@@ -139,14 +175,43 @@ export default function Contacto({ meta }: Props) {
           </div>
 
           {/* Formulario */}
-          <div className="bg-[#111] p-8 md:p-10 rounded-3xl border border-white/5">
+          <div className="bg-[#111] p-8 md:p-10 rounded-3xl border border-white/5 relative overflow-hidden">
             <h2 className="font-display font-bold text-2xl mb-8">Envíanos un mensaje</h2>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            
+            {submitStatus === 'success' ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 bg-[#111] z-10 flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-void">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-2">¡Mensaje enviado!</h3>
+                <p className="text-steel text-sm mb-6">Hemos recibido tu mensaje correctamente. Te responderemos lo antes posible.</p>
+                <button onClick={() => setSubmitStatus('idle')} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors">
+                  Enviar otro mensaje
+                </button>
+              </motion.div>
+            ) : null}
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {submitStatus === 'error' && (
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                  {submitError}
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-steel mb-2">Nombre</label>
-                  <input type="text" maxLength={50} required className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
+                  <input type="text" maxLength={50} required value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
                 </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-steel mb-2">Apellidos</label>
+                  <input type="text" maxLength={50} required value={formData.apellidos} onChange={e => setFormData({...formData, apellidos: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-steel mb-2">Teléfono</label>
                   <input 
@@ -154,19 +219,20 @@ export default function Contacto({ meta }: Props) {
                     pattern="[0-9]{9}" 
                     maxLength={9} 
                     required 
-                    onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
+                    value={formData.telefono}
+                    onChange={(e) => setFormData({...formData, telefono: e.target.value.replace(/[^0-9]/g, '')})}
                     placeholder="Ej. 600000000"
                     className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" 
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs uppercase tracking-wider text-steel mb-2">Correo electrónico</label>
-                <input type="email" maxLength={100} required className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-steel mb-2">Correo electrónico</label>
+                  <input type="email" maxLength={100} required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all" />
+                </div>
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Asunto (Opcional)</label>
-                <select className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
+                <select value={formData.asunto} onChange={e => setFormData({...formData, asunto: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
                   <option>Duda General</option>
                   <option>Sobre La Barbería</option>
                   <option>Sobre Peluquería Infantil</option>
@@ -175,10 +241,15 @@ export default function Contacto({ meta }: Props) {
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-steel mb-2">Mensaje</label>
-                <textarea rows={4} maxLength={500} required className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all resize-none" />
+                <textarea rows={4} maxLength={500} required value={formData.mensaje} onChange={e => setFormData({...formData, mensaje: e.target.value})} className="w-full bg-carbon border border-amber-400/40 rounded-lg px-4 py-3 text-bone focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all resize-none" />
               </div>
-              <button type="submit" className="w-full py-4 bg-bone text-void font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-amber-400 transition-colors">
-                Enviar Mensaje
+              <button disabled={isSubmitting} type="submit" className="disabled:opacity-50 disabled:cursor-not-allowed w-full py-4 bg-bone text-void font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-amber-400 transition-colors flex items-center justify-center gap-2">
+                {isSubmitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-void/30 border-t-void rounded-full animate-spin" />
+                    ENVIANDO...
+                  </>
+                ) : 'Enviar Mensaje'}
               </button>
             </form>
           </div>

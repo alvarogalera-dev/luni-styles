@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/la-barberia', [PageController::class, 'laBarberia'])->name('la-barberia');
@@ -14,3 +16,8 @@ Route::get('/aviso-legal', [PageController::class, 'avisoLegal'])->name('aviso-l
 Route::get('/politica-privacidad', [PageController::class, 'politicaPrivacidad'])->name('politica-privacidad');
 Route::get('/politica-cookies', [PageController::class, 'politicaCookies'])->name('politica-cookies');
 Route::get('/terminos-reserva', [PageController::class, 'terminosReserva'])->name('terminos-reserva');
+
+// API Routes (Using web middleware for CSRF protection in Inertia)
+Route::post('/api/booking', [BookingController::class, 'store'])->name('api.booking.store');
+Route::post('/api/check-loyalty', [BookingController::class, 'checkLoyalty'])->name('api.check-loyalty');
+Route::post('/api/contact', [ContactController::class, 'send'])->name('api.contact.send');
