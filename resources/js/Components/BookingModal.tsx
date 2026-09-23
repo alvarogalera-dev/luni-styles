@@ -515,14 +515,16 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                             <div className="text-xs text-blue-200/90 leading-relaxed space-y-2">
                               <p>
-                                <strong className="text-blue-300 font-bold block mb-0.5">💈 Fidelidad Inteligente (¡Tu 10º corte es GRATIS!)</strong>
-                                Tus citas acumuladas se guardan automáticamente y están vinculadas a los datos que pongas aquí. 
+                                <strong className="text-blue-300 font-bold block mb-0.5 text-sm">💈 Sistema de Fidelidad Inteligente</strong>
+                                Acumulas 1 punto por cada corte. <strong className="text-amber-400">¡Al llegar a 9 puntos, tu 10º corte es GRATIS!</strong>
                               </p>
-                              <p className="opacity-80">
-                                <strong className="text-blue-300">Da igual si te equivocas:</strong> Si alguna vez cambias de teléfono o email, el sistema recordará tus datos antiguos y asociará tus citas si el nombre es similar o coincide algo de tu perfil.
-                              </p>
+                              <div className="space-y-1.5 opacity-90 border-t border-blue-800/50 pt-2 mt-2">
+                                <p className="font-bold text-blue-300">¿Qué pasa si me equivoco de datos al reservar?</p>
+                                <p>✓ <strong className="text-emerald-400">Si mantienes tu Teléfono O tu Email:</strong> Basta con que UNA sola cosa (teléfono o correo) coincida con CUALQUIERA que hayas usado en el pasado. El sistema te reconocerá al instante y sumará tu corte.</p>
+                                <p>✓ <strong className="text-emerald-400">Si cambias ambos (Teléfono y Email):</strong> Nuestro sistema buscará por tu Nombre y Apellidos. Para evitar fraudes, en este caso exigimos una coincidencia ultra estricta del 90%. Escribe tu nombre exactamente igual que en tus citas anteriores para no perder los puntos.</p>
+                              </div>
                               <p className="text-[10px] uppercase tracking-wider font-bold text-blue-400 pt-1">
-                                ¿Dudas? → soporte@lunistyles.com
+                                ¿Dudas sobre tus puntos? → soporte@lunistyles.com
                               </p>
                             </div>
                           </div>

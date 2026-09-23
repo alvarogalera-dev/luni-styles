@@ -55,16 +55,10 @@ class BookingController extends Controller
                     $dbName = strtolower(trim($c->name . ' ' . $c->surname));
                     similar_text($inputName, $dbName, $percent);
                     
-                    // Si coinciden en más de 80%, o si uno contiene exactamente al otro (ej: "Carlos S" vs "Carlos Sanchez")
-                    if ($percent > 80 && $percent > $highestSimilarity) {
+                    // Fuzzy match ultra estricto: debe coincidir al menos al 90%
+                    if ($percent > 90 && $percent > $highestSimilarity) {
                         $highestSimilarity = $percent;
                         $bestMatch = $c;
-                    } elseif (str_contains($dbName, $inputName) || str_contains($inputName, $dbName)) {
-                        // Coincidencia directa de substring
-                        if (100 > $highestSimilarity) {
-                            $highestSimilarity = 100;
-                            $bestMatch = $c;
-                        }
                     }
                 }
 
