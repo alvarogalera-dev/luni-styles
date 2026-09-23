@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -26,29 +27,83 @@ class BookingController extends Controller
         ]);
 
         try {
-            $client = Client::firstOrCreate(
-                ['email' => $validated['email']],
-                [
-                    'name' => $validated['nombre'],
-                    'surname' => $validated['apellidos'],
-                    'phone' => $validated['telefono'],
-                ]
-            );
+            // 1. Identity Resolution (Match Cruzado + Lógica Difusa)
+            $client = Client::where('email', $validated['email'])->first();
 
-            // Update details and increment total
-            $client->update([
-                'name' => $validated['nombre'],
-                'surname' => $validated['apellidos'],
-                'phone' => $validated['telefono'],
-                'total_appointments' => $client->total_appointments + 1,
-            ]);
+            if (!$client) {
+                $client = Client::where('phone', $validated['telefono'])->first();
+            }
+
+            if (!$client) {
+                // Fuzzy match by name and surname
+                $inputName = strtolower(trim($validated['nombre'] . ' ' . $validated['apellidos']));
+                
+                // Fetch all clients to compare (In a huge DB this would be slow, but fine for a local shop)
+                $allClients = Client::all();
+                $bestMatch = null;
+                $highestSimilarity = 0;
+
+                foreach ($allClients as $c) {
+                    $dbName = strtolower(trim($c->name . ' ' . $c->surname));
+                    similar_text($inputName, $dbName, $percent);
+                    
+                    if ($percent > 90 && $percent > $highestSimilarity) {
+                        $highestSimilarity = $percent;
+                        $bestMatch = $c;
+                    }
+                }
+
+                if ($bestMatch) {
+                    $client = $bestMatch;
+                }
+            }
+
+            if (!$client) {
+                $client = Client::create([
+                    'email' => $validated['email'],
+                    'name' => trim($validated['nombre']),
+                    'surname' => trim($validated['apellidos']),
+                    'phone' => trim($validated['telefono']),
+                    'total_appointments' => 1,
+                    'loyalty_points' => 0,
+                    'penalty_flag' => false,
+                ]);
+            } else {
+                $client->update([
+                    'email' => $validated['email'],
+                    'name' => trim($validated['nombre']),
+                    'surname' => trim($validated['apellidos']),
+                    'phone' => trim($validated['telefono']),
+                    'total_appointments' => $client->total_appointments + 1,
+                ]);
+            }
 
             $datetime = Carbon::parse($validated['fecha'] . ' ' . $validated['hora']);
+            
+            // Assign employee based on availability to avoid overlap
+            $duration = $this->getServiceDuration($validated['servicio']);
+            $employeeId = 1;
+            
+            if ($validated['tipo_servicio'] === 'barberia') {
+                $employeeId = $this->assignBarber($validated['fecha'], $validated['hora'], $duration);
+                if (!$employeeId) {
+                    return response()->json(['success' => false, 'message' => 'Lo sentimos, esa hora acaba de ser reservada por otro cliente. Por favor, elige otra hora.'], 400);
+                }
+            } else {
+                // Infantil (Mariely = employee 3)
+                $employeeId = 3; 
+                // Check if she is free
+                if (!$this->isEmployeeFree(3, $validated['fecha'], $validated['hora'], $duration)) {
+                    return response()->json(['success' => false, 'message' => 'Lo sentimos, esa hora acaba de ser reservada. Por favor, elige otra.'], 400);
+                }
+            }
 
             $appointment = Appointment::create([
                 'client_id' => $client->id,
                 'appointment_date' => $datetime,
                 'service_type' => $validated['tipo_servicio'],
+                'service_name' => $validated['servicio'],
+                'employee_id' => $employeeId,
                 'price' => $validated['precio'],
                 'observations' => $validated['observaciones'],
                 'status' => 'pending',
@@ -79,5 +134,89 @@ class BookingController extends Controller
             'loyalty_points' => 0,
             'penalty_flag' => false,
         ]);
+    }
+
+    public function getAvailableSlots(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date',
+            'service_type' => 'required|string', // barberia or peluqueria_infantil
+            'duration' => 'required|integer', // in minutes
+        ]);
+
+        $date = $request->date;
+        $serviceType = $request->service_type;
+        $duration = (int) $request->duration;
+
+        $slots = [
+            '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
+            '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'
+        ];
+
+        $availableSlots = [];
+
+        foreach ($slots as $slot) {
+            if ($serviceType === 'barberia') {
+                if ($this->assignBarber($date, $slot, $duration) !== null) {
+                    $availableSlots[] = $slot;
+                }
+            } else {
+                if ($this->isEmployeeFree(3, $date, $slot, $duration)) {
+                    $availableSlots[] = $slot;
+                }
+            }
+        }
+
+        return response()->json(['available_slots' => $availableSlots]);
+    }
+
+    private function getServiceDuration($serviceName)
+    {
+        // Simplification for the backend logic
+        $durations = [
+            'Corte Normal' => 30,
+            'Corte + Barba' => 60,
+            'Solo Barba' => 30, // Assuming 30 for safety on grid
+            'Corte Infantil' => 45,
+            'Peinados' => 45,
+            'Accesorios' => 30,
+        ];
+
+        return $durations[$serviceName] ?? 30;
+    }
+
+    private function assignBarber($date, $time, $durationMinutes)
+    {
+        // Try Barber 1
+        if ($this->isEmployeeFree(1, $date, $time, $durationMinutes)) return 1;
+        // Try Barber 2
+        if ($this->isEmployeeFree(2, $date, $time, $durationMinutes)) return 2;
+        
+        return null;
+    }
+
+    private function isEmployeeFree($employeeId, $date, $time, $durationMinutes)
+    {
+        $start = Carbon::parse($date . ' ' . $time);
+        $end = $start->copy()->addMinutes($durationMinutes);
+
+        // Check if there are any appointments for this employee that overlap with [start, end)
+        $conflicts = Appointment::where('employee_id', $employeeId)
+            ->whereDate('appointment_date', $date)
+            ->where('status', '!=', 'cancelled')
+            ->get();
+
+        foreach ($conflicts as $appt) {
+            $apptStart = Carbon::parse($appt->appointment_date);
+            $apptDuration = $this->getServiceDuration($appt->service_name);
+            $apptEnd = $apptStart->copy()->addMinutes($apptDuration);
+
+            // Overlap condition: start < apptEnd AND end > apptStart
+            if ($start->lt($apptEnd) && $end->gt($apptStart)) {
+                return false; // conflict found
+            }
+        }
+
+        return true;
     }
 }

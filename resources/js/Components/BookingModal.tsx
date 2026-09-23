@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CreditCard, Scissors, Baby, Calendar as CalendarIcon, Clock, AlertCircle, User } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
-import { format } from 'date-fns';
+import { format, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import 'react-day-picker/dist/style.css';
 import { clsx } from 'clsx';
@@ -104,6 +104,8 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submitError, setSubmitError] = useState("");
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const isEmailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(contactData.email);
   const showEmailErrorRealtime = contactData.email.length > 0 && !isEmailValid;
 
@@ -395,10 +397,38 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           <DayPicker
                             mode="single"
                             selected={date}
-                            onSelect={(d) => { setDate(d); setTime(null); }}
+                            onSelect={async (d) => { 
+                              setDate(d); 
+                              setTime(null); 
+                              if (d) {
+                                setIsLoadingSlots(true);
+                                try {
+                                  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                                  const res = await fetch('/api/available-slots', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '' },
+                                    body: JSON.stringify({
+                                      date: format(d, 'yyyy-MM-dd'),
+                                      service_type: serviceType,
+                                      duration: selectedService?.duration || 30
+                                    })
+                                  });
+                                  const data = await res.json();
+                                  setAvailableSlots(data.available_slots || []);
+                                } catch (e) {
+                                  console.error(e);
+                                  setAvailableSlots([]);
+                                } finally {
+                                  setIsLoadingSlots(false);
+                                }
+                              } else {
+                                setAvailableSlots([]);
+                              }
+                            }}
                             locale={es}
                             disabled={[
                               { before: new Date() },
+                              { after: addMonths(new Date(), 6) },
                               { dayOfWeek: [0, 6] }
                             ]}
                             className="text-sm font-medium text-bone"
@@ -420,22 +450,33 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 </span>
                               </div>
                               {/* 4 cols on mobile, 5 on wider */}
-                              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                                {TIME_SLOTS.map((t) => (
-                                  <button
-                                    key={t}
-                                    onClick={() => setTime(t)}
-                                    className={cn(
-                                      "py-2.5 rounded-lg text-xs font-medium transition-all duration-200 border active:scale-95",
-                                      time === t
-                                        ? "bg-amber-400 text-void border-amber-400"
-                                        : "bg-[#111] text-ash border-onyx hover:border-steel"
-                                    )}
-                                  >
-                                    {t}
-                                  </button>
-                                ))}
-                              </div>
+                              {isLoadingSlots ? (
+                                <div className="flex justify-center items-center py-8">
+                                  <span className="w-6 h-6 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                                  {TIME_SLOTS.map((t) => {
+                                    const isAvailable = availableSlots.includes(t);
+                                    return (
+                                      <button
+                                        key={t}
+                                        disabled={!isAvailable}
+                                        onClick={() => setTime(t)}
+                                        className={cn(
+                                          "py-2.5 rounded-lg text-xs font-medium transition-all duration-200 border",
+                                          isAvailable ? "active:scale-95 cursor-pointer" : "opacity-30 cursor-not-allowed bg-[#0a0a0a] border-transparent text-steel",
+                                          time === t
+                                            ? "bg-amber-400 text-void border-amber-400"
+                                            : (isAvailable ? "bg-[#111] text-ash border-onyx hover:border-steel" : "")
+                                        )}
+                                      >
+                                        {isAvailable ? t : <X className="w-3.5 h-3.5 mx-auto" />}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -457,6 +498,13 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                     {step === 4 && (
                       <div className="space-y-4 text-bone">
                         <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-5">Tus datos</h3>
+                        
+                        <div className="bg-blue-950/40 border border-blue-900/50 rounded-xl p-3.5 mb-5 flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                          <p className="text-xs text-blue-200/80 leading-relaxed">
+                            <strong className="text-blue-300">Tus cortes gratis se asocian a tu Email o Teléfono.</strong> Asegúrate de usar siempre los mismos. Si tienes dudas o te equivocaste, contáctanos a soporte@lunistyles.com o llámanos.
+                          </p>
+                        </div>
                         <form className="space-y-3" onSubmit={(e) => { 
                           e.preventDefault(); 
                           const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -598,7 +646,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           )}>
                             <input type="radio" name="payment" value="local" checked={paymentMethod === 'local'} onChange={() => setPaymentMethod('local')} className="w-4 h-4 accent-amber-400" />
                             <div className="flex-1">
-                              <p className="font-bold text-bone text-sm">Pago en el local</p>
+                              <p className="font-bold text-bone text-sm">Pago (en el local)</p>
                               <p className="text-xs text-steel">{isKids ? 'Efectivo tras el servicio' : 'Efectivo o Tarjeta tras el servicio'}</p>
                             </div>
                           </label>
@@ -610,7 +658,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <input type="radio" name="payment" value="bizum" checked={paymentMethod === 'bizum'} onChange={() => setPaymentMethod('bizum')} disabled={isKids} className={cn("w-4 h-4", !isKids && "accent-amber-400")} />
                             <div className="flex-1">
                               <p className="font-bold text-bone text-sm flex items-center gap-2">
-                                Bizum
+                                Bizum (en el local)
                                 {isKids && <span className="bg-amber-400 text-void text-[9px] uppercase font-bold px-1.5 py-0.5 rounded">Próximamente</span>}
                               </p>
                               {isKids ? (
@@ -701,7 +749,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             <div>
                               <p className="text-xs font-bold">Forma de pago</p>
                               <p className="text-[10px] text-steel capitalize">
-                                {paymentMethod === 'local' ? (isKids ? 'Pago en el local (Efectivo)' : 'Pago en el local (Efectivo/Tarjeta)') : paymentMethod}
+                                {paymentMethod === 'local' ? (isKids ? 'Pago (en el local - Efectivo)' : 'Pago (en el local - Efectivo/Tarjeta)') : (paymentMethod === 'bizum' ? 'Bizum (en el local)' : paymentMethod)}
                               </p>
                             </div>
                           </div>

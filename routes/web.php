@@ -20,4 +20,5 @@ Route::get('/terminos-reserva', [PageController::class, 'terminosReserva'])->nam
 // API Routes (Using web middleware for CSRF protection in Inertia)
 Route::post('/api/booking', [BookingController::class, 'store'])->name('api.booking.store');
 Route::post('/api/check-loyalty', [BookingController::class, 'checkLoyalty'])->name('api.check-loyalty');
+Route::post('/api/available-slots', [BookingController::class, 'getAvailableSlots'])->name('api.available-slots');
 Route::post('/api/contact', [ContactController::class, 'send'])->name('api.contact.send');
