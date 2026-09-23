@@ -28,8 +28,9 @@ class BookingController extends Controller
 
         try {
             // 1. Identity Resolution (Match Histórico Cruzado + Lógica Difusa)
-            $inputEmail = $validated['email'];
-            $inputPhone = $validated['telefono'];
+            $inputEmail = strtolower(trim($validated['email']));
+            $inputPhone = trim($validated['telefono']);
+            $cleanPhone = str_replace(' ', '', $inputPhone);
             $inputName = strtolower(trim($validated['nombre'] . ' ' . $validated['apellidos']));
 
             // Buscar por email principal o en el historial de emails
@@ -37,10 +38,10 @@ class BookingController extends Controller
                 ->orWhere('known_emails', 'LIKE', '%' . $inputEmail . '%')
                 ->first();
 
-            // Buscar por teléfono principal o en el historial de teléfonos
+            // Buscar por teléfono principal o en el historial de teléfonos (ignorando espacios)
             if (!$client) {
-                $client = Client::where('phone', $inputPhone)
-                    ->orWhere('known_phones', 'LIKE', '%' . $inputPhone . '%')
+                $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)
+                    ->orWhere(DB::raw("REPLACE(known_phones, ' ', '')"), 'LIKE', '%' . $cleanPhone . '%')
                     ->first();
             }
 
@@ -54,9 +55,16 @@ class BookingController extends Controller
                     $dbName = strtolower(trim($c->name . ' ' . $c->surname));
                     similar_text($inputName, $dbName, $percent);
                     
-                    if ($percent > 90 && $percent > $highestSimilarity) {
+                    // Si coinciden en más de 80%, o si uno contiene exactamente al otro (ej: "Carlos S" vs "Carlos Sanchez")
+                    if ($percent > 80 && $percent > $highestSimilarity) {
                         $highestSimilarity = $percent;
                         $bestMatch = $c;
+                    } elseif (str_contains($dbName, $inputName) || str_contains($inputName, $dbName)) {
+                        // Coincidencia directa de substring
+                        if (100 > $highestSimilarity) {
+                            $highestSimilarity = 100;
+                            $bestMatch = $c;
+                        }
                     }
                 }
 
