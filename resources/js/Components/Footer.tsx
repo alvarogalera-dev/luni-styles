@@ -90,15 +90,39 @@ export default function Footer() {
               </li>
               <li>
                 <span className="text-ash font-bold text-xs uppercase tracking-wider block mb-1">Barbería</span>
-                <a href="tel:+34623599890" className="text-steel text-sm hover:text-amber-400 transition-colors">
-                  +34 623 59 98 90
-                </a>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <a href="tel:+34623599890" className="text-steel text-sm hover:text-amber-400 transition-colors">
+                    +34 623 59 98 90
+                  </a>
+                  <div className="flex items-center gap-1.5">
+                    <a href="https://www.instagram.com/glow.barber_ofi" target="_blank" rel="noopener noreferrer" title="Instagram Barbería"
+                      className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-amber-400 hover:text-amber-400 transition-all">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@glow.barber_ofi" target="_blank" rel="noopener noreferrer" title="TikTok Barbería"
+                      className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-amber-400 hover:text-amber-400 transition-all">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                    </a>
+                  </div>
+                </div>
               </li>
               <li className="pt-2">
                 <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-1">Peluquería Infantil</span>
-                <a href="tel:+34675372813" className="text-steel text-sm hover:text-amber-400 transition-colors">
-                  +34 675 37 28 13
-                </a>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <a href="tel:+34675372813" className="text-steel text-sm hover:text-emerald-400 transition-colors">
+                    +34 675 37 28 13
+                  </a>
+                  <div className="flex items-center gap-1.5">
+                    <a href="https://www.instagram.com/luni_styles/" target="_blank" rel="noopener noreferrer" title="Instagram Peluquería Infantil"
+                      className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-emerald-400 hover:text-emerald-400 transition-all">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@luni_styles" target="_blank" rel="noopener noreferrer" title="TikTok Peluquería"
+                      className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-emerald-400 hover:text-emerald-400 transition-all">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                    </a>
+                  </div>
+                </div>
               </li>
               <li className="pt-2">
                 <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block mb-1">Correo Electrónico</span>

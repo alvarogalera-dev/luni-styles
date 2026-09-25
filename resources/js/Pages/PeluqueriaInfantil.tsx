@@ -96,39 +96,6 @@ export default function PeluqueriaInfantil({ meta }: Props) {
           </div>
         </section>
 
-        {/* ── La Peluquera ── */}
-        <section className="py-20 md:py-24 px-4 md:px-10 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-12 md:mb-16">
-              <p className="text-emerald-500 font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">El Equipo</p>
-              <h2 className="font-display font-black text-4xl md:text-6xl tracking-tighter text-slate-900">La Peluquera.</h2>
-            </div>
-
-            <div ref={teamRef} className="grid grid-cols-1 gap-4 md:gap-6 max-w-sm">
-              {team.map((member, i) => (
-                <motion.div
-                  key={member.name}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={teamInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.76, 0, 0.24, 1] }}
-                  className="group flex flex-col items-center text-center gap-4 bg-white rounded-2xl border border-emerald-400 p-6 hover:border-emerald-500 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-emerald-100/50"
-                >
-                  {/* Avatar */}
-                  <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 bg-emerald-50 rounded-full flex items-center justify-center font-display font-black text-4xl md:text-5xl text-emerald-200 group-hover:text-emerald-400/50 transition-colors border border-emerald-100">
-                    {member.initial}
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-xl md:text-2xl text-slate-900 tracking-tight">{member.name}</h3>
-                    <p className="text-emerald-600 font-bold text-[10px] tracking-widest uppercase mt-1">{member.role}</p>
-                    <p className="text-slate-600 text-xs mt-2 tracking-wide font-medium">{member.specialty}</p>
-                    <p className="text-slate-500 text-xs mt-1">{member.years}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── El Catálogo ── */}
         <section className="py-20 md:py-28 px-4 md:px-10 bg-white border-t border-emerald-100">
           <div className="max-w-7xl mx-auto">
@@ -139,7 +106,6 @@ export default function PeluqueriaInfantil({ meta }: Props) {
                 ¿No sabéis qué hacerle? Aquí os dejamos algunas de nuestras creaciones para que podáis traerlas de referencia. ¡Nuestras peques siempre salen guapísimas!
               </p>
             </div>
-
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
               {[1,2,3,4,5,6,7,8,9,10,11,12].map((n) => (
                 <div
@@ -161,12 +127,68 @@ export default function PeluqueriaInfantil({ meta }: Props) {
                 </div>
               ))}
             </div>
-
             <div className="text-center mt-10">
               <p className="text-slate-400 text-xs md:text-sm">
                 Trae cualquiera de estas fotos como referencia o dínos en qué estiléis pensando y lo hacemos realidad 😊
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* ── La Peluquera ── */}
+        <section className="py-20 md:py-24 px-4 md:px-10 bg-white border-t border-emerald-100">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-12 md:mb-16">
+              <p className="text-emerald-500 font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">El Equipo</p>
+              <h2 className="font-display font-black text-4xl md:text-6xl tracking-tighter text-slate-900">La Peluquera.</h2>
+            </div>
+            <div ref={teamRef} className="grid grid-cols-1 gap-4 md:gap-6 max-w-sm">
+              {team.map((member, i) => (
+                <motion.div
+                  key={member.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={teamInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.76, 0, 0.24, 1] }}
+                  className="group flex flex-col items-center text-center gap-4 bg-white rounded-2xl border border-emerald-400 p-6 hover:border-emerald-500 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-emerald-100/50"
+                >
+                  <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 bg-emerald-50 rounded-full flex items-center justify-center font-display font-black text-4xl md:text-5xl text-emerald-200 group-hover:text-emerald-400/50 transition-colors border border-emerald-100">
+                    {member.initial}
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-xl md:text-2xl text-slate-900 tracking-tight">{member.name}</h3>
+                    <p className="text-emerald-600 font-bold text-[10px] tracking-widest uppercase mt-1">{member.role}</p>
+                    <p className="text-slate-600 text-xs mt-2 tracking-wide font-medium">{member.specialty}</p>
+                    <p className="text-slate-500 text-xs mt-1">{member.years}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── El Local (galería carrusel) ── */}
+        <section className="py-20 md:py-24 overflow-hidden border-t border-emerald-100 bg-emerald-50/30">
+          <div className="max-w-7xl mx-auto px-4 md:px-10 mb-12 text-center">
+            <h2 className="font-display font-black text-4xl md:text-5xl text-slate-900 tracking-tighter">El Local.</h2>
+            <p className="text-slate-500 mt-4 text-sm">Nuestro segundo hogar.</p>
+          </div>
+          <div className="relative w-full overflow-hidden">
+            <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-emerald-50/30 to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-emerald-50/30 to-transparent z-10 pointer-events-none" />
+            <motion.div
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
+              className="flex gap-4 md:gap-6 w-max"
+            >
+              {[...gallery, ...gallery].map((img, i) => (
+                <div
+                  key={i}
+                  className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
+                >
+                  <img src={img} alt="Galería" className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </motion.div>
           </div>
         </section>
 

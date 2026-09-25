@@ -27,54 +27,85 @@ export default function Home({ meta }: Props) {
       {/* ── Hero con foto de inicio ── */}
       <div ref={containerRef} className="relative h-screen overflow-hidden">
         <motion.div style={{ y, opacity }} className="absolute inset-0 w-full h-full">
-          {/* Foto principal de inicio */}
           <img
             src="/images/inicio.jpg"
             alt="Luni Styles - Barbería y Peluquería Infantil"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          {/* Overlay oscuro suave para que el texto sea legible sin quitar la foto */}
-          <div className="absolute inset-0 bg-black/45" />
+          {/* Gradiente split: más oscuro a la izquierda (barbería) más claro a la derecha (infantil) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/50" />
         </motion.div>
 
-        {/* ── Hero Content ── */}
-        <div className="relative z-20 flex flex-col items-center justify-center h-full px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
-            className="space-y-4 md:space-y-6 max-w-4xl mx-4"
-          >
-            <p className="text-amber-400 font-bold tracking-[0.3em] uppercase text-[10px] md:text-sm drop-shadow-md">
-              Tradición y Pasión
-            </p>
-            <h1 className="font-display font-black text-4xl md:text-7xl lg:text-8xl tracking-tighter text-white drop-shadow-2xl leading-[1.1]">
-              <span className="text-white">DOS</span> MUNDOS.<br />
-              <span className="text-emerald-400">UNA</span> <span className="text-amber-400">FAMILIA</span>.
-            </h1>
-            <p className="text-white/90 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md">
-              Un proyecto nacido del amor por nuestro trabajo. Una peluquería infantil y una barbería clásica, unidas en un mismo espacio en Alcantarilla, Murcia.
-            </p>
+        {/* Contenido dividido - NO bloquea el fondo */}
+        <div className="relative z-20 h-full flex">
 
-            {/* Botones de navegación */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 md:pt-6">
+          {/* IZQUIERDA: Barbería */}
+          <div className="flex-1 flex flex-col items-start justify-end pb-12 px-6 md:px-12 lg:px-16">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.9, ease: 'easeOut', delay: 0.2 }}
+              className="space-y-3 md:space-y-4 max-w-xs md:max-w-sm"
+            >
+              <p className="text-amber-400 font-bold tracking-[0.3em] uppercase text-[9px] md:text-[11px]">Barbería Masculina</p>
+              <h1 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter text-white drop-shadow-xl leading-[1.05]">
+                La<br /><span className="text-amber-400">Barbería</span>
+              </h1>
+              <p className="text-white/75 text-xs md:text-sm leading-relaxed hidden sm:block">
+                Cortes, degradados y arreglo de barba en Alcantarilla.
+              </p>
               <Link
                 href="/la-barberia"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-amber-400 border-2 border-white/40 hover:border-amber-400 rounded-full text-white hover:text-void font-bold tracking-widest uppercase text-xs md:text-sm transition-all duration-300 backdrop-blur-sm shadow-xl hover:shadow-amber-400/30 hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 px-5 py-3 md:px-7 md:py-3.5 bg-amber-400 hover:bg-amber-300 text-void font-bold tracking-widest uppercase text-[10px] md:text-xs rounded-full transition-all duration-300 shadow-xl shadow-amber-400/30 hover:scale-105 active:scale-95"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg>
-                La Barbería
+                Entrar →
               </Link>
+            </motion.div>
+          </div>
+
+          {/* Separador vertical sutil */}
+          <div className="hidden md:flex w-px bg-white/10 self-stretch my-16" />
+
+          {/* DERECHA: Peluquería Infantil */}
+          <div className="flex-1 flex flex-col items-end justify-end pb-12 px-6 md:px-12 lg:px-16 text-right">
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.9, ease: 'easeOut', delay: 0.35 }}
+              className="space-y-3 md:space-y-4 max-w-xs md:max-w-sm"
+            >
+              <p className="text-emerald-400 font-bold tracking-[0.3em] uppercase text-[9px] md:text-[11px]">Peluquería Infantil</p>
+              <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter text-white drop-shadow-xl leading-[1.05]">
+                Luni<br /><span className="text-emerald-400">Styles</span>
+              </h2>
+              <p className="text-white/75 text-xs md:text-sm leading-relaxed hidden sm:block">
+                Cortes infantiles con pasión y cuidado, para las más peques.
+              </p>
               <Link
                 href="/peluqueria-infantil"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-emerald-500 border-2 border-white/40 hover:border-emerald-500 rounded-full text-white hover:text-white font-bold tracking-widest uppercase text-xs md:text-sm transition-all duration-300 backdrop-blur-sm shadow-xl hover:shadow-emerald-500/30 hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 px-5 py-3 md:px-7 md:py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold tracking-widest uppercase text-[10px] md:text-xs rounded-full transition-all duration-300 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                Peluquería Infantil
+                Entrar →
               </Link>
-            </div>
+            </motion.div>
+          </div>
+
+        </div>
+
+        {/* Título central pequeño - visible solo en móvil arriba */}
+        <div className="absolute top-24 left-0 right-0 text-center z-20 px-4 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            <p className="text-white/60 font-bold tracking-[0.2em] uppercase text-[9px]">Tradición y Pasión</p>
+            <h1 className="font-display font-black text-xl md:text-3xl text-white drop-shadow-xl mt-1">
+              DOS MUNDOS. <span className="text-emerald-400">UNA</span> <span className="text-amber-400">FAMILIA</span>.
+            </h1>
           </motion.div>
         </div>
+
       </div>
 
       {/* ── Intro Text (White Block) ── */}
