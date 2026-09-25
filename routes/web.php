@@ -22,3 +22,22 @@ Route::post('/api/booking', [BookingController::class, 'store'])->name('api.book
 Route::post('/api/check-loyalty', [BookingController::class, 'checkLoyalty'])->name('api.check-loyalty');
 Route::post('/api/available-slots', [BookingController::class, 'getAvailableSlots'])->name('api.available-slots');
 Route::post('/api/contact', [ContactController::class, 'send'])->name('api.contact.send');
+
+// Panel Routes
+use App\Http\Controllers\PanelController;
+
+Route::get('/panel', function () {
+    return redirect('/panel/login');
+});
+
+Route::get('/panel/login', [PanelController::class, 'showLogin'])->name('login');
+Route::post('/panel/login', [PanelController::class, 'login']);
+
+Route::middleware('auth')->group(function () {
+    Route::post('/panel/logout', [PanelController::class, 'logout'])->name('logout');
+    Route::get('/panel/citas', [PanelController::class, 'dashboard'])->name('panel.citas');
+    Route::put('/panel/citas/{id}/status', [PanelController::class, 'updateStatus']);
+    Route::put('/panel/citas/{id}', [PanelController::class, 'updateAppointment']);
+    Route::delete('/panel/citas/{id}', [PanelController::class, 'deleteAppointment']);
+    Route::get('/panel/estadisticas', [PanelController::class, 'statistics'])->name('panel.estadisticas');
+});
