@@ -1,4 +1,4 @@
-import RootLayout from '@/Layouts/RootLayout';
+﻿import RootLayout from '@/Layouts/RootLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Mail, Phone, Plus, Minus, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
@@ -135,20 +135,43 @@ export default function Contacto({ meta }: Props) {
                   <div className="space-y-2">
                     <div>
                       <span className="text-ash font-bold text-xs uppercase tracking-wider block mb-0.5">Barbería</span>
-                      <a href="tel:+34623599890" className="text-steel hover:text-amber-400 transition-colors">
-                        +34 623 59 98 90
-                      </a>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <a href="tel:+34623599890" className="text-steel hover:text-amber-400 transition-colors">
+                          +34 623 59 98 90
+                        </a>
+                        <div className="flex items-center gap-1.5">
+                          <a href="https://www.instagram.com/glow.barber_ofi" target="_blank" rel="noopener noreferrer" title="Instagram Barbería"
+                            className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-amber-400 hover:text-amber-400 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                          </a>
+                          <a href="https://www.tiktok.com/@glow.barber_ofi" target="_blank" rel="noopener noreferrer" title="TikTok Barbería"
+                            className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-amber-400 hover:text-amber-400 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-0.5">Peluquería Infantil</span>
-                      <a href="tel:+34675372813" className="text-steel hover:text-emerald-400 transition-colors">
-                        +34 675 37 28 13
-                      </a>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <a href="tel:+34675372813" className="text-steel hover:text-emerald-400 transition-colors">
+                          +34 675 37 28 13
+                        </a>
+                        <div className="flex items-center gap-1.5">
+                          <a href="https://www.instagram.com/luni_styles/" target="_blank" rel="noopener noreferrer" title="Instagram Peluquería Infantil"
+                            className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-emerald-400 hover:text-emerald-400 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                          </a>
+                          <a href="https://www.tiktok.com/@luni_styles" target="_blank" rel="noopener noreferrer" title="TikTok Peluquería"
+                            className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-steel hover:border-emerald-400 hover:text-emerald-400 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-
               {/* Horario */}
               <div className="flex gap-4 items-start">
                 <div className="text-amber-400 shrink-0 mt-1">
@@ -160,52 +183,18 @@ export default function Contacto({ meta }: Props) {
                     {[
                       { day: 'Lunes' },
                       { day: 'Martes' },
-                      { day: 'Miércoles' },
+                      { day: 'Mi\u00e9rcoles' },
                       { day: 'Jueves' },
                       { day: 'Viernes' },
                     ].map((d) => (
                       <p key={d.day} className="text-steel text-sm">
-                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 10:00 – 14:00 | 17:00 – 20:00
+                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 10:00 \u2013 14:00 | 17:00 \u2013 20:00
                       </p>
                     ))}
                     <p className="text-steel text-sm">
-                      <span className="text-steel/50 font-bold inline-block w-24">Sáb – Dom:</span> Cerrado
+                      <span className="text-steel/50 font-bold inline-block w-24">S\u00e1b \u2013 Dom:</span> Cerrado
                     </p>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Socials */}
-            <div>
-              <p className="font-bold mb-4">Síguenos</p>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-ash font-bold text-[10px] uppercase tracking-wider mb-2">Instagram Barbería</p>
-                  <a href="https://www.instagram.com/glow.barber_ofi" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 group">
-                    <span className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-bone group-hover:bg-amber-400 group-hover:text-void transition-colors">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    </span>
-                    <span className="text-steel text-sm group-hover:text-amber-400 transition-colors">@glow.barber_ofi</span>
-                  </a>
-                </div>
-                <div>
-                  <p className="text-emerald-400 font-bold text-[10px] uppercase tracking-wider mb-2">Instagram Peluquería Infantil</p>
-                  <a href="https://www.instagram.com/luni_styles/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 group">
-                    <span className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-bone group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    </span>
-                    <span className="text-steel text-sm group-hover:text-emerald-400 transition-colors">@luni_styles</span>
-                  </a>
-                </div>
-                <div>
-                  <p className="text-ash font-bold text-[10px] uppercase tracking-wider mb-2">TikTok</p>
-                  <a href="https://www.tiktok.com/@luni_styles" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 group">
-                    <span className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-bone group-hover:bg-amber-400 group-hover:text-void transition-colors">
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
-                    </span>
-                    <span className="text-steel text-sm group-hover:text-amber-400 transition-colors">@luni_styles</span>
-                  </a>
                 </div>
               </div>
             </div>
@@ -416,3 +405,4 @@ export default function Contacto({ meta }: Props) {
     </RootLayout>
   );
 }
+

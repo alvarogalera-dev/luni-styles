@@ -131,51 +131,6 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-            {/* Social */}
-            <div className="mt-6 space-y-3">
-              <div>
-                <p className="text-ash font-bold text-[10px] uppercase tracking-wider mb-2">Instagram Barbería</p>
-                <a
-                  href="https://www.instagram.com/glow.barber_ofi"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-steel text-xs hover:text-amber-400 transition-colors group"
-                >
-                  <span className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center group-hover:border-amber-400 group-hover:text-amber-400 transition-all shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                  </span>
-                  @glow.barber_ofi
-                </a>
-              </div>
-              <div>
-                <p className="text-emerald-400 font-bold text-[10px] uppercase tracking-wider mb-2">Instagram Peluquería Infantil</p>
-                <a
-                  href="https://www.instagram.com/luni_styles/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-steel text-xs hover:text-emerald-400 transition-colors group"
-                >
-                  <span className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center group-hover:border-emerald-400 group-hover:text-emerald-400 transition-all shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                  </span>
-                  @luni_styles
-                </a>
-              </div>
-              <div>
-                <p className="text-ash font-bold text-[10px] uppercase tracking-wider mb-2">TikTok</p>
-                <a
-                  href="https://www.tiktok.com/@luni_styles"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-steel text-xs hover:text-amber-400 transition-colors group"
-                >
-                  <span className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center group-hover:border-amber-400 group-hover:text-amber-400 transition-all shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-                  </span>
-                  @luni_styles
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 
