@@ -168,15 +168,20 @@ class PanelController extends Controller
         return back();
     }
 
-    public function statistics()
+    public function statistics($type = null)
     {
         $user = Auth::user();
         
         $query = Appointment::where('status', 'completed');
-        if ($user->role === 'barber') {
+        
+        $statType = 'general';
+        
+        if ($user->role === 'barber' || $type === 'barberia') {
             $query->where('service_type', 'barberia');
-        } elseif ($user->role === 'hairdresser') {
+            $statType = 'barberia';
+        } elseif ($user->role === 'hairdresser' || $type === 'peluqueria_infantil') {
             $query->where('service_type', 'peluqueria_infantil');
+            $statType = 'peluqueria_infantil';
         }
         
         // 1. Cortes por día, semana, mes, año
@@ -227,6 +232,7 @@ class PanelController extends Controller
 
         return Inertia::render('Panel/Statistics', [
             'stats' => [
+                'type' => $statType,
                 'cortes' => [
                     'hoy' => $cortesHoy,
                     'semana' => $cortesSemana,

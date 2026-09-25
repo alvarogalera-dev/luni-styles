@@ -48,7 +48,7 @@ export default function PanelLayout({ children, title, user }: Props) {
             <Link
                 href="/panel/citas"
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                    url.startsWith('/panel/citas')
+                    url === '/panel/citas'
                         ? 'bg-white/10 text-white font-bold'
                         : 'text-steel hover:text-white hover:bg-white/5'
                 }`}
@@ -56,17 +56,45 @@ export default function PanelLayout({ children, title, user }: Props) {
                 <Calendar className="w-5 h-5" />
                 <span>Citas</span>
             </Link>
-            <Link
-                href="/panel/estadisticas"
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                    url.startsWith('/panel/estadisticas')
-                        ? 'bg-white/10 text-white font-bold'
-                        : 'text-steel hover:text-white hover:bg-white/5'
-                }`}
-            >
-                <BarChart3 className="w-5 h-5" />
-                <span>Estadísticas</span>
-            </Link>
+            
+            {user.role === 'superadmin' ? (
+                <>
+                    <Link
+                        href="/panel/estadisticas/barberia"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.includes('barberia')
+                                ? 'bg-amber-400/10 text-amber-400 font-bold border border-amber-400/20'
+                                : 'text-steel hover:text-amber-400 hover:bg-amber-400/5'
+                        }`}
+                    >
+                        <BarChart3 className="w-5 h-5" />
+                        <span className="text-sm">Estadísticas (Barbería)</span>
+                    </Link>
+                    <Link
+                        href="/panel/estadisticas/peluqueria_infantil"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.includes('peluqueria_infantil')
+                                ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20'
+                                : 'text-steel hover:text-emerald-400 hover:bg-emerald-500/5'
+                        }`}
+                    >
+                        <BarChart3 className="w-5 h-5" />
+                        <span className="text-sm">Estadísticas (Infantil)</span>
+                    </Link>
+                </>
+            ) : (
+                <Link
+                    href="/panel/estadisticas"
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                        url.startsWith('/panel/estadisticas')
+                            ? 'bg-white/10 text-white font-bold'
+                            : 'text-steel hover:text-white hover:bg-white/5'
+                    }`}
+                >
+                    <BarChart3 className="w-5 h-5" />
+                    <span>Estadísticas</span>
+                </Link>
+            )}
         </>
     );
 

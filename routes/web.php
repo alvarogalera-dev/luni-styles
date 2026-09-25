@@ -39,5 +39,5 @@ Route::middleware('auth')->group(function () {
     Route::put('/panel/citas/{id}/status', [PanelController::class, 'updateStatus']);
     Route::put('/panel/citas/{id}', [PanelController::class, 'updateAppointment']);
     Route::delete('/panel/citas/{id}', [PanelController::class, 'deleteAppointment']);
-    Route::get('/panel/estadisticas', [PanelController::class, 'statistics'])->name('panel.estadisticas');
+    Route::get('/panel/estadisticas/{type?}', [PanelController::class, 'statistics'])->name('panel.estadisticas');
 });
