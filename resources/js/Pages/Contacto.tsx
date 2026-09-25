@@ -179,13 +179,34 @@ export default function Contacto({ meta }: Props) {
             {/* Socials */}
             <div>
               <p className="font-bold mb-4">Síguenos</p>
-              <div className="flex gap-4">
-                <a href="https://www.instagram.com/luni_styles/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-carbon flex items-center justify-center text-bone hover:bg-amber-400 hover:text-void transition-colors">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                </a>
-                <a href="https://www.tiktok.com/@luni_styles" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-carbon flex items-center justify-center text-bone hover:bg-amber-400 hover:text-void transition-colors">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
-                </a>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-ash font-bold text-[10px] uppercase tracking-wider mb-2">Instagram Barbería</p>
+                  <a href="https://www.instagram.com/glow.barber_ofi" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 group">
+                    <span className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-bone group-hover:bg-amber-400 group-hover:text-void transition-colors">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </span>
+                    <span className="text-steel text-sm group-hover:text-amber-400 transition-colors">@glow.barber_ofi</span>
+                  </a>
+                </div>
+                <div>
+                  <p className="text-emerald-400 font-bold text-[10px] uppercase tracking-wider mb-2">Instagram Peluquería Infantil</p>
+                  <a href="https://www.instagram.com/luni_styles/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 group">
+                    <span className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-bone group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </span>
+                    <span className="text-steel text-sm group-hover:text-emerald-400 transition-colors">@luni_styles</span>
+                  </a>
+                </div>
+                <div>
+                  <p className="text-ash font-bold text-[10px] uppercase tracking-wider mb-2">TikTok</p>
+                  <a href="https://www.tiktok.com/@luni_styles" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 group">
+                    <span className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-bone group-hover:bg-amber-400 group-hover:text-void transition-colors">
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                    </span>
+                    <span className="text-steel text-sm group-hover:text-amber-400 transition-colors">@luni_styles</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

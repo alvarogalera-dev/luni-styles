@@ -129,33 +129,44 @@ export default function PeluqueriaInfantil({ meta }: Props) {
           </div>
         </section>
 
-        {/* ── Galería (Carrusel animado como La Barbería) ── */}
-        <section className="py-20 md:py-24 overflow-hidden border-t border-emerald-100 bg-emerald-50/30">
-          <div className="max-w-7xl mx-auto px-4 md:px-10 mb-12 text-center">
-            <h2 className="font-display font-black text-4xl md:text-5xl text-slate-900 tracking-tighter">El Local.</h2>
-            <p className="text-slate-500 mt-4 text-sm">Nuestro segundo hogar.</p>
-          </div>
+        {/* ── El Catálogo ── */}
+        <section className="py-20 md:py-28 px-4 md:px-10 bg-white border-t border-emerald-100">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <p className="text-emerald-500 font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">Inspiración</p>
+              <h2 className="font-display font-black text-4xl md:text-6xl tracking-tighter text-slate-900 mb-4">El Catálogo.</h2>
+              <p className="text-slate-500 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+                ¿No sabéis qué hacerle? Aquí os dejamos algunas de nuestras creaciones para que podáis traerlas de referencia. ¡Nuestras peques siempre salen guapísimas!
+              </p>
+            </div>
 
-          {/* Marquee infinito */}
-          <div className="relative w-full overflow-hidden">
-            {/* Sombra fundido bordes */}
-            <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-emerald-50/30 to-transparent z-10 pointer-events-none" />
-            <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-emerald-50/30 to-transparent z-10 pointer-events-none" />
-
-            <motion.div
-              animate={{ x: ['0%', '-50%'] }}
-              transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
-              className="flex gap-4 md:gap-6 w-max"
-            >
-              {[...gallery, ...gallery].map((img, i) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+              {[1,2,3,4,5,6,7,8,9,10,11,12].map((n) => (
                 <div
-                  key={i}
-                  className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
+                  key={n}
+                  className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500"
                 >
-                  <img src={img} alt="Galería" className="w-full h-full object-cover" loading="lazy" />
+                  <img
+                    src={`/images/catalogo/${n}.jpg`}
+                    alt={`Peinado infantil ${n}`}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="bg-white/90 backdrop-blur-sm text-emerald-700 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
+                      Referencia #{n}
+                    </span>
+                  </div>
                 </div>
               ))}
-            </motion.div>
+            </div>
+
+            <div className="text-center mt-10">
+              <p className="text-slate-400 text-xs md:text-sm">
+                Trae cualquiera de estas fotos como referencia o dínos en qué estiléis pensando y lo hacemos realidad 😊
+              </p>
+            </div>
           </div>
         </section>
 

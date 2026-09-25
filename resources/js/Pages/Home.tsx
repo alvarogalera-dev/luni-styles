@@ -24,54 +24,57 @@ export default function Home({ meta }: Props) {
 
   return (
     <RootLayout meta={meta}>
-      {/* ── Hero Video Background (Light & Dark Mix) ── */}
-      <div ref={containerRef} className="relative h-screen overflow-hidden bg-void">
+      {/* ── Hero con foto de inicio ── */}
+      <div ref={containerRef} className="relative h-screen overflow-hidden">
         <motion.div style={{ y, opacity }} className="absolute inset-0 w-full h-full">
-          {/* Split background fallback */}
-          <div className="absolute inset-0 flex">
-             <div className="w-1/2 h-full bg-carbon" />
-             <div className="w-1/2 h-full bg-white" />
-          </div>
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-luminosity"
-          >
-            {/* Video abstracto elegante */}
-            <source src="https://cdn.pixabay.com/video/2015/10/24/1109-143167194_large.mp4" type="video/mp4" />
-          </video>
-          {/* Degradado sobre el video: oscuro a la izquierda, transición a blanco, terminando en verde claro (KIDS) a la derecha */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-white to-emerald-100/90 mix-blend-multiply opacity-80" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-emerald-50/80" />
+          {/* Foto principal de inicio */}
+          <img
+            src="/images/inicio.jpg"
+            alt="Luni Styles - Barbería y Peluquería Infantil"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          {/* Overlay oscuro suave para que el texto sea legible sin quitar la foto */}
+          <div className="absolute inset-0 bg-black/45" />
         </motion.div>
 
-        {/* ── Hero Content (card blocks links below it via pointer-events) ── */}
-        <div className="relative z-[20] flex flex-col items-center justify-center h-full px-4 text-center mt-8 md:mt-0 pointer-events-none">
+        {/* ── Hero Content ── */}
+        <div className="relative z-20 flex flex-col items-center justify-center h-full px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
-            className="pointer-events-auto space-y-4 md:space-y-6 max-w-4xl bg-black/40 backdrop-blur-md p-6 md:p-16 rounded-3xl border border-white/20 shadow-2xl mx-4"
+            className="space-y-4 md:space-y-6 max-w-4xl mx-4"
           >
             <p className="text-amber-400 font-bold tracking-[0.3em] uppercase text-[10px] md:text-sm drop-shadow-md">
               Tradición y Pasión
             </p>
-            <h1 className="font-display font-black text-4xl md:text-7xl lg:text-8xl tracking-tighter text-bone drop-shadow-2xl leading-[1.1]">
+            <h1 className="font-display font-black text-4xl md:text-7xl lg:text-8xl tracking-tighter text-white drop-shadow-2xl leading-[1.1]">
               <span className="text-white">DOS</span> MUNDOS.<br />
               <span className="text-emerald-400">UNA</span> <span className="text-amber-400">FAMILIA</span>.
             </h1>
-            <p className="text-white/90 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+            <p className="text-white/90 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md">
               Un proyecto nacido del amor por nuestro trabajo. Una peluquería infantil y una barbería clásica, unidas en un mismo espacio en Alcantarilla, Murcia.
             </p>
+
+            {/* Botones de navegación */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 md:pt-6">
+              <Link
+                href="/la-barberia"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-amber-400 border-2 border-white/40 hover:border-amber-400 rounded-full text-white hover:text-void font-bold tracking-widest uppercase text-xs md:text-sm transition-all duration-300 backdrop-blur-sm shadow-xl hover:shadow-amber-400/30 hover:scale-105 active:scale-95"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg>
+                La Barbería
+              </Link>
+              <Link
+                href="/peluqueria-infantil"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-emerald-500 border-2 border-white/40 hover:border-emerald-500 rounded-full text-white hover:text-white font-bold tracking-widest uppercase text-xs md:text-sm transition-all duration-300 backdrop-blur-sm shadow-xl hover:shadow-emerald-500/30 hover:scale-105 active:scale-95"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                Peluquería Infantil
+              </Link>
+            </div>
           </motion.div>
         </div>
-
-
-        {/* Clickable zones: left -> Barberia, right -> Infantil. z-[4] so card stays above them */}
-        <Link href="/la-barberia" className="absolute left-0 top-0 w-1/2 h-full z-[4] cursor-pointer" aria-label="Ir a La Barbería" />
-        <Link href="/peluqueria-infantil" className="absolute right-0 top-0 w-1/2 h-full z-[4] cursor-pointer" aria-label="Ir a Peluquería Infantil" />
       </div>
 
       {/* ── Intro Text (White Block) ── */}
