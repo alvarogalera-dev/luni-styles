@@ -1,4 +1,4 @@
-﻿import RootLayout from '@/Layouts/RootLayout';
+import RootLayout from '@/Layouts/RootLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Mail, Phone, Plus, Minus, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
@@ -183,16 +183,16 @@ export default function Contacto({ meta }: Props) {
                     {[
                       { day: 'Lunes' },
                       { day: 'Martes' },
-                      { day: 'Mi\u00e9rcoles' },
+                      { day: 'Miércoles' },
                       { day: 'Jueves' },
                       { day: 'Viernes' },
                     ].map((d) => (
                       <p key={d.day} className="text-steel text-sm">
-                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 10:00 \u2013 14:00 | 17:00 \u2013 20:00
+                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 10:00 – 14:00 | 17:00 – 20:00
                       </p>
                     ))}
                     <p className="text-steel text-sm">
-                      <span className="text-steel/50 font-bold inline-block w-24">S\u00e1b \u2013 Dom:</span> Cerrado
+                      <span className="text-steel/50 font-bold inline-block w-24">Sáb – Dom:</span> Cerrado
                     </p>
                   </div>
                 </div>
