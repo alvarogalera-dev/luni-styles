@@ -74,9 +74,9 @@ export default function Home({ meta }: Props) {
               transition={{ duration: 0.9, ease: 'easeOut', delay: 0.35 }}
               className="space-y-3 md:space-y-4 max-w-xs md:max-w-sm"
             >
-              <p className="text-emerald-400 font-bold tracking-[0.3em] uppercase text-[9px] md:text-[11px]">Peluquería Infantil</p>
+              <p className="text-emerald-400 font-bold tracking-[0.3em] uppercase text-[9px] md:text-[11px]">La peluquería para niños</p>
               <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter text-white drop-shadow-xl leading-[1.05]">
-                Luni<br /><span className="text-emerald-400">Styles</span>
+                Peluquería<br /><span className="text-emerald-400">Infantil</span>
               </h2>
               <p className="text-white/75 text-xs md:text-sm leading-relaxed hidden sm:block">
                 Cortes infantiles con pasión y cuidado, para las más peques.
