@@ -490,9 +490,15 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                             onChange={e => setLocalFilters(f => ({...f, employee_id: Number(e.target.value)}))}
                                             className="w-full bg-carbon border border-white/10 rounded-lg p-2 text-white text-xs focus:outline-none focus:border-amber-400">
                                             <option value={0}>Todos</option>
-                                            <option value={1}>Luis (Barbero)</option>
-                                            <option value={2}>Carlos (Barbero)</option>
-                                            <option value={3}>Mariely (Infantil)</option>
+                                            {user.role !== 'hairdresser' && (
+                                                <>
+                                                    <option value={1}>Luis (Barbero)</option>
+                                                    <option value={2}>Carlos (Barbero)</option>
+                                                </>
+                                            )}
+                                            {user.role !== 'barber' && (
+                                                <option value={3}>Mariely (Infantil)</option>
+                                            )}
                                         </select>
                                     </div>
                                     {user.role === 'superadmin' && (

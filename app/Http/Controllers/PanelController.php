@@ -65,8 +65,8 @@ class PanelController extends Controller
         $page         = max(1, $request->integer('page', 1));
         $perPage      = 20;
 
-        // Por defecto: hoy (si no hay filtro de fecha)
-        if (empty($filterDate)) {
+        // Por defecto: hoy (si no hay filtro de fecha y no se ha solicitado explícitamente sin filtro)
+        if (!$request->has('date')) {
             $filterDate = Carbon::today()->format('Y-m-d');
         }
 
@@ -110,6 +110,7 @@ class PanelController extends Controller
             $likeQ = '%' . addcslashes($search, '%_') . '%';
             $query->where(function ($q) use ($likeQ) {
                 $q->where('service_name', 'LIKE', $likeQ)
+                  ->orWhere('id', 'LIKE', $likeQ)
                   ->orWhereHas('client', function ($cq) use ($likeQ) {
                       $cq->where('name', 'LIKE', $likeQ)
                          ->orWhere('surname', 'LIKE', $likeQ)

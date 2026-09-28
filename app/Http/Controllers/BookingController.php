@@ -179,8 +179,17 @@ class BookingController extends Controller
         ];
 
         $availableSlots = [];
+        $now = \Carbon\Carbon::now();
+        $isToday = $date === $now->format('Y-m-d');
 
         foreach ($slots as $slot) {
+            if ($isToday) {
+                $slotTime = \Carbon\Carbon::createFromFormat('H:i', $slot);
+                if ($slotTime->lt($now)) {
+                    continue;
+                }
+            }
+
             if ($serviceType === 'barberia') {
                 if ($this->assignBarber($date, $slot, $duration) !== null) {
                     $availableSlots[] = $slot;
