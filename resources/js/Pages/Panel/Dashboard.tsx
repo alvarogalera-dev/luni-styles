@@ -432,7 +432,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                 </div>
 
                 {/* Búsqueda + filtros */}
-                <div className="bg-[#111] border border-white/5 rounded-2xl mb-4 overflow-hidden">
+                <div className="bg-[#111] border border-white/5 rounded-2xl mb-4">
                     <div className="p-3 flex flex-col sm:flex-row gap-2.5">
                         {/* Búsqueda */}
                         <div className="relative flex-1">
@@ -471,7 +471,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 10 }}
-                                                className="absolute top-full left-0 mt-2 bg-[#161616] border border-white/10 rounded-2xl p-3 z-50 shadow-2xl"
+                                                className="absolute top-full right-0 sm:left-0 sm:right-auto mt-2 bg-[#161616] border border-white/10 rounded-2xl p-3 z-50 shadow-2xl"
                                             >
                                                 <style>{`.rdp{margin:0}.rdp-button,.rdp-day_button{border-radius:50%!important;border:none!important;background:transparent!important;color:#fff}.rdp-button:hover:not([disabled]){background-color:#27272a!important;color:#fbbf24!important}.rdp-selected .rdp-button,.rdp-selected .rdp-day_button,button.rdp-selected,button.rdp-day_selected{background-color:transparent!important;color:#fbbf24!important;font-weight:700!important;border:2px solid #fbbf24!important}.rdp-today .rdp-button,.rdp-today .rdp-day_button{color:#fbbf24!important;font-weight:700!important}.rdp-nav_button,.rdp-chevron{color:#fbbf24!important;fill:#fbbf24!important}.rdp-outside{opacity:.3!important;pointer-events:none}.rdp-dropdown{background-color:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:6px!important;padding:2px 6px!important;font-size:14px!important}.rdp-dropdown option{background-color:#161616!important;color:#fff!important}.rdp-caption_dropdowns{display:flex;gap:8px;justify-content:center}.rdp-vhidden{display:none!important}`}</style>
                                                 <DayPicker
