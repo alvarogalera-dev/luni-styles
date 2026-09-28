@@ -28,7 +28,7 @@ export default function Login() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="text-center"
+                    className="text-center mix-blend-difference"
                 >
                     <h2 className="font-display font-black text-4xl text-white tracking-tighter">Panel de Control</h2>
                     <p className="mt-2 text-sm text-steel">Acceso restringido para personal autorizado.</p>

@@ -545,21 +545,24 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                       <div className="space-y-4 text-bone">
                         <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-5">Tus datos</h3>
                         
-                        <div className="bg-blue-950/40 border border-blue-900/50 rounded-xl p-4 mb-6 relative overflow-hidden">
-                          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 rounded-l-xl" />
+                        <div className={cn(
+                          "border rounded-xl p-4 mb-6 relative overflow-hidden",
+                          isKids ? "bg-emerald-50 border-emerald-200" : "bg-blue-950/40 border-blue-900/50"
+                        )}>
+                          <div className={cn("absolute top-0 left-0 w-1 h-full rounded-l-xl", isKids ? "bg-emerald-500" : "bg-blue-500")} />
                           <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                            <div className="text-xs text-blue-200/90 leading-relaxed space-y-2">
+                            <AlertCircle className={cn("w-5 h-5 shrink-0 mt-0.5", isKids ? "text-emerald-500" : "text-blue-400")} />
+                            <div className={cn("text-xs leading-relaxed space-y-2", isKids ? "text-gray-700" : "text-blue-200/90")}>
                               <p>
-                                <strong className="text-blue-300 font-bold block mb-0.5 text-sm">💈 Sistema de Fidelidad Inteligente</strong>
-                                Acumulas 1 punto por cada corte. <strong className="text-amber-400">¡Al llegar a 9 puntos, tu 10º corte es GRATIS!</strong>
+                                <strong className={cn("font-bold block mb-0.5 text-sm", isKids ? "text-emerald-700" : "text-blue-300")}>{isKids ? '🧸' : '💈'} Sistema de Fidelidad Inteligente</strong>
+                                Acumulas 1 punto por cada corte. <strong className={isKids ? "text-emerald-600" : "text-amber-400"}>¡Al llegar a 9 puntos, tu 10º corte es GRATIS!</strong>
                               </p>
-                              <div className="space-y-1.5 opacity-90 border-t border-blue-800/50 pt-2 mt-2">
-                                <p className="font-bold text-blue-300">¿Qué pasa si me equivoco de datos al reservar?</p>
-                                <p>✓ <strong className="text-emerald-400">Si mantienes tu Teléfono O tu Email:</strong> Basta con que UNA sola cosa (teléfono o correo) coincida con CUALQUIERA que hayas usado en el pasado. El sistema te reconocerá al instante y sumará tu corte.</p>
-                                <p>✓ <strong className="text-emerald-400">Si cambias ambos (Teléfono y Email):</strong> Nuestro sistema buscará por tu Nombre y Apellidos. Para evitar fraudes, en este caso exigimos una coincidencia ultra estricta del 90%. Escribe tu nombre exactamente igual que en tus citas anteriores para no perder los puntos.</p>
+                              <div className={cn("space-y-1.5 pt-2 mt-2 border-t", isKids ? "border-emerald-200" : "border-blue-800/50 opacity-90")}>
+                                <p className={cn("font-bold", isKids ? "text-emerald-700" : "text-blue-300")}>¿Qué pasa si me equivoco de datos al reservar?</p>
+                                <p>✓ <strong className={isKids ? "text-emerald-600" : "text-emerald-400"}>Si mantienes tu Teléfono O tu Email:</strong> Basta con que UNA sola cosa (teléfono o correo) coincida con CUALQUIERA que hayas usado en el pasado. El sistema te reconocerá al instante y sumará tu corte.</p>
+                                <p>✓ <strong className={isKids ? "text-emerald-600" : "text-emerald-400"}>Si cambias ambos (Teléfono y Email):</strong> Nuestro sistema buscará por tu Nombre y Apellidos. Para evitar fraudes, en este caso exigimos una coincidencia ultra estricta del 90%. Escribe tu nombre exactamente igual que en tus citas anteriores para no perder los puntos.</p>
                               </div>
-                              <p className="text-[10px] uppercase tracking-wider font-bold text-blue-400 pt-1">
+                              <p className={cn("text-[10px] uppercase tracking-wider font-bold pt-1", isKids ? "text-emerald-600" : "text-blue-400")}>
                                 ¿Dudas sobre tus puntos? → soporte@lunistyles.com
                               </p>
                             </div>
