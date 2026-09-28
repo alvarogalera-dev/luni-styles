@@ -220,12 +220,15 @@ function AppointmentForm({ formData, setFormData, user }: any) {
             <div>
                 <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-3">Fecha y Hora</p>
                 <div className="bg-carbon/50 p-3 rounded-2xl border border-white/10 flex justify-center mb-3 overflow-hidden">
-                    <style>{`.rdp{margin:0}.rdp-button,.rdp-day_button{border-radius:50%!important;border:none!important;background:transparent!important;color:#fff}.rdp-button:hover:not([disabled]){background-color:#27272a!important;color:#fbbf24!important}.rdp-selected .rdp-button,.rdp-selected .rdp-day_button,button.rdp-selected,button.rdp-day_selected{background-color:transparent!important;color:#fbbf24!important;font-weight:700!important;border:2px solid #fbbf24!important}.rdp-today .rdp-button,.rdp-today .rdp-day_button{color:#fbbf24!important;font-weight:700!important}.rdp-nav_button,.rdp-chevron{color:#fbbf24!important;fill:#fbbf24!important}.rdp-outside{opacity:.3!important;pointer-events:none}`}</style>
+                    <style>{`.rdp{margin:0}.rdp-button,.rdp-day_button{border-radius:50%!important;border:none!important;background:transparent!important;color:#fff}.rdp-button:hover:not([disabled]){background-color:#27272a!important;color:#fbbf24!important}.rdp-selected .rdp-button,.rdp-selected .rdp-day_button,button.rdp-selected,button.rdp-day_selected{background-color:transparent!important;color:#fbbf24!important;font-weight:700!important;border:2px solid #fbbf24!important}.rdp-today .rdp-button,.rdp-today .rdp-day_button{color:#fbbf24!important;font-weight:700!important}.rdp-nav_button,.rdp-chevron{color:#fbbf24!important;fill:#fbbf24!important}.rdp-outside{opacity:.3!important;pointer-events:none}.rdp-dropdown{background-color:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:6px!important;padding:2px 6px!important;font-size:14px!important}.rdp-dropdown option{background-color:#161616!important;color:#fff!important}.rdp-caption_dropdowns{display:flex;gap:8px;justify-content:center}.rdp-vhidden{display:none!important}`}</style>
                     <DayPicker
                         mode="single"
                         selected={formData.fecha}
                         onSelect={(d) => setFormData((p: any) => ({...p, fecha: d, hora: null}))}
                         locale={es}
+                        captionLayout="dropdown-buttons"
+                        fromYear={2026}
+                        toYear={2035}
                         disabled={[{ before: new Date() }, { dayOfWeek: [0, 6] }]}
                         className="text-sm font-medium"
                     />
@@ -308,6 +311,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     const [isEditMode, setIsEditMode] = useState(false);
     const [showNewModal, setShowNewModal] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [confirmModal, setConfirmModal] = useState<any>(null);
 
     const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -441,20 +445,52 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                 className="w-full pl-9 pr-4 py-2.5 bg-carbon border border-white/10 rounded-xl text-white placeholder-steel/40 focus:outline-none focus:border-amber-400 transition-all text-sm" />
                         </div>
 
-                        {/* Filtro fecha rápido con X para quitar */}
+                        {/* Filtro fecha rápido con calendario pro */}
                         <div className="flex items-center gap-2">
                             <div className="relative">
-                                <CalIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-steel/50 pointer-events-none" />
-                                <input type="date"
-                                    value={localFilters.date}
-                                    onChange={e => setLocalFilters(f => ({...f, date: e.target.value}))}
-                                    className="pl-8 pr-8 py-2.5 bg-carbon border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400 transition-all w-44" />
+                                <button
+                                    onClick={() => setShowDatePicker(!showDatePicker)}
+                                    className="pl-8 pr-8 py-2.5 bg-carbon border border-white/10 rounded-xl text-white text-sm hover:border-amber-400 transition-all w-44 text-left flex items-center justify-between"
+                                >
+                                    <CalIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-steel/50 pointer-events-none" />
+                                    {localFilters.date ? format(new Date(localFilters.date), 'dd/MM/yyyy') : 'Todas las fechas'}
+                                </button>
+
                                 {localFilters.date && (
                                     <button onClick={clearDateFilter} title="Quitar filtro de fecha"
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-steel hover:text-red-400 transition-colors">
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-steel hover:text-red-400 transition-colors bg-carbon pl-1">
                                         <X className="w-3.5 h-3.5" />
                                     </button>
                                 )}
+
+                                <AnimatePresence>
+                                    {showDatePicker && (
+                                        <>
+                                            <div className="fixed inset-0 z-40" onClick={() => setShowDatePicker(false)} />
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                className="absolute top-full left-0 mt-2 bg-[#161616] border border-white/10 rounded-2xl p-3 z-50 shadow-2xl"
+                                            >
+                                                <style>{`.rdp{margin:0}.rdp-button,.rdp-day_button{border-radius:50%!important;border:none!important;background:transparent!important;color:#fff}.rdp-button:hover:not([disabled]){background-color:#27272a!important;color:#fbbf24!important}.rdp-selected .rdp-button,.rdp-selected .rdp-day_button,button.rdp-selected,button.rdp-day_selected{background-color:transparent!important;color:#fbbf24!important;font-weight:700!important;border:2px solid #fbbf24!important}.rdp-today .rdp-button,.rdp-today .rdp-day_button{color:#fbbf24!important;font-weight:700!important}.rdp-nav_button,.rdp-chevron{color:#fbbf24!important;fill:#fbbf24!important}.rdp-outside{opacity:.3!important;pointer-events:none}.rdp-dropdown{background-color:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:6px!important;padding:2px 6px!important;font-size:14px!important}.rdp-dropdown option{background-color:#161616!important;color:#fff!important}.rdp-caption_dropdowns{display:flex;gap:8px;justify-content:center}.rdp-vhidden{display:none!important}`}</style>
+                                                <DayPicker
+                                                    mode="single"
+                                                    selected={localFilters.date ? new Date(localFilters.date) : undefined}
+                                                    onSelect={(d) => {
+                                                        setLocalFilters(f => ({ ...f, date: d ? format(d, 'yyyy-MM-dd') : '' }));
+                                                        setShowDatePicker(false);
+                                                    }}
+                                                    locale={es}
+                                                    captionLayout="dropdown-buttons"
+                                                    fromYear={2026}
+                                                    toYear={2035}
+                                                    className="text-sm font-medium"
+                                                />
+                                            </motion.div>
+                                        </>
+                                    )}
+                                </AnimatePresence>
                             </div>
                             <button onClick={() => navigate({})}
                                 className="px-4 py-2.5 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-colors text-sm whitespace-nowrap">
@@ -523,7 +559,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                             setLocalFilters(reset);
                                             router.get('/panel/citas', reset, { preserveState: true, replace: true });
                                         }} className="px-3 bg-carbon text-steel font-bold py-2 rounded-lg text-xs border border-white/10 hover:text-white transition-colors">
-                                            Reset
+                                            Restablecer
                                         </button>
                                     </div>
                                 </div>

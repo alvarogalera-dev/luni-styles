@@ -450,25 +450,32 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             @media (max-width: 400px) {
                               .rdp { transform: scale(0.88); transform-origin: top center; }
                             }
+                            .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
+                            .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+                            .rdp-caption_dropdowns { display: flex; gap: 8px; justify-content: center; }
+                            .rdp-vhidden { display: none !important; }
+
                           `}</style>
-                          <DayPicker
-                            mode="single"
-                            selected={date}
-                            onSelect={(d) => { 
-                              setDate(d); 
-                              setTime(null); 
-                              if (!d) {
-                                setAvailableSlots([]);
-                              }
-                            }}
-                            locale={es}
-                            disabled={[
-                              { before: new Date() },
-                              { after: addMonths(new Date(), 6) },
-                              { dayOfWeek: [0, 6] }
-                            ]}
-                            className="text-sm font-medium text-bone"
-                          />
+                            <DayPicker
+                              mode="single"
+                              selected={date}
+                              onSelect={(d) => { 
+                                setDate(d); 
+                                setTime(null); 
+                                if (!d) {
+                                  setAvailableSlots([]);
+                                }
+                              }}
+                              locale={es}
+                              captionLayout="dropdown-buttons"
+                              fromYear={2026}
+                              toYear={2035}
+                              disabled={[
+                                { before: new Date() },
+                                { dayOfWeek: [0, 6] }
+                              ]}
+                              className="text-sm font-medium text-bone"
+                            />
                         </div>
 
                         <AnimatePresence>
