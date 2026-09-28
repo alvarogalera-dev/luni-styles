@@ -19,6 +19,17 @@ function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
 }
 
+const esCapitalized = {
+    ...es,
+    localize: {
+        ...es.localize,
+        month: (n: any, opts: any) => {
+            const m = es.localize?.month(n, opts) || '';
+            return m.charAt(0).toUpperCase() + m.slice(1);
+        }
+    }
+};
+
 const BARBERIA_SERVICES = [
     { id: 'b1', name: 'Corte Normal',  duration: 30, price: '12' },
     { id: 'b2', name: 'Corte + Barba', duration: 60, price: '15' },
@@ -216,16 +227,14 @@ function AppointmentForm({ formData, setFormData, user }: any) {
                 </div>
             </div>
 
-            {/* Fecha + Calendario */}
             <div>
                 <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-3">Fecha y Hora</p>
                 <div className="bg-carbon/50 p-3 rounded-2xl border border-white/10 flex justify-center mb-3 overflow-hidden">
-                    <style>{`.rdp{margin:0}.rdp-button,.rdp-day_button{border-radius:50%!important;border:none!important;background:transparent!important;color:#fff}.rdp-button:hover:not([disabled]){background-color:#27272a!important;color:#fbbf24!important}.rdp-selected .rdp-button,.rdp-selected .rdp-day_button,button.rdp-selected,button.rdp-day_selected{background-color:transparent!important;color:#fbbf24!important;font-weight:700!important;border:2px solid #fbbf24!important}.rdp-today .rdp-button,.rdp-today .rdp-day_button{color:#fbbf24!important;font-weight:700!important}.rdp-nav_button,.rdp-chevron{color:#fbbf24!important;fill:#fbbf24!important}.rdp-outside{opacity:.3!important;pointer-events:none}.rdp-dropdown{background-color:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:6px!important;padding:2px 6px!important;font-size:14px!important}.rdp-dropdown option{background-color:#161616!important;color:#fff!important}.rdp-caption_dropdowns{display:flex;gap:8px;justify-content:center}.rdp-vhidden{display:none!important}.rdp-caption_label{text-transform:capitalize;}`}</style>
                     <DayPicker
                         mode="single"
                         selected={formData.fecha}
                         onSelect={(d) => setFormData((p: any) => ({...p, fecha: d, hora: null}))}
-                        locale={es}
+                        locale={esCapitalized}
                         captionLayout="dropdown-buttons"
                         fromYear={2026}
                         toYear={2035}
@@ -473,7 +482,6 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                 exit={{ opacity: 0, y: 10 }}
                                                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:top-full sm:left-0 sm:right-auto sm:translate-x-0 sm:translate-y-0 sm:mt-2 bg-[#161616] border border-white/10 rounded-2xl p-3 z-50 shadow-2xl"
                                             >
-                                                <style>{`.rdp{margin:0}.rdp-button,.rdp-day_button{border-radius:50%!important;border:none!important;background:transparent!important;color:#fff}.rdp-button:hover:not([disabled]){background-color:#27272a!important;color:#fbbf24!important}.rdp-selected .rdp-button,.rdp-selected .rdp-day_button,button.rdp-selected,button.rdp-day_selected{background-color:transparent!important;color:#fbbf24!important;font-weight:700!important;border:2px solid #fbbf24!important}.rdp-today .rdp-button,.rdp-today .rdp-day_button{color:#fbbf24!important;font-weight:700!important}.rdp-nav_button,.rdp-chevron{color:#fbbf24!important;fill:#fbbf24!important}.rdp-outside{opacity:.3!important;pointer-events:none}.rdp-dropdown{background-color:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:6px!important;padding:2px 6px!important;font-size:14px!important}.rdp-dropdown option{background-color:#161616!important;color:#fff!important}.rdp-caption_dropdowns{display:flex;gap:8px;justify-content:center}.rdp-vhidden{display:none!important}.rdp-caption_label{text-transform:capitalize;}`}</style>
                                                 <DayPicker
                                                     mode="single"
                                                     selected={localFilters.date ? new Date(localFilters.date) : undefined}
@@ -481,7 +489,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                         setLocalFilters(f => ({ ...f, date: d ? format(d, 'yyyy-MM-dd') : '' }));
                                                         setShowDatePicker(false);
                                                     }}
-                                                    locale={es}
+                                                    locale={esCapitalized}
                                                     captionLayout="dropdown-buttons"
                                                     fromYear={2026}
                                                     toYear={2035}

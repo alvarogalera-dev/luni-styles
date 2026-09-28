@@ -8,6 +8,17 @@ import 'react-day-picker/dist/style.css';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+const esCapitalized = {
+  ...es,
+  localize: {
+    ...es.localize,
+    month: (n: any, opts: any) => {
+      const m = es.localize?.month(n, opts) || '';
+      return m.charAt(0).toUpperCase() + m.slice(1);
+    }
+  }
+};
+
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
 }
@@ -466,7 +477,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                   setAvailableSlots([]);
                                 }
                               }}
-                              locale={es}
+                              locale={esCapitalized}
                               captionLayout="dropdown-buttons"
                               fromYear={2026}
                               toYear={2035}

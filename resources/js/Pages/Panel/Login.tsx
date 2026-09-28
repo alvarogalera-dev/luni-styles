@@ -28,9 +28,11 @@ export default function Login() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="text-center mix-blend-difference"
+                    className="text-center"
                 >
-                    <h2 className="font-display font-black text-4xl text-white tracking-tighter">Panel de Control</h2>
+                    <h2 className="font-display font-black text-4xl tracking-tighter bg-gradient-to-r from-white from-50% to-[#0a0a0a] to-50% bg-clip-text text-transparent">
+                        Panel de Control
+                    </h2>
                     <p className="mt-2 text-sm text-steel">Acceso restringido para personal autorizado.</p>
                 </motion.div>
             </div>
