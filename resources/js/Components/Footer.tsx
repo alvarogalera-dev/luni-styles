@@ -27,6 +27,10 @@ export default function Footer() {
     return `/${localeCode}${path === '/' ? '' : path}`;
   };
 
+  const getUrl = (path: string) => {
+    return currentLocale === 'es' ? path : `/${currentLocale}${path}`;
+  };
+
   return (
     <footer className="bg-void border-t border-border-subtle">
       {/* Top separator line */}
@@ -62,7 +66,7 @@ export default function Footer() {
               ].map((item) => (
                 <li key={item.href}>
                   <Link
-                    href={item.href}
+                    href={getUrl(item.href)}
                     className="text-steel text-sm hover:text-amber-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 transition-colors duration-200"
                   >
                     {item.label}
@@ -84,7 +88,7 @@ export default function Footer() {
               ].map((item) => (
                 <li key={item.href}>
                   <Link
-                    href={item.href}
+                    href={getUrl(item.href)}
                     className="text-steel text-sm hover:text-amber-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 transition-colors duration-200"
                   >
                     {item.label}

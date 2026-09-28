@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import BookingModal from './BookingModal';
@@ -11,6 +11,13 @@ export default function Navbar() {
   const lastScrollY = useRef(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [initialService, setInitialService] = useState<'barberia' | 'infantil' | null>(null);
+  const { props } = usePage();
+  const currentLocale = ((props as any).locale as string) || 'es';
+
+  // Helper to get correct localized url
+  const getUrl = (path: string) => {
+    return currentLocale === 'es' ? path : `/${currentLocale}${path}`;
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,7 +63,7 @@ export default function Navbar() {
 
         <nav className="relative flex items-center justify-between w-full mx-auto">
           {/* Logo (Left aligned) */}
-          <Link href="/" className="group flex items-center gap-3 z-10 w-auto lg:w-1/4">
+          <Link href={getUrl('/')} className="group flex items-center gap-3 z-10 w-auto lg:w-1/4">
             <span className="text-bone font-display font-black tracking-widest text-lg md:text-xl uppercase drop-shadow-lg whitespace-nowrap">
               Luni<span className="text-amber-400">Styles</span>
             </span>
@@ -68,7 +75,7 @@ export default function Navbar() {
               {navLinks.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={getUrl(item.href)}
                   className="text-bone/80 text-xs tracking-[0.2em] font-bold uppercase hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 transition-colors duration-300 relative group"
                 >
                   {item.label}

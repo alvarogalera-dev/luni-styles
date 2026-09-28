@@ -1,8 +1,8 @@
 import RootLayout from '@/Layouts/RootLayout';
 import KidsScrollAnimation from '@/Components/KidsScrollAnimation';
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { Calendar, Clock } from 'lucide-react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { Calendar, Clock, X } from 'lucide-react';
 
 interface Meta { title: string; description: string; }
 interface Props { meta: Meta; }
@@ -44,6 +44,7 @@ const gallery = [
 export default function PeluqueriaInfantil({ meta }: Props) {
   const teamRef = useRef<HTMLDivElement>(null);
   const teamInView = useInView(teamRef, { once: true, margin: '-10%' });
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
   return (
     <RootLayout meta={meta}>
@@ -66,9 +67,10 @@ export default function PeluqueriaInfantil({ meta }: Props) {
             {/* 11 fotos: la 6.jpg es duplicado de la 1.jpg, se omite */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
               {[1,2,3,4,5,7,8,9,10,11,12].map((n) => (
-                <div
+                <button
                   key={n}
-                  className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500"
+                  onClick={() => setSelectedImage(n)}
+                  className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500 w-full text-left"
                 >
                   <img
                     src={`/images/catalogo/${n}.jpg`}
@@ -82,7 +84,12 @@ export default function PeluqueriaInfantil({ meta }: Props) {
                       Ver inspiración
                     </span>
                   </div>
-                </div>
+                  <div className="absolute top-2 left-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="bg-emerald-600/90 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full shadow-md">
+                      #STYLE-{n.toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                </button>
               ))}
             </div>
             <div className="text-center mt-10">
@@ -208,6 +215,60 @@ export default function PeluqueriaInfantil({ meta }: Props) {
         </section>
 
       </div>
+      <AnimatePresence>
+        {selectedImage !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-2xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl"
+            >
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/50 backdrop-blur-md rounded-full text-slate-800 hover:bg-white hover:text-emerald-600 transition-colors shadow-sm"
+              >
+                <X size={20} strokeWidth={3} />
+              </button>
+              
+              <div className="aspect-[4/5] sm:aspect-square w-full bg-slate-100 relative">
+                <img
+                  src={`/images/catalogo/${selectedImage}.jpg`}
+                  alt="Inspiración Infantil"
+                  className="w-full h-full object-contain sm:object-cover"
+                />
+              </div>
+              
+              <div className="p-6 md:p-8 text-center bg-emerald-50">
+                <p className="text-emerald-600 font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase mb-2">Referencia del Corte</p>
+                <h3 className="font-display font-black text-3xl text-slate-900 mb-4">#STYLE-{selectedImage.toString().padStart(2, '0')}</h3>
+                <p className="text-slate-600 text-sm max-w-md mx-auto">
+                  ¿Te gusta este peinado? Dínos este código al reservar o enséñanos la foto cuando vengas a visitarnos.
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setTimeout(() => {
+                      document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil' } }));
+                    }, 300);
+                  }}
+                  className="mt-6 inline-flex items-center justify-center px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold tracking-widest uppercase text-xs rounded-full transition-all duration-300 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95"
+                >
+                  Reservar Ahora
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </RootLayout>
   );
 }
