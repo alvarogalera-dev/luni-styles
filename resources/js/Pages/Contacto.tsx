@@ -30,7 +30,7 @@ const COUNTRY_CODES = [
 ];
 
 export default function Contacto({ meta }: Props) {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [formData, setFormData] = useState({ nombre: '', apellidos: '', telefono: '', phonePrefix: '+34', customPrefix: '', email: '', asunto: 'Duda General', mensaje: '' });
   const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -100,11 +100,13 @@ export default function PanelLayout({ children, title, user }: Props) {
 
     return (
         <div className="min-h-screen bg-[#050505] text-bone font-sans flex">
-            <Head title={`${title} - Panel Luni Styles`} />
+            <Head title="Panel de Control" />
 
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#111] border-b border-white/5 z-40 flex items-center justify-between px-4">
-                <span className="font-display font-black text-xl text-white tracking-tighter">LuniStyles<span className="text-amber-400">.</span></span>
+                <span className="text-bone font-display font-black tracking-widest text-lg uppercase drop-shadow-lg whitespace-nowrap">
+                  Luni<span className="text-amber-400">Styles</span>
+                </span>
                 <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-steel hover:text-white transition-colors">
                     <Menu className="w-6 h-6" />
                 </button>
@@ -138,7 +140,9 @@ export default function PanelLayout({ children, title, user }: Props) {
                 </button>
 
                 <div className="p-6 h-16 lg:h-24 flex items-center border-b border-white/5 shrink-0">
-                    <span className="font-display font-black text-2xl lg:text-3xl text-white tracking-tighter">LuniStyles<span className="text-amber-400">.</span></span>
+                    <span className="text-bone font-display font-black tracking-widest text-xl uppercase drop-shadow-lg whitespace-nowrap">
+                      Luni<span className="text-amber-400">Styles</span>
+                    </span>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">

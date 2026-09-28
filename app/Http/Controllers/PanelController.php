@@ -31,7 +31,6 @@ class PanelController extends Controller
             'password' => ['required', 'string', 'max:128'],
         ]);
 
-        // Throttle: max 5 intentos por minuto (RateLimiter via middleware en routes)
         if (Auth::attempt($credentials, false)) {
             $request->session()->regenerate();
             return redirect()->intended('/panel/citas');
@@ -58,16 +57,15 @@ class PanelController extends Controller
     {
         $user = Auth::user();
 
-        // Sanear inputs de filtro
-        $search    = $request->string('search', '')->limit(100)->toString();
-        $filterDate = $request->string('date', '')->limit(10)->toString();
-        $filterEmp  = $request->integer('employee_id', 0);
+        $search       = $request->string('search', '')->limit(100)->toString();
+        $filterDate   = $request->string('date', '')->limit(10)->toString();
+        $filterEmp    = $request->integer('employee_id', 0);
         $filterStatus = $request->string('status', '')->limit(20)->toString();
         $filterType   = $request->string('service_type', '')->limit(30)->toString();
         $page         = max(1, $request->integer('page', 1));
         $perPage      = 20;
 
-        // Si no hay filtro de fecha, mostrar solo hoy por defecto
+        // Por defecto: hoy (si no hay filtro de fecha)
         if (empty($filterDate)) {
             $filterDate = Carbon::today()->format('Y-m-d');
         }
@@ -77,25 +75,22 @@ class PanelController extends Controller
                 Carbon::now()->subMonths(3)->startOfDay(),
                 Carbon::now()->addMonths(12)->endOfDay(),
             ])
-            ->orderBy('appointment_date', 'desc');
+            ->orderBy('appointment_date', 'asc');
 
-        // Control de visibilidad por rol
+        // Control por rol
         if ($user->role === 'barber') {
             $query->where('service_type', 'barberia');
         } elseif ($user->role === 'hairdresser') {
             $query->where('service_type', 'peluqueria_infantil');
-        }
-
-        // Filtro tipo de servicio (solo admin puede filtrar libremente)
-        if (!empty($filterType) && $user->role === 'superadmin') {
+        } elseif ($user->role === 'superadmin' && !empty($filterType)) {
             $query->where('service_type', $filterType);
         }
 
-        // Filtro por fecha
+        // Filtro por fecha (si hay fecha, filtrar por ese día)
         if (!empty($filterDate)) {
             try {
-                $d = Carbon::parse($filterDate)->format('Y-m-d');
-                $query->whereDate('appointment_date', $d);
+                $d = Carbon::createFromFormat('Y-m-d', $filterDate);
+                $query->whereDate('appointment_date', $d->format('Y-m-d'));
             } catch (\Exception $e) {}
         }
 
@@ -110,7 +105,7 @@ class PanelController extends Controller
             $query->where('status', $filterStatus);
         }
 
-        // Búsqueda full-text: nombre, apellidos, email, teléfono, servicio
+        // Búsqueda
         if (!empty($search)) {
             $likeQ = '%' . addcslashes($search, '%_') . '%';
             $query->where(function ($q) use ($likeQ) {
@@ -145,11 +140,11 @@ class PanelController extends Controller
         });
 
         return Inertia::render('Panel/Dashboard', [
-            'appointments'   => $appointments,
-            'total'          => $total,
-            'page'           => $page,
-            'perPage'        => $perPage,
-            'filters'        => [
+            'appointments' => $appointments,
+            'total'        => $total,
+            'page'         => $page,
+            'perPage'      => $perPage,
+            'filters'      => [
                 'search'       => $search,
                 'date'         => $filterDate,
                 'employee_id'  => $filterEmp,
@@ -158,8 +153,8 @@ class PanelController extends Controller
             ],
             'user' => [
                 'name' => $user->name,
-                'role' => $user->role
-            ]
+                'role' => $user->role,
+            ],
         ]);
     }
 
@@ -171,7 +166,7 @@ class PanelController extends Controller
     {
         $validated = $request->validate(['status' => 'required|in:completed,no-show']);
 
-        $appointment = Appointment::with('client')->findOrFail($id);
+        $appointment = Appointment::with('client')->findOrFail((int) $id);
         $this->authorizeAppointment($appointment);
 
         if ($appointment->status === $validated['status']) {
@@ -214,19 +209,21 @@ class PanelController extends Controller
 
     public function updateAppointment(Request $request, $id)
     {
-        $appointment = Appointment::findOrFail($id);
+        $appointment = Appointment::with('client')->findOrFail((int) $id);
         $this->authorizeAppointment($appointment);
 
         $validated = $request->validate([
-            'nombre'       => 'required|string|max:100',
-            'apellidos'    => 'required|string|max:100',
-            'telefono'     => 'required|string|max:30',
-            'email'        => 'required|email|max:255',
-            'servicio'     => 'required|string|max:100',
-            'empleado_id'  => 'required|integer|between:1,10',
-            'fecha'        => 'required|date|after_or_equal:2020-01-01',
-            'hora'         => ['required', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
-            'observaciones'=> 'nullable|string|max:500',
+            'nombre'        => 'required|string|max:100',
+            'apellidos'     => 'required|string|max:100',
+            'telefono'      => 'required|string|max:30',
+            'email'         => 'required|email|max:255',
+            'servicio'      => 'required|string|max:100',
+            'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
+            'empleado_id'   => 'required|integer|between:1,10',
+            'fecha'         => 'required|date_format:Y-m-d',
+            'hora'          => ['required', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
+            'precio'        => 'nullable|string|max:20',
+            'observaciones' => 'nullable|string|max:500',
         ]);
 
         $client = $appointment->client;
@@ -240,10 +237,12 @@ class PanelController extends Controller
         $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
 
         $appointment->update([
-            'service_name' => strip_tags($validated['servicio']),
-            'employee_id'  => $validated['empleado_id'],
+            'service_name'     => strip_tags($validated['servicio']),
+            'service_type'     => $validated['tipo_servicio'],
+            'employee_id'      => (int) $validated['empleado_id'],
             'appointment_date' => $datetime,
-            'observations' => isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null,
+            'price'            => isset($validated['precio']) ? strip_tags($validated['precio']) : $appointment->price,
+            'observations'     => isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null,
         ]);
 
         return back();
@@ -251,7 +250,7 @@ class PanelController extends Controller
 
     public function deleteAppointment(Request $request, $id)
     {
-        $appointment = Appointment::findOrFail($id);
+        $appointment = Appointment::findOrFail((int) $id);
         $this->authorizeAppointment($appointment);
         $appointment->delete();
         return back();
@@ -279,7 +278,6 @@ class PanelController extends Controller
         $baseQuery = Appointment::where('status', 'completed');
 
         $statType = 'general';
-
         if ($user->role === 'barber' || $type === 'barberia') {
             $baseQuery->where('service_type', 'barberia');
             $statType = 'barberia';
@@ -297,34 +295,39 @@ class PanelController extends Controller
         $cortesAno    = (clone $baseQuery)->whereYear('appointment_date', $hoy->year)->count();
         $cortesTotal  = (clone $baseQuery)->count();
 
-        // 2. Ingresos - parsear precio numérico correctamente
+        // 2. Ingresos
         $calcIngresos = function ($appts) {
             $total = 0;
             foreach ($appts as $appt) {
                 $raw = preg_replace('/[^0-9,.]/', '', $appt->price ?? '');
                 $raw = str_replace(',', '.', $raw);
-                $total += (float) $raw;
+                $v = (float) $raw;
+                if ($v > 0) $total += $v;
             }
             return round($total, 2);
         };
 
-        $ingresosHoy     = $calcIngresos((clone $baseQuery)->whereDate('appointment_date', $hoy)->get());
-        $ingresosSemana  = $calcIngresos((clone $baseQuery)->whereBetween('appointment_date', [$hoy->copy()->startOfWeek(), $hoy->copy()->endOfWeek()])->get());
-        $ingresosMes     = $calcIngresos((clone $baseQuery)->whereMonth('appointment_date', $hoy->month)->whereYear('appointment_date', $hoy->year)->get());
-        $ingresosAno     = $calcIngresos((clone $baseQuery)->whereYear('appointment_date', $hoy->year)->get());
+        $ingresosHoy    = $calcIngresos((clone $baseQuery)->whereDate('appointment_date', $hoy)->get());
+        $ingresosSemana = $calcIngresos((clone $baseQuery)->whereBetween('appointment_date', [$hoy->copy()->startOfWeek(), $hoy->copy()->endOfWeek()])->get());
+        $ingresosMes    = $calcIngresos((clone $baseQuery)->whereMonth('appointment_date', $hoy->month)->whereYear('appointment_date', $hoy->year)->get());
+        $ingresosAno    = $calcIngresos((clone $baseQuery)->whereYear('appointment_date', $hoy->year)->get());
 
         // 3. Servicios más demandados
-        $servicios = (clone $baseQuery)->select('service_name', DB::raw('count(*) as total'))
+        $servicios = (clone $baseQuery)
+            ->select('service_name', DB::raw('count(*) as total'))
             ->groupBy('service_name')
             ->orderBy('total', 'desc')
             ->get();
 
         // 4. Rendimiento por empleado
-        $empleados = (clone $baseQuery)->select('employee_id', DB::raw('count(*) as total'))
+        $empleados = (clone $baseQuery)
+            ->select('employee_id', DB::raw('count(*) as total'))
             ->groupBy('employee_id')
             ->orderBy('total', 'desc')
-            ->get()->map(function ($emp) use ($baseQuery) {
-                $mostDemanded = (clone $baseQuery)->where('employee_id', $emp->employee_id)
+            ->get()
+            ->map(function ($emp) use ($baseQuery) {
+                $mostDemanded = (clone $baseQuery)
+                    ->where('employee_id', $emp->employee_id)
                     ->select('service_name', DB::raw('count(*) as cnt'))
                     ->groupBy('service_name')
                     ->orderBy('cnt', 'desc')
@@ -339,37 +342,48 @@ class PanelController extends Controller
                 ];
             });
 
-        // 5. Clientes con penalización (inasistencias)
+        // 5. Clientes penalizados
         $clientesPenalizados = Client::where('penalty_flag', true)->count();
 
         // 6. Tasa de asistencia
-        $totalCitas     = Appointment::when($statType !== 'general', fn($q) => $q->where('service_type', $statType === 'barberia' ? 'barberia' : 'peluqueria_infantil'))->whereIn('status', ['completed', 'no-show'])->count();
+        $queryBase2 = Appointment::whereIn('status', ['completed', 'no-show']);
+        if ($statType !== 'general') {
+            $queryBase2->where('service_type', $statType === 'barberia' ? 'barberia' : 'peluqueria_infantil');
+        }
+        $totalCitas       = $queryBase2->count();
         $citasCompletadas = (clone $baseQuery)->count();
-        $tasaAsistencia = $totalCitas > 0 ? round(($citasCompletadas / $totalCitas) * 100, 1) : 0;
+        $tasaAsistencia   = $totalCitas > 0 ? round(($citasCompletadas / $totalCitas) * 100, 1) : 0;
 
-        // 7. Hora punta más popular
-        $horaPunta = Appointment::where('status', 'completed')
-            ->when($statType !== 'general', fn($q) => $q->where('service_type', $statType === 'barberia' ? 'barberia' : 'peluqueria_infantil'))
-            ->select(DB::raw("strftime('%H', appointment_date) as hora"), DB::raw('count(*) as total'))
-            ->groupBy('hora')
-            ->orderBy('total', 'desc')
-            ->first();
+        // 7. Hora punta — usando Carbon para compatibilidad MySQL / PostgreSQL / SQLite
+        $horaPunta = 'N/A';
+        $horaCounts = [];
+        $allCompleted = (clone $baseQuery)->select('appointment_date')->get();
+        foreach ($allCompleted as $appt) {
+            $h = Carbon::parse($appt->appointment_date)->format('H:00');
+            $horaCounts[$h] = ($horaCounts[$h] ?? 0) + 1;
+        }
+        if (!empty($horaCounts)) {
+            arsort($horaCounts);
+            $horaPunta = array_key_first($horaCounts);
+        }
 
-        // 8. Día de la semana con más citas
-        $diaPunta = Appointment::where('status', 'completed')
-            ->when($statType !== 'general', fn($q) => $q->where('service_type', $statType === 'barberia' ? 'barberia' : 'peluqueria_infantil'))
-            ->select(DB::raw("strftime('%w', appointment_date) as dow"), DB::raw('count(*) as total'))
-            ->groupBy('dow')
-            ->orderBy('total', 'desc')
-            ->first();
-
-        $diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        $diaPuntaNombre = $diaPunta ? ($diasSemana[(int)$diaPunta->dow] ?? 'N/A') : 'N/A';
+        // 8. Día punta
+        $diasSemana = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sábado'];
+        $diaCounts  = [];
+        foreach ($allCompleted as $appt) {
+            $dow = (int) Carbon::parse($appt->appointment_date)->dayOfWeek;
+            $diaCounts[$dow] = ($diaCounts[$dow] ?? 0) + 1;
+        }
+        $diaPunta = 'N/A';
+        if (!empty($diaCounts)) {
+            arsort($diaCounts);
+            $diaPunta = $diasSemana[array_key_first($diaCounts)] ?? 'N/A';
+        }
 
         return Inertia::render('Panel/Statistics', [
             'stats' => [
-                'type'      => $statType,
-                'cortes'    => [
+                'type'    => $statType,
+                'cortes'  => [
                     'hoy'    => $cortesHoy,
                     'semana' => $cortesSemana,
                     'mes'    => $cortesMes,
@@ -386,13 +400,13 @@ class PanelController extends Controller
                 'empleados'           => $empleados,
                 'clientesPenalizados' => $clientesPenalizados,
                 'tasaAsistencia'      => $tasaAsistencia,
-                'horaPunta'           => $horaPunta ? $horaPunta->hora . ':00' : 'N/A',
-                'diaPunta'            => $diaPuntaNombre,
+                'horaPunta'           => $horaPunta,
+                'diaPunta'            => $diaPunta,
             ],
             'user' => [
                 'name' => $user->name,
                 'role' => $user->role,
-            ]
+            ],
         ]);
     }
 }

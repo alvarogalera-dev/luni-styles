@@ -130,6 +130,13 @@ export default function Footer() {
                   contacto@lunistyles.com
                 </a>
               </li>
+              <li className="pt-2">
+                <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block mb-1">Horario</span>
+                <p className="text-steel text-sm leading-relaxed">
+                  Lun – Vie: <span className="text-bone/80 font-medium">16:00 – 21:00</span>
+                </p>
+                <p className="text-steel/50 text-xs mt-0.5">Sábado y Domingo: Cerrado</p>
+              </li>
             </ul>
           </div>
         </div>

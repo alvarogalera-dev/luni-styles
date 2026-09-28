@@ -160,7 +160,7 @@ export default function LaBarberia({ meta }: Props) {
                 <Tag className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-amber-400 font-bold text-sm">🎉 Precio Especial de Inauguración</p>
-                  <p className="text-amber-300/80 text-xs mt-1">Precios rebajados durante nuestras 2 primeras semanas. Oferta válida hasta el <strong>lunes 12 de octubre de 2026</strong>. ¡Aprovecha y reserva ya!</p>
+                  <p className="text-amber-300/80 text-xs mt-1">Precios rebajados durante nuestras 2 primeras semanas. Oferta válida hasta el <strong>Lunes 12 de octubre de 2026</strong>. ¡Aprovecha y reserva ya!</p>
                 </div>
               </div>
             )}
