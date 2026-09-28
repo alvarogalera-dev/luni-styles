@@ -198,6 +198,7 @@ body:has([data-theme="kids"]) {
 }
 [data-theme="kids"] .bg-\[\#050505\] { background-color: #fdfbf7 !important; }
 [data-theme="kids"] .bg-\[\#0a0a0a\], [data-theme="kids"] .bg-\[\#111\], [data-theme="kids"] .bg-\[\#161616\] { background-color: #ffffff !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+[data-theme="kids"] .bg-\[\#111\]\/95 { background-color: rgba(255,255,255,0.95) !important; border-color: rgba(0,0,0,0.05) !important; }
 [data-theme="kids"] .bg-carbon, [data-theme="kids"] .bg-carbon\/50 { background-color: #f3f4f6 !important; }
 
 [data-theme="kids"] .text-bone, [data-theme="kids"] .text-white { color: #111827 !important; }
@@ -237,3 +238,8 @@ body:has([data-theme="kids"]) {
   background-color: #f3f4f6 !important;
   color: #4b5563 !important;
 }
+
+/* ── Google Translate Overrides ── */
+.goog-te-banner-frame.skiptranslate, #goog-gt-tt, .goog-te-balloon-frame, #google_translate_element { display: none !important; }
+body { top: 0px !important; }
+.goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }

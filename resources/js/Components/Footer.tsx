@@ -1,8 +1,31 @@
-import { Link } from '@inertiajs/react';
-import { ExternalLink } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { ExternalLink, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const { props } = usePage();
+  const currentLocale = ((props as any).locale as string) || 'es';
+  const currentPath = ((props as any).currentPath as string) || '/';
+  const [langOpen, setLangOpen] = useState(false);
+
+  const languages = [
+    { code: 'es', label: 'Español' },
+    { code: 'en', label: 'English' },
+    { code: 'ru', label: 'Русский' },
+    { code: 'cn', label: '中文' }
+  ];
+
+  const currentLangLabel = languages.find(l => l.code === currentLocale)?.code.toUpperCase() || 'ES';
+
+  // Helper to generate locale URLs
+  const getLocaleUrl = (localeCode: string) => {
+    // Strip current locale prefix if any
+    let path = currentPath.replace(/^(en|ru|cn)(\/|$)/, '');
+    if (!path.startsWith('/')) path = '/' + path;
+    if (localeCode === 'es') return path;
+    return `/${localeCode}${path === '/' ? '' : path}`;
+  };
 
   return (
     <footer className="bg-void border-t border-border-subtle">
@@ -142,13 +165,42 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-border-subtle pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-border-subtle pt-8 flex flex-col md:flex-row items-center justify-between gap-4 relative">
           <p className="text-steel text-xs tracking-wider text-center md:text-left">
             © {year} Luni Styles. Todos los derechos reservados.
           </p>
-          <p className="text-steel text-xs tracking-wider text-center md:text-right">
-            Developed by <span className="text-bone font-bold">CodeOS</span>
-          </p>
+          
+          <div className="flex items-center gap-6">
+            <p className="text-steel text-xs tracking-wider text-center md:text-right">
+              Developed by <span className="text-bone font-bold">CodeOS</span>
+            </p>
+
+            {/* Language Selector */}
+            <div className="relative">
+              {langOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setLangOpen(false)} />
+                  <div className="absolute bottom-full right-0 mb-2 bg-[#111] border border-white/10 rounded-xl py-2 min-w-[120px] shadow-2xl z-50 overflow-hidden">
+                    {languages.map((lang) => (
+                      <a
+                        key={lang.code}
+                        href={getLocaleUrl(lang.code)}
+                        className={`block px-4 py-2 text-sm transition-colors ${currentLocale === lang.code ? 'text-amber-400 font-bold bg-white/5' : 'text-steel hover:text-white hover:bg-white/5'}`}
+                      >
+                        {lang.label}
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center gap-1.5 text-steel hover:text-white transition-colors text-sm font-bold uppercase"
+              >
+                {currentLangLabel} <ChevronUp className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

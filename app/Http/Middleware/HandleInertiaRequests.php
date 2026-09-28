@@ -35,9 +35,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $segment = $request->segment(1);
+        $locale = in_array($segment, ['en', 'ru', 'cn']) ? $segment : 'es';
+
         return [
             ...parent::share($request),
-            //
+            'locale' => $locale,
+            'currentPath' => $request->path(),
         ];
     }
 }

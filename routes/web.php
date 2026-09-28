@@ -5,17 +5,23 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ContactController;
 
-Route::get('/', [PageController::class, 'home'])->name('home');
-Route::get('/la-barberia', [PageController::class, 'laBarberia'])->name('la-barberia');
-Route::get('/peluqueria-infantil', [PageController::class, 'peluqueriaInfantil'])->name('peluqueria-infantil');
-Route::get('/quienes-somos', [PageController::class, 'quienesSomos'])->name('quienes-somos');
-Route::get('/contacto', [PageController::class, 'contacto'])->name('contacto');
+$locales = ['es', 'en', 'ru', 'cn'];
+foreach ($locales as $locale) {
+    $prefix = $locale === 'es' ? '' : $locale;
+    Route::group(['prefix' => $prefix], function () use ($locale) {
+        Route::get('/', [PageController::class, 'home'])->name($locale.'.home');
+        Route::get('/la-barberia', [PageController::class, 'laBarberia'])->name($locale.'.la-barberia');
+        Route::get('/peluqueria-infantil', [PageController::class, 'peluqueriaInfantil'])->name($locale.'.peluqueria-infantil');
+        Route::get('/quienes-somos', [PageController::class, 'quienesSomos'])->name($locale.'.quienes-somos');
+        Route::get('/contacto', [PageController::class, 'contacto'])->name($locale.'.contacto');
 
-// Legal Routes
-Route::get('/aviso-legal', [PageController::class, 'avisoLegal'])->name('aviso-legal');
-Route::get('/politica-privacidad', [PageController::class, 'politicaPrivacidad'])->name('politica-privacidad');
-Route::get('/politica-cookies', [PageController::class, 'politicaCookies'])->name('politica-cookies');
-Route::get('/terminos-reserva', [PageController::class, 'terminosReserva'])->name('terminos-reserva');
+        // Legal Routes
+        Route::get('/aviso-legal', [PageController::class, 'avisoLegal'])->name($locale.'.aviso-legal');
+        Route::get('/politica-privacidad', [PageController::class, 'politicaPrivacidad'])->name($locale.'.politica-privacidad');
+        Route::get('/politica-cookies', [PageController::class, 'politicaCookies'])->name($locale.'.politica-cookies');
+        Route::get('/terminos-reserva', [PageController::class, 'terminosReserva'])->name($locale.'.terminos-reserva');
+    });
+}
 
 // API Routes (Using web middleware for CSRF protection in Inertia)
 Route::post('/api/booking', [BookingController::class, 'store'])->name('api.booking.store');
