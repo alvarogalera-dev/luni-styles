@@ -10,46 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          
-      - name: Install Composer Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install NPM Dependencies
-        run: npm ci
-
-      - name: Build Assets
-        run: npm run build
-
-      - name: Deploy to VPS
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-rltgoDzvO --delete"
-          SOURCE: "/"
-          REMOTE_HOST: ${{ secrets.SERVER_IP }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          TARGET: "/home/lunistyles/htdocs/lunistyles.com/"
-          EXCLUDE: "/node_modules/, /.git/, /.github/"
-          
-      - name: Run Artisan Commands
+      - name: Execute Deployment on VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /home/lunistyles/htdocs/lunistyles.com
+            
+            # Remove any existing .git if it's the first time
+            if [ ! -d ".git" ]; then
+              git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/alvarogalera-dev/luni-styles.git temp_dir
+              mv temp_dir/.git .
+              rm -rf temp_dir
+              git reset --hard HEAD
+            fi
+            
+            # Configure git
+            git config pull.rebase false
+            
+            # Pull latest changes using token
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/alvarogalera-dev/luni-styles.git
+            git pull origin main
+            
+            # Install PHP dependencies
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            
+            # Install Node dependencies and build
+            npm ci
+            npm run build
+            
+            # Optimize Laravel
             php artisan optimize:clear
             php artisan storage:link
