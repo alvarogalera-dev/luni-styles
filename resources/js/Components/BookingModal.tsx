@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CreditCard, Scissors, Baby, Calendar as CalendarIcon, Clock, AlertCircle, User } from 'lucide-react';
+import { X, CreditCard, Scissors, Baby, Calendar as CalendarIcon, Clock, AlertCircle, User, Tag } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 import { format, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -18,6 +18,16 @@ interface BookingModalProps {
   initialServiceType?: 'barberia' | 'infantil' | null;
 }
 
+// ─── Promo de inauguración: 28 Sep 2026 – 12 Oct 2026 (hora españa)
+// Se calcula automáticamente; cuando pase el 12 Oct a las 00:01 CET desaparece solo
+function isOpeningPromoActive(): boolean {
+  const now = new Date();
+  // UTC offsets para hora española (CEST = UTC+2 en octubre)
+  const promoStart = new Date('2026-09-28T00:00:00+02:00');
+  const promoEnd   = new Date('2026-10-12T00:01:00+02:00');
+  return now >= promoStart && now < promoEnd;
+}
+
 const BARBERIA_SERVICES = [
   {
     id: 'b1',
@@ -26,6 +36,7 @@ const BARBERIA_SERVICES = [
     duration: 30,
     durationLabel: '30 min',
     price: 12,
+    promoPrice: 10,
   },
   {
     id: 'b2',
@@ -34,6 +45,7 @@ const BARBERIA_SERVICES = [
     duration: 60,
     durationLabel: '45–60 min',
     price: 15,
+    promoPrice: 13,
   },
   {
     id: 'b3',
@@ -42,6 +54,7 @@ const BARBERIA_SERVICES = [
     duration: 20,
     durationLabel: '15–30 min',
     price: 4,
+    promoPrice: 4,
   },
 ];
 
@@ -81,12 +94,12 @@ const COUNTRY_CODES = [
 ];
 
 const TIME_SLOTS = [
-  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-  '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'
+  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
 ];
 
 export default function BookingModal({ isOpen, onClose, initialServiceType }: BookingModalProps) {
   const [step, setStep] = useState(1);
+  const promoActive = isOpeningPromoActive();
 
   // Form State
   const [serviceType, setServiceType] = useState<'barberia' | 'infantil' | null>(null);
@@ -325,6 +338,13 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                     {step === 2 && (
                       <div className="space-y-4 text-bone">
                         <h3 className="text-xl md:text-2xl font-display font-bold text-center mb-5">Selecciona el servicio</h3>
+                        {/* Banner promo inauguración (sólo barberia + sólo durante la promo) */}
+                        {promoActive && !isKids && (
+                          <div className="mb-4 p-3 bg-amber-400/10 border border-amber-400/30 rounded-xl flex items-center gap-2.5">
+                            <Tag className="w-4 h-4 text-amber-400 shrink-0" />
+                            <p className="text-xs text-amber-300 font-bold">🎉 <span className="text-amber-400">Precio de Inauguración</span> — Solo durante las 2 primeras semanas (hasta el 12 Oct). ¡Aprovéchalo!</p>
+                          </div>
+                        )}
                         <div className="space-y-2.5">
                           {services.map(svc => (
                             <button
@@ -350,8 +370,17 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 </p>
                               </div>
                               {(svc as any).price != null && (
-                                <div className="font-display font-black text-xl md:text-2xl shrink-0 text-amber-400">
-                                  {(svc as any).price}€
+                                <div className="shrink-0 text-right">
+                                  {promoActive && !isKids && (svc as any).promoPrice && (svc as any).promoPrice !== (svc as any).price ? (
+                                    <>
+                                      <div className="text-steel line-through text-sm">{(svc as any).price}€</div>
+                                      <div className="font-display font-black text-xl md:text-2xl text-amber-400">{(svc as any).promoPrice}€</div>
+                                    </>
+                                  ) : (
+                                    <div className="font-display font-black text-xl md:text-2xl text-amber-400">
+                                      {(svc as any).price}€
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </button>

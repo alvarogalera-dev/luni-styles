@@ -74,16 +74,16 @@ export default function Home({ meta }: Props) {
               transition={{ duration: 0.9, ease: 'easeOut', delay: 0.35 }}
               className="space-y-3 md:space-y-4 max-w-xs md:max-w-sm"
             >
-              <p className="text-emerald-400 font-bold tracking-[0.3em] uppercase text-[9px] md:text-[11px]">La peluquería para niños</p>
+              <p className="text-[#00ff88] font-bold tracking-[0.3em] uppercase text-[9px] md:text-[11px] drop-shadow-[0_0_8px_rgba(0,255,136,0.6)]">La peluquería para niños</p>
               <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter text-white drop-shadow-xl leading-[1.05]">
-                Peluquería<br /><span className="text-emerald-400">Infantil</span>
+                Peluquería<br /><span className="text-[#00ff88] drop-shadow-[0_0_12px_rgba(0,255,136,0.5)]">Infantil</span>
               </h2>
               <p className="text-white/75 text-xs md:text-sm leading-relaxed hidden sm:block">
                 Cortes infantiles con pasión y cuidado, para las más peques.
               </p>
               <Link
                 href="/peluqueria-infantil"
-                className="inline-flex items-center gap-2 px-5 py-3 md:px-7 md:py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold tracking-widest uppercase text-[10px] md:text-xs rounded-full transition-all duration-300 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 px-5 py-3 md:px-7 md:py-3.5 bg-[#00e676] hover:bg-[#00ff88] text-[#001a0d] font-bold tracking-widest uppercase text-[10px] md:text-xs rounded-full transition-all duration-300 shadow-xl shadow-[#00ff88]/40 hover:scale-105 active:scale-95"
               >
                 Entrar →
               </Link>
@@ -159,7 +159,7 @@ export default function Home({ meta }: Props) {
             </Link>
           </motion.div>
 
-          {/* Lado Infantil (Claro) */}
+          {/* Lado Infantil (Claro + Verde vibrante) */}
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -169,15 +169,15 @@ export default function Home({ meta }: Props) {
           >
             <Link
               href="/peluqueria-infantil"
-              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#f8fafc] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full block"
+              className="flex-1 flex flex-col items-center justify-center p-10 lg:p-24 bg-[#00150a] relative group overflow-hidden cursor-pointer text-center transition-colors duration-300 w-full block"
             >
-              <div className="absolute inset-0 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="absolute inset-0 bg-[#00e676]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               <div className="relative z-10 text-center max-w-sm space-y-6 mx-auto">
-                <h2 className="font-display font-black text-4xl md:text-5xl text-[#0f172a] tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
+                <h2 className="font-display font-black text-4xl md:text-5xl text-white tracking-tighter uppercase transition-transform duration-300 group-hover:scale-105">
                   Peluquería Infantil
                 </h2>
-                <div className="w-12 h-1 bg-emerald-400 mx-auto rounded-full" />
-                <p className="text-[#475569] text-sm md:text-base leading-relaxed">
+                <div className="w-12 h-1 bg-[#00e676] mx-auto rounded-full" />
+                <p className="text-white/70 text-sm md:text-base leading-relaxed">
                   Un entorno seguro y divertido diseñado especialmente para los más pequeños. Con la paciencia y el cariño que requieren, convertimos el corte de pelo en una experiencia positiva y agradable.
                 </p>
                 <button 
@@ -186,7 +186,7 @@ export default function Home({ meta }: Props) {
                     e.stopPropagation();
                     document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil' } }));
                   }}
-                  className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#0f172a] hover:bg-[#1e293b] text-white rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-xl shadow-slate-200 relative z-20"
+                  className="inline-block mt-4 px-8 py-3 md:py-4 bg-[#00e676] hover:bg-[#00ff88] text-[#001a0d] rounded-full text-xs font-black tracking-widest uppercase transition-all duration-300 shadow-xl shadow-[#00e676]/30 relative z-20"
                 >
                   Reservar Cita
                 </button>

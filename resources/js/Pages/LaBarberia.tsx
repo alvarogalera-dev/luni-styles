@@ -2,7 +2,15 @@ import RootLayout from '@/Layouts/RootLayout';
 import SequenceScroll from '@/Components/SequenceScroll';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Tag } from 'lucide-react';
+
+// Promo de inauguración: 28 Sep 2026 – 12 Oct 2026 (zona horaria CET/CEST)
+function isOpeningPromoActive(): boolean {
+  const now = new Date();
+  const promoStart = new Date('2026-09-28T00:00:00+02:00');
+  const promoEnd   = new Date('2026-10-12T00:01:00+02:00');
+  return now >= promoStart && now < promoEnd;
+}
 
 interface Meta { title: string; description: string; }
 interface Props { meta: Meta; }
@@ -28,6 +36,7 @@ const services = [
   {
     name: 'Corte Normal',
     price: '12€',
+    promoPrice: '10€',
     duration: '30 min',
     includes: 'Corte de pelo · Lavado · Cejas',
     img: '/images/fade.webp',
@@ -35,6 +44,7 @@ const services = [
   {
     name: 'Corte + Barba',
     price: '15€',
+    promoPrice: '13€',
     duration: '45–60 min',
     includes: 'Corte de pelo · Lavado · Cejas · Barba',
     img: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop',
@@ -42,6 +52,7 @@ const services = [
   {
     name: 'Barba',
     price: '4€',
+    promoPrice: '4€',
     duration: '15–30 min',
     includes: 'Arreglo de barba',
     img: '/images/barba.avif',
@@ -125,6 +136,7 @@ function GalleryCarousel() {
 export default function LaBarberia({ meta }: Props) {
   const teamRef = useRef<HTMLDivElement>(null);
   const teamInView = useInView(teamRef, { once: true, margin: '-10%' });
+  const promoActive = isOpeningPromoActive();
 
   return (
     <RootLayout meta={meta}>
@@ -141,6 +153,17 @@ export default function LaBarberia({ meta }: Props) {
               <p className="text-amber-400 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-3">La Carta</p>
               <h2 className="font-display font-black text-3xl md:text-6xl tracking-tighter text-white">Nuestros Servicios.</h2>
             </div>
+
+            {/* Banner promo inauguración */}
+            {promoActive && (
+              <div className="mb-8 p-4 bg-amber-400/10 border border-amber-400/30 rounded-2xl flex items-start gap-3">
+                <Tag className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-amber-400 font-bold text-sm">🎉 Precio Especial de Inauguración</p>
+                  <p className="text-amber-300/80 text-xs mt-1">Precios rebajados durante nuestras 2 primeras semanas. Oferta válida hasta el <strong>lunes 12 de octubre de 2026</strong>. ¡Aprovecha y reserva ya!</p>
+                </div>
+              </div>
+            )}
 
             {/* Mobile: vertical stack | Tablet+: grid 3 cols */}
             <div className="flex flex-col md:grid md:grid-cols-3 gap-5 md:gap-8">
@@ -167,11 +190,20 @@ export default function LaBarberia({ meta }: Props) {
                         loading="lazy"
                       />
                     </div>
-                    <div className="p-5 md:p-7">
+                  <div className="p-5 md:p-7">
                       {/* Name & price on same row */}
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg md:text-2xl font-display font-bold leading-tight">{svc.name}</h3>
-                        <span className="text-xl md:text-2xl font-black text-amber-400 shrink-0 ml-2">{svc.price}</span>
+                        <div className="shrink-0 ml-2 text-right">
+                          {promoActive && svc.promoPrice && svc.promoPrice !== svc.price ? (
+                            <>
+                              <span className="text-steel line-through text-sm block">{svc.price}</span>
+                              <span className="text-xl md:text-2xl font-black text-amber-400">{svc.promoPrice}</span>
+                            </>
+                          ) : (
+                            <span className="text-xl md:text-2xl font-black text-amber-400">{svc.price}</span>
+                          )}
+                        </div>
                       </div>
                       {/* Duration */}
                       <div className="flex items-center gap-1.5 text-steel text-[10px] uppercase tracking-wider mb-3">

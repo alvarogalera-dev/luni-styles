@@ -12,7 +12,7 @@ const faqs = [
   { q: '¿A partir de qué edad cortáis el pelo a niños?', a: 'Atendemos a niños desde los primeros meses de vida. Tenemos experiencia en el primer corte de bebés y contamos con el material y la paciencia necesaria para que sea una experiencia tranquila y agradable.' },
   { q: '¿Vendéis productos para el cuidado en casa?', a: 'Sí. En nuestra tienda física disponemos de una selección de productos de barbería (ceras, geles de fijación) y también gafas de sol. Puedes consultarnos directamente en el local.' },
   { q: '¿Puedo cancelar o modificar mi cita?', a: 'Sí. Para cancelar o modificar una cita, por favor contáctanos con al menos 24 horas de antelación por teléfono o por mensaje a nuestras redes sociales. Consulta nuestros Términos de Reserva para más información.' },
-  { q: '¿Cuáles son vuestro horario de apertura?', a: 'Abrimos de lunes a viernes de 10:00 a 14:00 y de 17:00 a 20:00. Los sábados y domingos permanecemos cerrados. En épocas especiales (verano, festivos) podemos ajustar el horario; te recomendamos consultarlo antes de venir.' },
+  { q: '¿Cuáles son vuestro horario de apertura?', a: 'Abrimos de lunes a viernes de 16:00 a 21:00. Los sábados y domingos permanecemos cerrados. En épocas especiales (festivos) podemos ajustar el horario; te recomendamos consultarlo antes de venir.' },
   { q: '¿Ofrecéis servicios para toda la familia?', a: 'Sí. Luni Styles combina barbería para adultos y peluquería infantil en el mismo espacio, por lo que puedes reservar cita para ti y para tus hijos en la misma visita sin necesidad de desplazarte a otro establecimiento.' },
   { q: '¿Cómo puedo llegar al local?', a: 'Estamos ubicados en C. Pedro Hernández Guillamón "El Peseta", 5, en Alcantarilla (Murcia). Dispones de aparcamiento en las calles del entorno. Puedes ver la ubicación exacta en el mapa de esta misma página.' },
 ];
@@ -188,7 +188,7 @@ export default function Contacto({ meta }: Props) {
                       { day: 'Viernes' },
                     ].map((d) => (
                       <p key={d.day} className="text-steel text-sm">
-                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 10:00 – 14:00 | 17:00 – 20:00
+                        <span className="text-amber-400 font-bold inline-block w-24">{d.day}:</span> 16:00 – 21:00
                       </p>
                     ))}
                     <p className="text-steel text-sm">
