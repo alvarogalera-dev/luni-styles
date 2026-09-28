@@ -17,7 +17,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-[#0a0a0a] from-50% to-[#fdfbf7] to-50% flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden text-bone">
-            <Head title="Acceso Panel - Luni Styles" />
+            <Head title="Acceso Panel" />
 
             {/* Background elements */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/10 rounded-full blur-[120px] pointer-events-none" />
@@ -31,7 +31,7 @@ export default function Login() {
                     className="text-center"
                 >
                     <h2 className="font-display font-black text-4xl tracking-tighter bg-gradient-to-r from-white from-50% to-[#0a0a0a] to-50% bg-clip-text text-transparent">
-                        Panel de Control
+                        Acceso Panel
                     </h2>
                     <p className="mt-2 text-sm text-steel">Acceso restringido para personal autorizado.</p>
                 </motion.div>
