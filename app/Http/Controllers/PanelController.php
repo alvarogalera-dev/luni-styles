@@ -348,7 +348,13 @@ class PanelController extends Controller
             });
 
         // 5. Clientes penalizados
-        $clientesPenalizados = Client::where('penalty_flag', true)->count();
+        $clientesPenalizadosQuery = Client::where('penalty_flag', true);
+        if ($statType !== 'general') {
+            $clientesPenalizadosQuery->whereHas('appointments', function ($q) use ($statType) {
+                $q->where('service_type', $statType);
+            });
+        }
+        $clientesPenalizados = $clientesPenalizadosQuery->count();
 
         // 6. Tasa de asistencia
         $queryBase2 = Appointment::whereIn('status', ['completed', 'no-show']);

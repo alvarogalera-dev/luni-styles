@@ -248,8 +248,9 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.97, opacity: 0, y: 30 }}
               transition={{ type: 'spring', stiffness: 350, damping: 35 }}
-              className="w-full sm:max-w-xl bg-[#111] border border-onyx sm:rounded-3xl rounded-t-3xl shadow-2xl pointer-events-auto relative flex flex-col"
-              style={{ maxHeight: '92vh' }}
+              className="w-full sm:max-w-xl border sm:rounded-3xl rounded-t-3xl shadow-2xl pointer-events-auto relative flex flex-col bg-[#111]"
+              style={{ maxHeight: '92vh', transition: 'background-color 0.4s ease' }}
+              data-theme={step === 1 ? 'split' : (serviceType === 'infantil' ? 'kids' : 'dark')}
             >
               {/* Drag handle visible on mobile */}
               <div className="sm:hidden w-10 h-1 bg-white/20 rounded-full mx-auto mt-3 mb-1 shrink-0" />
@@ -446,7 +447,6 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             }
                             .rdp-outside { opacity: 0.3 !important; pointer-events: none; }
                             .rdp-caption_label { text-transform: capitalize; }
-                            /* Scale down calendar on mobile */
                             @media (max-width: 400px) {
                               .rdp { transform: scale(0.88); transform-origin: top center; }
                             }

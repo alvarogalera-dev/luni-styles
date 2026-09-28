@@ -218,7 +218,22 @@ body:has([data-theme="kids"]) {
 
 [data-theme="kids"] .rdp-dropdown { border: 1px solid rgba(0,0,0,0.1) !important; color: #111827 !important; }
 [data-theme="kids"] .rdp-dropdown option { background-color: #ffffff !important; color: #111827 !important; }
+[data-theme="kids"] .rdp-button { color: #111827 !important; }
+[data-theme="kids"] .rdp-button[disabled] { color: #9ca3af !important; }
 [data-theme="kids"] .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
 [data-theme="kids"] .rdp-selected .rdp-button, [data-theme="kids"] button.rdp-selected { color: #10b981 !important; border-color: #10b981 !important; }
 [data-theme="kids"] .rdp-today .rdp-button, [data-theme="kids"] button.rdp-today { color: #10b981 !important; }
 [data-theme="kids"] .rdp-nav_button, [data-theme="kids"] .rdp-chevron { color: #10b981 !important; fill: #10b981 !important; }
+
+/* ── Split Theme Overrides ── */
+[data-theme="split"] {
+  background: linear-gradient(90deg, #111 50%, #fdfbf7 50%) !important;
+}
+[data-theme="split"] h3 {
+  color: #fff !important;
+  mix-blend-mode: difference;
+}
+[data-theme="split"] button:has(.lucide-x) {
+  background-color: #f3f4f6 !important;
+  color: #4b5563 !important;
+}

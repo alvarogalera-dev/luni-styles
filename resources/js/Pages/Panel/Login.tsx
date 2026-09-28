@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Lock, Mail, AlertCircle } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
+    const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -15,18 +16,18 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden text-bone">
+        <div className="min-h-screen bg-gradient-to-r from-[#0a0a0a] from-50% to-[#fdfbf7] to-50% flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden text-bone">
             <Head title="Acceso Panel - Luni Styles" />
 
             {/* Background elements */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/20 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-900/20 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-900/10 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
                 <motion.div 
-                    initial={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.2 }}
                     className="text-center"
                 >
                     <h2 className="font-display font-black text-4xl text-white tracking-tighter">Panel de Control</h2>
@@ -36,9 +37,9 @@ export default function Login() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
+                    transition={{ duration: 0.2 }}
                     className="bg-[#111] py-8 px-6 sm:px-10 shadow-2xl rounded-3xl border border-white/10"
                 >
                     <form className="space-y-6" onSubmit={submit}>
@@ -77,13 +78,20 @@ export default function Login() {
                                     <Lock className="h-5 w-5 text-steel/50" />
                                 </div>
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
-                                    className="block w-full pl-12 pr-4 py-3 bg-carbon border border-white/10 rounded-xl text-white placeholder-steel/30 focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all outline-none"
+                                    className="block w-full pl-12 pr-12 py-3 bg-carbon border border-white/10 rounded-xl text-white placeholder-steel/30 focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all outline-none"
                                     placeholder="••••••••"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-steel hover:text-white transition-colors focus:outline-none"
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
                             </div>
                         </div>
 
