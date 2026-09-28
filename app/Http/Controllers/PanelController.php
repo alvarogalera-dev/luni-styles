@@ -276,6 +276,10 @@ class PanelController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->role === 'superadmin' && empty($type)) {
+            return redirect()->route('panel.estadisticas', ['type' => 'barberia']);
+        }
+
         $baseQuery = Appointment::where('status', 'completed');
 
         $statType = 'general';

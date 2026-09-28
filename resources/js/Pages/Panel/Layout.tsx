@@ -99,7 +99,7 @@ export default function PanelLayout({ children, title, user }: Props) {
     );
 
     return (
-        <div className="min-h-screen bg-[#050505] text-bone font-sans flex">
+        <div className="min-h-screen bg-[#050505] text-bone font-sans flex" data-theme={user?.role === 'hairdresser' ? 'kids' : 'dark'}>
             <Head title="Panel de Control" />
 
             {/* Mobile Header */}

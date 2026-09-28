@@ -187,3 +187,38 @@
     letter-spacing: -0.04em;
   }
 }
+
+/* ── Kids Panel Theme Overrides ── */
+body:has([data-theme="kids"]) {
+  background-color: #fdfbf7 !important;
+}
+[data-theme="kids"] {
+  background-color: #fdfbf7 !important;
+  color: #111827 !important;
+}
+[data-theme="kids"] .bg-\[\#050505\] { background-color: #fdfbf7 !important; }
+[data-theme="kids"] .bg-\[\#0a0a0a\], [data-theme="kids"] .bg-\[\#111\], [data-theme="kids"] .bg-\[\#161616\] { background-color: #ffffff !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+[data-theme="kids"] .bg-carbon, [data-theme="kids"] .bg-carbon\/50 { background-color: #f3f4f6 !important; }
+
+[data-theme="kids"] .text-bone, [data-theme="kids"] .text-white { color: #111827 !important; }
+[data-theme="kids"] .text-steel { color: #4b5563 !important; }
+[data-theme="kids"] .text-void { color: #ffffff !important; }
+
+[data-theme="kids"] .border-white\/5, [data-theme="kids"] .border-white\/10 { border-color: rgba(0,0,0,0.08) !important; }
+[data-theme="kids"] .border-onyx { border-color: rgba(0,0,0,0.1) !important; }
+
+[data-theme="kids"] .text-amber-400 { color: #10b981 !important; }
+[data-theme="kids"] .bg-amber-400 { background-color: #10b981 !important; color: white !important; }
+[data-theme="kids"] .hover\:bg-amber-300:hover { background-color: #059669 !important; }
+[data-theme="kids"] .bg-amber-400\/10 { background-color: rgba(16, 185, 129, 0.1) !important; }
+[data-theme="kids"] .border-amber-400\/20 { border-color: rgba(16, 185, 129, 0.2) !important; }
+[data-theme="kids"] .border-amber-400\/40 { border-color: rgba(16, 185, 129, 0.4) !important; }
+[data-theme="kids"] .focus\:border-amber-400:focus { border-color: #10b981 !important; }
+[data-theme="kids"] .shadow-amber-400\/20 { box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.2) !important; }
+
+[data-theme="kids"] .rdp-dropdown { border: 1px solid rgba(0,0,0,0.1) !important; color: #111827 !important; }
+[data-theme="kids"] .rdp-dropdown option { background-color: #ffffff !important; color: #111827 !important; }
+[data-theme="kids"] .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
+[data-theme="kids"] .rdp-selected .rdp-button, [data-theme="kids"] button.rdp-selected { color: #10b981 !important; border-color: #10b981 !important; }
+[data-theme="kids"] .rdp-today .rdp-button, [data-theme="kids"] button.rdp-today { color: #10b981 !important; }
+[data-theme="kids"] .rdp-nav_button, [data-theme="kids"] .rdp-chevron { color: #10b981 !important; fill: #10b981 !important; }
