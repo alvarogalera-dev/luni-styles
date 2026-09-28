@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@inertiajs/react": "^2.0.0",
+        "@vitalets/google-translate-api": "^9.2.1",
         "clsx": "^2.1.1",
         "date-fns": "^4.4.0",
         "framer-motion": "^13.2.0",

@@ -2,15 +2,12 @@ import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
 import LenisProvider from '@/Components/LenisProvider';
 import CookieBanner from '@/Components/CookieBanner';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 
-declare global {
-  interface Window {
-    googleTranslateElementInit: () => void;
-    google: any;
-  }
-}
+// Optional: you can import the translations statically, but to avoid large bundle size we could fetch it,
+// however importing is fine for ~500 strings.
+import translationsData from '../translations.json';
 
 interface Meta {
   title?: string;
@@ -25,55 +22,80 @@ interface RootLayoutProps {
 export default function RootLayout({ children, meta }: RootLayoutProps) {
   const { props } = usePage();
   const currentLocale = (props as any).locale || 'es';
+  const [isTranslating, setIsTranslating] = useState(currentLocale !== 'es');
 
   useEffect(() => {
-    // Add google translate div if it doesn't exist
-    if (!document.getElementById('google_translate_element')) {
-      const gt = document.createElement('div');
-      gt.id = 'google_translate_element';
-      gt.style.display = 'none';
-      document.body.appendChild(gt);
-
-      // Add script
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      document.body.appendChild(script);
-
-      window.googleTranslateElementInit = () => {
-        new window.google.translate.TranslateElement({
-          pageLanguage: 'es',
-          includedLanguages: 'es,en,ru,zh-CN',
-          autoDisplay: false
-        }, 'google_translate_element');
-      };
+    if (currentLocale === 'es') {
+      setIsTranslating(false);
+      return;
     }
-  }, []);
 
-  useEffect(() => {
-    const checkAndTranslate = () => {
-      const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-      if (select) {
-        let langVal = '';
-        if (currentLocale === 'en') langVal = 'en';
-        else if (currentLocale === 'ru') langVal = 'ru';
-        else if (currentLocale === 'cn') langVal = 'zh-CN';
-        else langVal = 'es'; // default
-        
-        if (select.value !== langVal) {
-          select.value = langVal;
-          select.dispatchEvent(new Event('change'));
+    const dict = (translationsData as any)[currentLocale];
+    if (!dict) {
+      setIsTranslating(false);
+      return;
+    }
+
+    let isDisconnecting = false;
+    let observer: MutationObserver;
+
+    const translateNode = (node: Node) => {
+      if (isDisconnecting) return;
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const tag = (node as HTMLElement).tagName?.toLowerCase();
+        if (['script', 'style', 'noscript', 'code'].includes(tag)) return;
+        // check placeholders
+        if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement) {
+          const ph = node.getAttribute('placeholder');
+          if (ph && dict[ph]) node.setAttribute('placeholder', dict[ph]);
+        }
+      }
+      
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent || '';
+        const trimmed = text.trim();
+        // Replace if we have an exact match for the trimmed content
+        if (trimmed && dict[trimmed] && dict[trimmed] !== trimmed) {
+          node.textContent = text.replace(trimmed, dict[trimmed]);
         }
       } else {
-        setTimeout(checkAndTranslate, 500);
+        node.childNodes.forEach(translateNode);
       }
     };
-    checkAndTranslate();
+
+    // Initial translation pass
+    translateNode(document.body);
+    setIsTranslating(false);
+
+    // Watch for dynamic updates (React state changes, modales, etc.)
+    observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(n => translateNode(n));
+        } else if (mutation.type === 'characterData') {
+          // Careful with infinite loops: translateNode only replaces if the text matches Spanish dictionary
+          translateNode(mutation.target);
+        }
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+
+    return () => {
+      isDisconnecting = true;
+      if (observer) observer.disconnect();
+    };
   }, [currentLocale]);
 
   return (
     <LenisProvider>
-      {/* SEO */}
+      {/* Hide content to prevent flash of untranslated text */}
+      <div style={{ opacity: isTranslating ? 0 : 1, transition: 'opacity 0.2s ease-in-out' }}>
+        {/* SEO */}
       <Head>
         <title>{meta?.title ?? 'Luni Styles'}</title>
         <meta
@@ -95,6 +117,7 @@ export default function RootLayout({ children, meta }: RootLayoutProps) {
         <main>{children}</main>
         <Footer />
         <CookieBanner />
+      </div>
       </div>
     </LenisProvider>
   );
