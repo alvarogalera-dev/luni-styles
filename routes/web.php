@@ -31,6 +31,10 @@ Route::post('/api/available-slots', [BookingController::class, 'getAvailableSlot
 Route::post('/api/barbers-availability', [BookingController::class, 'getBarbersAvailability'])->name('api.barbers-availability');
 Route::post('/api/contact', [ContactController::class, 'send'])->name('api.contact.send');
 
+// Webhook para despliegues
+use App\Http\Controllers\WebhookController;
+Route::post('/api/webhook/github', [WebhookController::class, 'deploy']);
+
 // Panel Routes
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\ShopController;

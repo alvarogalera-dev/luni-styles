@@ -180,6 +180,20 @@ function FormModal({ title, fields, values, onChange, onSave, onClose, isSubmitt
 export default function Shop({ services, products, localMedia, catalogPhotos, shopType, user }: any) {
     const [activeTab, setActiveTab] = useState<'services' | 'products' | 'local' | 'catalog'>('services');
 
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '');
+            if (['services', 'products', 'local', 'catalog'].includes(hash)) {
+                setActiveTab(hash as any);
+            } else {
+                setActiveTab('services');
+            }
+        };
+        handleHashChange();
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
     // Service form state
     const [serviceModal, setServiceModal] = useState<{ mode: 'create' | 'edit'; item?: any } | null>(null);
     const [serviceForm, setServiceForm] = useState<any>({});
@@ -207,7 +221,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     // ── Services ──────────────────────────────────────────────────────────────
 
     const openCreateService = () => {
-        setServiceForm({ name: '', description: '', duration_minutes: 30, duration_label: '', price: '', promo_price: '' });
+        setServiceForm({ name: '', description: '', duration_minutes: 30, duration_label: '', price: '', promo_price: '', photo_url: '' });
         setServicePhoto(null);
         setServicePhotoPreview(null);
         setServiceModal({ mode: 'create' });
@@ -221,6 +235,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
             duration_label: item.duration_label || '',
             price: item.price?.toString() || '',
             promo_price: item.promo_price?.toString() || '',
+            photo_url: item.photo_url || '',
         });
         setServicePhoto(null);
         setServicePhotoPreview(item.photo_url || null);
@@ -253,7 +268,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     // ── Products ──────────────────────────────────────────────────────────────
 
     const openCreateProduct = () => {
-        setProductForm({ name: '', description: '', price: '' });
+        setProductForm({ name: '', tag: '', description: '', price: '', photo_url: '' });
         setProductPhoto(null);
         setProductPhotoPreview(null);
         setProductModal({ mode: 'create' });
@@ -262,8 +277,10 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     const openEditProduct = (item: any) => {
         setProductForm({
             name: item.name || '',
+            tag: item.tag || '',
             description: item.description || '',
             price: item.price?.toString() || '',
+            photo_url: item.photo_url || '',
         });
         setProductPhoto(null);
         setProductPhotoPreview(item.photo_url || null);
@@ -496,7 +513,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Descripción</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Descripción *</label>
                                     <textarea value={serviceForm.description} onChange={e => setServiceForm((p: any) => ({...p, description: e.target.value}))}
                                         rows={3}
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all resize-none" />
@@ -509,7 +526,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                             className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Etiqueta duración</label>
+                                        <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Etiqueta duración *</label>
                                         <input type="text" placeholder="ej: 30-45 min" value={serviceForm.duration_label}
                                             onChange={e => setServiceForm((p: any) => ({...p, duration_label: e.target.value}))}
                                             className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
@@ -518,7 +535,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                 {isBarber && (
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Precio normal (€)</label>
+                                            <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Precio normal (€) *</label>
                                             <input type="number" min={0} step={0.5} value={serviceForm.price}
                                                 onChange={e => setServiceForm((p: any) => ({...p, price: e.target.value}))}
                                                 className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
@@ -532,7 +549,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                     </div>
                                 )}
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto * (Archivo o URL)</label>
                                     {servicePhotoPreview && (
                                         <div className="mb-3 relative">
                                             <img src={servicePhotoPreview} alt="preview" className="w-full h-40 object-cover rounded-xl border border-white/10" />
@@ -548,6 +565,13 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                         <input type="file" accept="image/*" className="hidden"
                                             onChange={e => handleFileChange(e, setServicePhoto, setServicePhotoPreview)} />
                                     </label>
+                                    <div className="mt-2 text-center text-steel text-xs uppercase font-bold">O</div>
+                                    <input type="text" placeholder="https://ejemplo.com/foto.jpg" value={serviceForm.photo_url}
+                                        onChange={e => {
+                                            setServiceForm((p: any) => ({...p, photo_url: e.target.value}));
+                                            if (e.target.value) setServicePhotoPreview(e.target.value);
+                                        }}
+                                        className="w-full mt-2 bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                             </div>
                         }
@@ -571,19 +595,24 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Descripción</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Etiqueta</label>
+                                    <input type="text" placeholder="ej: Cera mate" value={productForm.tag} onChange={e => setProductForm((p: any) => ({...p, tag: e.target.value}))}
+                                        className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Descripción *</label>
                                     <textarea value={productForm.description} onChange={e => setProductForm((p: any) => ({...p, description: e.target.value}))}
                                         rows={3}
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all resize-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Precio (€)</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Precio (€) *</label>
                                     <input type="number" min={0} step={0.5} value={productForm.price}
                                         onChange={e => setProductForm((p: any) => ({...p, price: e.target.value}))}
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto * (Archivo o URL)</label>
                                     {productPhotoPreview && (
                                         <div className="mb-3 relative">
                                             <img src={productPhotoPreview} alt="preview" className="w-full h-40 object-cover rounded-xl border border-white/10" />
@@ -599,6 +628,13 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                         <input type="file" accept="image/*" className="hidden"
                                             onChange={e => handleFileChange(e, setProductPhoto, setProductPhotoPreview)} />
                                     </label>
+                                    <div className="mt-2 text-center text-steel text-xs uppercase font-bold">O</div>
+                                    <input type="text" placeholder="https://ejemplo.com/foto.jpg" value={productForm.photo_url}
+                                        onChange={e => {
+                                            setProductForm((p: any) => ({...p, photo_url: e.target.value}));
+                                            if (e.target.value) setProductPhotoPreview(e.target.value);
+                                        }}
+                                        className="w-full mt-2 bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                             </div>
                         }

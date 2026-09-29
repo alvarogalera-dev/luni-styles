@@ -17,29 +17,23 @@ import { twMerge } from 'tailwind-merge';
 
 // CSS para colorear de amarillo el calendario del panel
 const panelCalendarCss = `
-  .rdp-panel .rdp-nav_button, .rdp-panel .rdp-nav_icon, .rdp-panel .rdp-chevron {
-    color: #fbbf24 !important;
-    fill: #fbbf24 !important;
-    stroke: #fbbf24 !important;
+  .rdp { --rdp-accent-color: transparent; margin: 0; }
+  .rdp-day, .rdp-cell { border: none !important; background: transparent !important; border-radius: 50% !important; }
+  .rdp-button, .rdp-day_button {
+    border-radius: 50% !important;
+    border: none !important;
+    width: 40px !important; height: 40px !important;
   }
-  .rdp-panel .rdp-selected .rdp-day_button, .rdp-panel button.rdp-selected {
+  .rdp-day_selected, .rdp-day_selected:hover {
     background-color: #fbbf24 !important;
     color: #000 !important;
-    border: 2px solid #fbbf24 !important;
-    border-radius: 50% !important;
-    font-weight: bold !important;
-  }
-  .rdp-panel .rdp-today .rdp-day_button, .rdp-panel button.rdp-today {
-    color: #fbbf24 !important;
     font-weight: bold;
   }
-  .rdp-panel .rdp-button:hover:not([disabled]) {
-    background-color: #27272a !important;
-    color: #fbbf24 !important;
-    border-radius: 50%;
-  }
-  .rdp-panel .rdp-dropdown { background-color: #111 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; }
-  .rdp-panel .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+  .rdp-day_today { color: #fbbf24; font-weight: bold; }
+  .rdp-button:hover:not([disabled]) { background-color: #27272a; color: white; }
+  .rdp-nav_button, .rdp-nav_icon { color: #fbbf24 !important; fill: #fbbf24 !important; }
+  .rdp-dropdown { background-color: #111 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; }
+  .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
 `;
 
 function cn(...inputs: (string | undefined | null | false)[]) {
@@ -149,6 +143,75 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
     );
 }
 
+// ─── HELPER: Selector de barbero en tiempo real ───
+function BarberPicker({ fecha, hora, duration, value, onChange }: any) {
+    const [barbers, setBarbers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!fecha || !hora) { setBarbers([]); return; }
+        setLoading(true);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        fetch('/api/barbers-availability', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({
+                date: format(fecha, 'yyyy-MM-dd'),
+                time: hora,
+                duration: duration || 30
+            }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            const list = data.barbers || [];
+            setBarbers(list);
+            // Auto-select si solo hay 1
+            if (list.length > 0) {
+                const available = list.filter((b: any) => b.available);
+                if (available.length === 1 && !value) {
+                    onChange(available[0].id);
+                } else if (!available.some((b: any) => b.id === value)) {
+                    onChange(null); // Reset if selected barber is no longer available
+                }
+            }
+        })
+        .catch(() => setBarbers([]))
+        .finally(() => setLoading(false));
+    }, [fecha, hora, duration]);
+
+    if (!fecha || !hora) return null;
+
+    return (
+        <div className="bg-carbon/50 p-4 rounded-2xl border border-white/10 mt-3">
+            <p className="text-xs uppercase text-steel font-bold mb-3 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5" /> Elige tu barbero
+            </p>
+            {loading ? (
+                <div className="flex justify-center py-3">
+                    <span className="w-5 h-5 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 gap-2">
+                    {barbers.map((b) => (
+                        <button
+                            key={b.id} type="button" disabled={!b.available}
+                            onClick={() => onChange(b.id)}
+                            className={cn(
+                                'relative flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all border',
+                                !b.available ? 'opacity-40 cursor-not-allowed bg-[#0a0a0a] border-white/5 text-steel/50' :
+                                value === b.id ? 'bg-amber-400 text-void border-amber-400 shadow-lg' :
+                                'bg-[#111] text-ash border-white/10 hover:border-amber-400/50 hover:text-white'
+                            )}>
+                            <span className={!b.available ? 'line-through' : ''}>{b.name}</span>
+                            {!b.available && <X className="w-3 h-3 absolute right-2 top-2 text-steel/40" />}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── FORM COMPARTIDO para crear/editar ───
 function AppointmentForm({ formData, setFormData, user }: any) {
     const currentServices = formData.tipo_servicio === 'barberia' ? BARBERIA_SERVICES : INFANTIL_SERVICES;
@@ -173,15 +236,15 @@ function AppointmentForm({ formData, setFormData, user }: any) {
                             onChange={e => setFormData((p: any) => ({...p, nombre: e.target.value}))} />
                     </div>
                     <div>
-                        <label className="text-xs text-steel/70 mb-1 block">Apellidos *</label>
-                        <input required type="text" maxLength={100}
+                        <label className="text-xs text-steel/70 mb-1 block">Apellidos <span className="text-steel/40">(opcional)</span></label>
+                        <input type="text" maxLength={100}
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                             value={formData.apellidos}
                             onChange={e => setFormData((p: any) => ({...p, apellidos: e.target.value}))} />
                     </div>
                     <div>
-                        <label className="text-xs text-steel/70 mb-1 block">Teléfono <span className="text-steel/40">(opcional)</span></label>
-                        <input type="text" maxLength={30}
+                        <label className="text-xs text-steel/70 mb-1 block">Teléfono *</label>
+                        <input required type="text" maxLength={30}
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                             value={formData.telefono}
                             onChange={e => setFormData((p: any) => ({...p, telefono: e.target.value}))} />
@@ -219,37 +282,32 @@ function AppointmentForm({ formData, setFormData, user }: any) {
                             </select>
                         </div>
                     )}
-                    <div>
+                    <div className={formData.tipo_servicio === 'barberia' ? "col-span-2" : ""}>
                         <label className="text-xs text-steel/70 mb-1 block">Servicio *</label>
                         <select required
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
                             value={formData.servicio}
-                            onChange={e => setFormData((p: any) => ({...p, servicio: e.target.value, hora: null}))}>
+                            onChange={e => setFormData((p: any) => ({...p, servicio: e.target.value, hora: null, empleado_id: formData.tipo_servicio === 'peluqueria_infantil' ? 3 : null}))}>
                             <option value="" disabled>Selecciona...</option>
                             {currentServices.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                         </select>
                     </div>
-                    <div>
-                        <label className="text-xs text-steel/70 mb-1 block">Empleado</label>
-                        <select
-                            className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
-                            value={formData.empleado_id}
-                            onChange={e => setFormData((p: any) => ({...p, empleado_id: Number(e.target.value)}))}>
-                            {formData.tipo_servicio === 'barberia' ? (
-                                <>
-                                    <option value={1}>Luis (Barbero)</option>
-                                    <option value={2}>Carlos (Barbero)</option>
-                                </>
-                            ) : (
+                    {formData.tipo_servicio === 'peluqueria_infantil' && (
+                        <div>
+                            <label className="text-xs text-steel/70 mb-1 block">Empleado</label>
+                            <select
+                                className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
+                                value={formData.empleado_id || 3}
+                                onChange={e => setFormData((p: any) => ({...p, empleado_id: Number(e.target.value)}))}>
                                 <option value={3}>Mariely (Infantil)</option>
-                            )}
-                        </select>
-                    </div>
+                            </select>
+                        </div>
+                    )}
                     <div className="col-span-2">
                         <label className="text-xs text-steel/70 mb-1 block">Precio (automático)</label>
                         <input type="text" readOnly
                             className="w-full bg-[#0a0a0a] border border-white/5 rounded-xl p-3 text-steel text-sm cursor-not-allowed"
-                            value={formData.precio ? (formData.precio + (formData.precio !== 'Consultar' ? '€' : '')) : '—'} />
+                            value={formData.precio ? formData.precio + '€' : '—'} />
                     </div>
                 </div>
             </div>
@@ -274,9 +332,18 @@ function AppointmentForm({ formData, setFormData, user }: any) {
                     servicio={formData.servicio}
                     tipo_servicio={formData.tipo_servicio}
                     value={formData.hora}
-                    onChange={(t: string) => setFormData((p: any) => ({...p, hora: t}))}
+                    onChange={(t: string) => setFormData((p: any) => ({...p, hora: t, empleado_id: null}))}
                     existingHora={null}
                 />
+                {formData.tipo_servicio === 'barberia' && (
+                    <BarberPicker
+                        fecha={formData.fecha}
+                        hora={formData.hora}
+                        duration={currentServices.find(s => s.name === formData.servicio)?.duration}
+                        value={formData.empleado_id}
+                        onChange={(id: number | null) => setFormData((p: any) => ({...p, empleado_id: id}))}
+                    />
+                )}
             </div>
 
             {/* Observaciones */}

@@ -77,7 +77,7 @@ class ShopController extends Controller
             'price'            => $shopType === 'peluqueria_infantil' ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
             'promo_price'      => 'nullable|numeric|min:0',
             'photo'            => 'nullable|file|image|max:5120',
-            'photo_url'        => 'nullable|url|max:500',
+            'photo_url'        => 'nullable|string|max:500',
         ]);
 
         $photoUrl = null;
@@ -170,10 +170,11 @@ class ShopController extends Controller
 
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
-            'description' => 'nullable|string|max:1000',
-            'price'       => 'nullable|numeric|min:0',
+            'tag'         => 'nullable|string|max:50',
+            'description' => 'required|string|max:1000',
+            'price'       => 'required|numeric|min:0',
             'photo'       => 'nullable|file|image|max:5120',
-            'photo_url'   => 'nullable|url|max:500',
+            'photo_url'   => 'nullable|string|max:500',
         ]);
 
         $photoUrl = null;
@@ -188,6 +189,7 @@ class ShopController extends Controller
         Product::create([
             'shop_type'   => $shopType,
             'name'        => strip_tags($validated['name']),
+            'tag'         => isset($validated['tag']) ? strip_tags($validated['tag']) : null,
             'description' => isset($validated['description']) ? strip_tags($validated['description']) : null,
             'price'       => isset($validated['price']) ? (float) $validated['price'] : null,
             'photo_url'   => $photoUrl,
@@ -207,10 +209,11 @@ class ShopController extends Controller
 
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
-            'description' => 'nullable|string|max:1000',
-            'price'       => 'nullable|numeric|min:0',
+            'tag'         => 'nullable|string|max:50',
+            'description' => 'required|string|max:1000',
+            'price'       => 'required|numeric|min:0',
             'photo'       => 'nullable|file|image|max:5120',
-            'photo_url'   => 'nullable|max:500',
+            'photo_url'   => 'nullable|string|max:500',
         ]);
 
         $photoUrl = $product->photo_url;
@@ -222,6 +225,7 @@ class ShopController extends Controller
 
         $product->update([
             'name'        => strip_tags($validated['name']),
+            'tag'         => isset($validated['tag']) ? strip_tags($validated['tag']) : null,
             'description' => isset($validated['description']) ? strip_tags($validated['description']) : null,
             'price'       => isset($validated['price']) ? (float) $validated['price'] : null,
             'photo_url'   => $photoUrl,

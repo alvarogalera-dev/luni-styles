@@ -215,8 +215,8 @@ class PanelController extends Controller
 
         $validated = $request->validate([
             'nombre'        => 'required|string|max:100',
-            'apellidos'     => 'required|string|max:100',
-            'telefono'      => 'nullable|string|max:30',
+            'apellidos'     => 'nullable|string|max:100',
+            'telefono'      => 'required|string|max:30',
             'email'         => 'nullable|email|max:255',
             'servicio'      => 'required|string|max:100',
             'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
@@ -230,8 +230,8 @@ class PanelController extends Controller
         $client = $appointment->client;
         $client->update([
             'name'    => strip_tags($validated['nombre']),
-            'surname' => strip_tags($validated['apellidos']),
-            'phone'   => $validated['telefono'] ? strip_tags($validated['telefono']) : ($client->phone ?? ''),
+            'surname' => isset($validated['apellidos']) ? strip_tags($validated['apellidos']) : '',
+            'phone'   => strip_tags($validated['telefono']),
             'email'   => $validated['email'] ?? $client->email,
         ]);
 
@@ -255,8 +255,8 @@ class PanelController extends Controller
 
         $validated = $request->validate([
             'nombre'        => 'required|string|max:100',
-            'apellidos'     => 'required|string|max:100',
-            'telefono'      => 'nullable|string|max:30',
+            'apellidos'     => 'nullable|string|max:100',
+            'telefono'      => 'required|string|max:30',
             'email'         => 'nullable|email|max:255',
             'servicio'      => 'required|string|max:100',
             'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
@@ -292,7 +292,7 @@ class PanelController extends Controller
                 'email'               => $inputEmail ?? 'sin-email@panel.local',
                 'known_emails'        => $inputEmail ?? '',
                 'name'                => strip_tags(trim($validated['nombre'])),
-                'surname'             => strip_tags(trim($validated['apellidos'])),
+                'surname'             => isset($validated['apellidos']) ? strip_tags(trim($validated['apellidos'])) : '',
                 'phone'               => $inputPhone ?? '',
                 'known_phones'        => $inputPhone ?? '',
                 'total_appointments'  => 1,
