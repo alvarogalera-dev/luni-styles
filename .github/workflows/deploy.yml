@@ -52,3 +52,7 @@ jobs:
             # Optimize Laravel
             php artisan optimize:clear
             php artisan storage:link
+            
+            # Update Database
+            php artisan migrate --force
+            php artisan db:seed --class=InitialDataSeeder --force
