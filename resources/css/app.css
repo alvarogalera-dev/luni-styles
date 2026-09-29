@@ -275,9 +275,17 @@ body { top: 0px !important; }
   font-weight: 900 !important;
   outline: none !important;
   border-color: #fbbf24 !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: none !important;
 }
 
-/* Forzar hover de los dias */
+/* Forzar hover y focus de todos los botones para quitar anillos azules */
 .rdp-day_button:hover, .rdp-button:hover:not([disabled]) {
   background-color: #27272a !important;
+}
+.rdp-day_button:focus, .rdp-button:focus, .rdp-nav_button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
 }

@@ -28,11 +28,15 @@ const panelCalendarCss = `
     background-color: #fbbf24 !important;
     color: #000 !important;
     font-weight: bold !important;
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-shadow: none !important;
   }
   .rdp-day_today { color: #fbbf24 !important; font-weight: bold !important; }
   .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: white !important; }
+  .rdp-button:focus, .rdp-day_button:focus, .rdp-nav_button:focus { outline: none !important; box-shadow: none !important; }
   .rdp-nav_button svg { fill: #fbbf24 !important; color: #fbbf24 !important; }
-  .rdp-nav_button, .rdp-nav_icon { color: #fbbf24 !important; fill: #fbbf24 !important; }
+  .rdp-nav_button, .rdp-nav_icon { color: #fbbf24 !important; fill: #fbbf24 !important; stroke: #fbbf24 !important; }
   .rdp-dropdown { background-color: #111 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; }
   .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
 `;

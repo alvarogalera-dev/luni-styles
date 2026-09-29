@@ -309,34 +309,6 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
         router.delete(`/panel/tienda/productos/${id}`, { preserveScroll: true });
     };
 
-    // ── Local Media ───────────────────────────────────────────────────────────
-
-    const saveMedia = () => {
-        setIsSubmitting(true);
-        const fd = new FormData();
-        fd.append('media_type', mediaType);
-        if (mediaCaption) fd.append('caption', mediaCaption);
-        if (mediaFile) fd.append('media', mediaFile);
-
-        router.post('/panel/tienda/local', fd as any, {
-            preserveScroll: true,
-            forceFormData: true,
-            onSuccess: () => {
-                setMediaModal(false);
-                setMediaFile(null);
-                setMediaPreview(null);
-                setMediaCaption('');
-                setIsSubmitting(false);
-            },
-            onError: () => setIsSubmitting(false),
-        });
-    };
-
-    const deleteMedia = (id: number) => {
-        if (!confirm('¿Eliminar este archivo?')) return;
-        router.delete(`/panel/tienda/local/${id}`, { preserveScroll: true });
-    };
-
     // ── Catalog ──────────────────────────────────────────────────────────────
     const openCreateCatalog = () => {
         setCatalogCaption('');
@@ -653,77 +625,6 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                 )}
             </AnimatePresence>
 
-            {/* ── MODAL: LOCAL MEDIA ── */}
-            <AnimatePresence>
-                {mediaModal && (
-                    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMediaModal(false)} />
-                        <motion.div
-                            initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 60 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="bg-[#111] border-t sm:border border-white/10 sm:rounded-3xl rounded-t-3xl w-full sm:max-w-lg max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl"
-                        >
-                            <div className="sm:hidden w-10 h-1 bg-white/20 rounded-full mx-auto mt-3 mb-1" />
-                            <div className="sticky top-0 bg-[#111]/95 backdrop-blur-md border-b border-white/5 p-4 flex items-center justify-between z-10">
-                                <h3 className="font-display font-black text-white text-lg">Subir al Local</h3>
-                                <button onClick={() => setMediaModal(false)} className="p-2 text-steel hover:text-white bg-carbon rounded-full border border-white/5 transition-colors">
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                {/* Tipo */}
-                                <div className="grid grid-cols-2 gap-2">
-                                    {(['photo', 'video'] as const).map(t => (
-                                        <button key={t} type="button" onClick={() => setMediaType(t)}
-                                            className={cn('flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border transition-all',
-                                                mediaType === t ? 'bg-amber-400 text-void border-amber-400' : 'bg-carbon text-steel border-white/10 hover:border-white/30')}>
-                                            {t === 'photo' ? <Camera className="w-4 h-4" /> : <Video className="w-4 h-4" />}
-                                            {t === 'photo' ? 'Foto' : 'Vídeo'}
-                                        </button>
-                                    ))}
-                                </div>
-                                {/* Preview */}
-                                {mediaPreview && (
-                                    <div className="relative">
-                                        {mediaType === 'video' ? (
-                                            <video src={mediaPreview} className="w-full h-48 object-cover rounded-xl border border-white/10" muted />
-                                        ) : (
-                                            <img src={mediaPreview} alt="preview" className="w-full h-48 object-cover rounded-xl border border-white/10" />
-                                        )}
-                                        <button onClick={() => { setMediaFile(null); setMediaPreview(null); }}
-                                            className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:text-red-400 transition-colors">
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                )}
-                                {/* File input */}
-                                <label className="flex items-center gap-3 p-4 bg-carbon border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-amber-400 transition-colors">
-                                    <Upload className="w-5 h-5 text-steel" />
-                                    <div>
-                                        <p className="text-white text-sm font-bold">{mediaFile ? mediaFile.name : 'Seleccionar archivo'}</p>
-                                        <p className="text-steel text-xs">{mediaType === 'video' ? 'MP4, MOV, AVI (max 50MB)' : 'JPG, PNG, WebP (max 5MB)'}</p>
-                                    </div>
-                                    <input type="file"
-                                        accept={mediaType === 'video' ? 'video/*' : 'image/*'}
-                                        className="hidden"
-                                        onChange={e => handleFileChange(e, setMediaFile, setMediaPreview)} />
-                                </label>
-                                {/* Caption */}
-                                <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Descripción (opcional)</label>
-                                    <input type="text" value={mediaCaption} onChange={e => setMediaCaption(e.target.value)} placeholder="ej: Ambiente del local..."
-                                        className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
-                                </div>
-                                <button disabled={!mediaFile || isSubmitting} onClick={saveMedia}
-                                    className="w-full bg-amber-400 text-void font-bold py-3.5 rounded-xl hover:bg-amber-300 transition-colors flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                                    {isSubmitting ? <span className="w-4 h-4 border-2 border-void/30 border-t-void rounded-full animate-spin" /> : <><Upload className="w-4 h-4" /> Subir</>}
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
 
             {/* ── MODAL: CATÁLOGO ── */}
             <AnimatePresence>

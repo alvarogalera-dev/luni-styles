@@ -177,7 +177,7 @@ export default function LaBarberia({ meta, services = [], products = [], localMe
                       {/* Duration */}
                       <div className="flex items-center gap-1.5 text-steel text-[10px] uppercase tracking-wider mb-3">
                         <Clock className="w-3 h-3 shrink-0" />
-                        {svc.duration} min
+                        {svc.duration_label || `${svc.duration_minutes} min`}
                       </div>
                       {/* Includes */}
                       <p className="text-ash text-xs md:text-sm leading-relaxed">{svc.description}</p>

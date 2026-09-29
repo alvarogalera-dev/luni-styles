@@ -97,7 +97,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                     <div className="p-6 md:p-8">
                       <h3 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">{svc.name}</h3>
                       <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase tracking-wider mb-2 font-bold">
-                        <Clock className="w-3 h-3" /> {svc.duration} min
+                        <Clock className="w-3 h-3" /> {svc.duration_label || `${svc.duration_minutes} min`}
                       </div>
                       <p className="text-emerald-600/80 text-[10px] uppercase tracking-wider mb-3 font-bold">
                         Horario &nbsp;<span className="text-slate-300">·</span>&nbsp; <span className="text-slate-400">16:00 – 21:00 · L–V</span>

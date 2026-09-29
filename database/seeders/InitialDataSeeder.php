@@ -69,7 +69,7 @@ class InitialDataSeeder extends Seeder
         // Barberia Product
         Product::firstOrCreate(['shop_type' => 'barberia', 'name' => 'RedOne Aqua Hair Wax'], [
             'description' => 'Fijación extrema y brillo duradero. Fórmula a base de agua ideal para peinados que necesitan máxima sujeción sin dejar residuos.',
-            'tags' => 'Cera',
+            'tag' => 'Cera',
             'price' => 6,
             'sort_order' => 1,
             'photo_url' => '/products/redone-aqua-hair-red.png'
