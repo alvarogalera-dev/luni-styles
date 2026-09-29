@@ -33,11 +33,10 @@ jobs:
             # Backup DB safely
             cp database/database.sqlite database/database.sqlite.bak || true
             
-            git stash
-            
-            # Pull latest changes using token
+            # Force sync with origin
             git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/alvarogalera-dev/luni-styles.git
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             
             # Restore DB
             mv database/database.sqlite.bak database/database.sqlite || true
