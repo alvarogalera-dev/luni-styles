@@ -117,6 +117,9 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
   const [selectedService, setSelectedService] = useState<any>(null);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | null>(null);
+  const [selectedBarberId, setSelectedBarberId] = useState<number | null>(null);
+  const [barbersAvailability, setBarbersAvailability] = useState<{id: number, name: string, available: boolean}[]>([]);
+  const [isLoadingBarbers, setIsLoadingBarbers] = useState(false);
   const [contactData, setContactData] = useState({ name: '', lastName: '', email: '', phonePrefix: '+34', customPrefix: '', phone: '' });
   const [acceptedTerms, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
@@ -160,6 +163,41 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
       fetchSlots();
     }
   }, [date, serviceType, selectedService]);
+
+  // Cargar disponibilidad de barberos en tiempo real cuando se selecciona fecha+hora
+  React.useEffect(() => {
+    if (serviceType !== 'barberia' || !date || !time || !selectedService) {
+      setBarbersAvailability([]);
+      setSelectedBarberId(null);
+      return;
+    }
+    const fetchBarbers = async () => {
+      setIsLoadingBarbers(true);
+      setSelectedBarberId(null);
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const res = await fetch('/api/barbers-availability', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '' },
+          body: JSON.stringify({
+            date: format(date, 'yyyy-MM-dd'),
+            time,
+            duration: selectedService?.duration || 30,
+          }),
+        });
+        const data = await res.json();
+        setBarbersAvailability(data.barbers || []);
+      } catch (e) {
+        setBarbersAvailability([]);
+      } finally {
+        setIsLoadingBarbers(false);
+      }
+    };
+    fetchBarbers();
+    // Actualizar cada 15 segundos para tiempo real
+    const interval = setInterval(fetchBarbers, 15000);
+    return () => clearInterval(interval);
+  }, [date, time, serviceType, selectedService]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -227,6 +265,8 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
     setSelectedService(null);
     setDate(undefined);
     setTime(null);
+    setSelectedBarberId(null);
+    setBarbersAvailability([]);
     setContactData({ name: '', lastName: '', email: '', phonePrefix: '+34', customPrefix: '', phone: '' });
     setTermsAccepted(false);
     setShowTermsError(false);
@@ -538,10 +578,49 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                           )}
                         </AnimatePresence>
 
+                        {/* Selector de barbero en tiempo real (solo barbería) */}
+                        {serviceType === 'barberia' && date && time && (
+                          <div className="bg-carbon/50 p-4 rounded-2xl border border-onyx">
+                            <p className="text-xs font-bold uppercase tracking-widest text-steel mb-3 flex items-center gap-1.5">
+                              <User className="w-3.5 h-3.5" /> Elige tu barbero
+                            </p>
+                            {isLoadingBarbers ? (
+                              <div className="flex justify-center py-3">
+                                <span className="w-5 h-5 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 gap-2">
+                                {barbersAvailability.map((b) => (
+                                  <button
+                                    key={b.id}
+                                    type="button"
+                                    disabled={!b.available}
+                                    onClick={() => setSelectedBarberId(b.id)}
+                                    className={cn(
+                                      'relative flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all border',
+                                      !b.available
+                                        ? 'opacity-40 cursor-not-allowed bg-[#0a0a0a] border-onyx text-steel/50'
+                                        : selectedBarberId === b.id
+                                        ? 'bg-amber-400 text-void border-amber-400 shadow-lg shadow-amber-400/20'
+                                        : 'bg-[#111] text-ash border-onyx hover:border-amber-400/50 hover:text-white'
+                                    )}
+                                  >
+                                    <span className={!b.available ? 'line-through' : ''}>{b.name}</span>
+                                    {!b.available && <X className="w-3 h-3 absolute right-2 top-2 text-steel/40" />}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {barbersAvailability.length > 0 && !barbersAvailability.some(b => b.available) && (
+                              <p className="text-center text-xs text-red-400 mt-2">Todos los barberos están ocupados a esta hora</p>
+                            )}
+                          </div>
+                        )}
+
                         <div className="flex justify-between pt-4 border-t border-white/10">
                           <button onClick={prevStep} className="px-5 py-2 text-steel hover:text-bone transition-colors text-sm">Volver</button>
                           <button
-                            disabled={!date || !time}
+                            disabled={!date || !time || (serviceType === 'barberia' && barbersAvailability.length > 0 && !selectedBarberId)}
                             onClick={nextStep}
                             className="disabled:opacity-40 disabled:cursor-not-allowed px-6 py-2.5 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-colors text-sm active:scale-95"
                           >
@@ -786,6 +865,11 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 <p className="text-[10px] text-steel uppercase tracking-widest mb-0.5">Total</p>
                                 {loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9 ? (
                                   <p className="font-bold text-emerald-400 text-lg">Gratis</p>
+                                ) : promoActive && selectedService?.promoPrice && selectedService.promoPrice !== selectedService.price ? (
+                                  <>
+                                    <p className="text-steel line-through text-sm">{selectedService.price}€</p>
+                                    <p className="font-bold text-amber-400 text-lg">{selectedService.promoPrice}€</p>
+                                  </>
                                 ) : (
                                   <p className="font-bold text-amber-400 text-lg">{selectedService.price}€</p>
                                 )}
@@ -922,8 +1006,9 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                     hora: time,
                                     servicio: selectedService?.name,
                                     tipo_servicio: serviceType,
-                                    precio: (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9) ? 'Gratis' : (selectedService?.price?.toString() || 'Variable'),
-                                    observaciones: observations
+                                    precio: (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9) ? 'Gratis' : (promoActive && !isKids && selectedService?.promoPrice ? String(selectedService.promoPrice) : selectedService?.price?.toString() || 'Variable'),
+                                    observaciones: observations,
+                                    barbero_id: selectedBarberId,
                                   })
                                 });
 

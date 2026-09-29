@@ -27,10 +27,13 @@ foreach ($locales as $locale) {
 Route::post('/api/booking', [BookingController::class, 'store'])->name('api.booking.store');
 Route::post('/api/check-loyalty', [BookingController::class, 'checkLoyalty'])->name('api.check-loyalty');
 Route::post('/api/available-slots', [BookingController::class, 'getAvailableSlots'])->name('api.available-slots');
+// API para disponibilidad de barberos por hora (tiempo real en BookingModal)
+Route::post('/api/barbers-availability', [BookingController::class, 'getBarbersAvailability'])->name('api.barbers-availability');
 Route::post('/api/contact', [ContactController::class, 'send'])->name('api.contact.send');
 
 // Panel Routes
 use App\Http\Controllers\PanelController;
+use App\Http\Controllers\ShopController;
 
 Route::get('/panel', function () {
     return redirect('/panel/login');
@@ -45,5 +48,33 @@ Route::middleware('auth')->group(function () {
     Route::put('/panel/citas/{id}/status', [PanelController::class, 'updateStatus']);
     Route::put('/panel/citas/{id}', [PanelController::class, 'updateAppointment']);
     Route::delete('/panel/citas/{id}', [PanelController::class, 'deleteAppointment']);
+    Route::post('/panel/citas', [PanelController::class, 'createAppointment'])->name('panel.citas.create');
     Route::get('/panel/estadisticas/{type?}', [PanelController::class, 'statistics'])->name('panel.estadisticas');
+
+    // API estadísticas drill-down
+    Route::get('/panel/api/stats/drill', [PanelController::class, 'statsDrillDown'])->name('panel.stats.drill');
+    Route::get('/panel/api/stats/penalizados', [PanelController::class, 'statsPenalizados'])->name('panel.stats.penalizados');
+
+    // Shop (Servicios, Productos, Local, Catálogo)
+    Route::get('/panel/tienda', [ShopController::class, 'index'])->name('panel.tienda');
+
+    // Services
+    Route::post('/panel/tienda/servicios', [ShopController::class, 'storeService'])->name('panel.tienda.servicios.store');
+    Route::post('/panel/tienda/servicios/{id}', [ShopController::class, 'updateService'])->name('panel.tienda.servicios.update');
+    Route::delete('/panel/tienda/servicios/{id}', [ShopController::class, 'destroyService'])->name('panel.tienda.servicios.destroy');
+
+    // Products
+    Route::post('/panel/tienda/productos', [ShopController::class, 'storeProduct'])->name('panel.tienda.productos.store');
+    Route::post('/panel/tienda/productos/{id}', [ShopController::class, 'updateProduct'])->name('panel.tienda.productos.update');
+    Route::delete('/panel/tienda/productos/{id}', [ShopController::class, 'destroyProduct'])->name('panel.tienda.productos.destroy');
+
+    // Local Media
+    Route::post('/panel/tienda/local', [ShopController::class, 'storeLocalMedia'])->name('panel.tienda.local.store');
+    Route::post('/panel/tienda/local/{id}', [ShopController::class, 'updateLocalMedia'])->name('panel.tienda.local.update');
+    Route::delete('/panel/tienda/local/{id}', [ShopController::class, 'destroyLocalMedia'])->name('panel.tienda.local.destroy');
+
+    // Catalog Photos (Peluquería)
+    Route::post('/panel/tienda/catalogo', [ShopController::class, 'storeCatalogPhoto'])->name('panel.tienda.catalogo.store');
+    Route::post('/panel/tienda/catalogo/{id}', [ShopController::class, 'updateCatalogPhoto'])->name('panel.tienda.catalogo.update');
+    Route::delete('/panel/tienda/catalogo/{id}', [ShopController::class, 'destroyCatalogPhoto'])->name('panel.tienda.catalogo.destroy');
 });

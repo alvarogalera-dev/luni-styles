@@ -216,8 +216,8 @@ class PanelController extends Controller
         $validated = $request->validate([
             'nombre'        => 'required|string|max:100',
             'apellidos'     => 'required|string|max:100',
-            'telefono'      => 'required|string|max:30',
-            'email'         => 'required|email|max:255',
+            'telefono'      => 'nullable|string|max:30',
+            'email'         => 'nullable|email|max:255',
             'servicio'      => 'required|string|max:100',
             'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
             'empleado_id'   => 'required|integer|between:1,10',
@@ -231,8 +231,8 @@ class PanelController extends Controller
         $client->update([
             'name'    => strip_tags($validated['nombre']),
             'surname' => strip_tags($validated['apellidos']),
-            'phone'   => strip_tags($validated['telefono']),
-            'email'   => $validated['email'],
+            'phone'   => $validated['telefono'] ? strip_tags($validated['telefono']) : ($client->phone ?? ''),
+            'email'   => $validated['email'] ?? $client->email,
         ]);
 
         $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
@@ -247,6 +247,83 @@ class PanelController extends Controller
         ]);
 
         return back();
+    }
+
+    public function createAppointment(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'nombre'        => 'required|string|max:100',
+            'apellidos'     => 'required|string|max:100',
+            'telefono'      => 'nullable|string|max:30',
+            'email'         => 'nullable|email|max:255',
+            'servicio'      => 'required|string|max:100',
+            'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
+            'empleado_id'   => 'required|integer|between:1,10',
+            'fecha'         => 'required|date_format:Y-m-d',
+            'hora'          => ['required', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
+            'precio'        => 'nullable|string|max:20',
+            'observaciones' => 'nullable|string|max:500',
+        ]);
+
+        // Restrict to appropriate service type
+        if ($user->role === 'barber') {
+            $validated['tipo_servicio'] = 'barberia';
+        } elseif ($user->role === 'hairdresser') {
+            $validated['tipo_servicio'] = 'peluqueria_infantil';
+        }
+
+        // Find or create client
+        $inputEmail = $validated['email'] ? strtolower(trim($validated['email'])) : null;
+        $inputPhone = $validated['telefono'] ? trim($validated['telefono']) : null;
+
+        $client = null;
+        if ($inputEmail) {
+            $client = Client::where('email', $inputEmail)->first();
+        }
+        if (!$client && $inputPhone) {
+            $cleanPhone = str_replace(' ', '', $inputPhone);
+            $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)->first();
+        }
+
+        if (!$client) {
+            $client = Client::create([
+                'email'               => $inputEmail ?? 'sin-email@panel.local',
+                'known_emails'        => $inputEmail ?? '',
+                'name'                => strip_tags(trim($validated['nombre'])),
+                'surname'             => strip_tags(trim($validated['apellidos'])),
+                'phone'               => $inputPhone ?? '',
+                'known_phones'        => $inputPhone ?? '',
+                'total_appointments'  => 1,
+                'loyalty_points'      => 0,
+                'penalty_flag'        => false,
+            ]);
+        } else {
+            $client->update([
+                'name'    => strip_tags(trim($validated['nombre'])),
+                'surname' => strip_tags(trim($validated['apellidos'])),
+                'total_appointments' => $client->total_appointments + 1,
+            ]);
+        }
+
+        $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
+
+        // Determine price with promo logic
+        $price = $validated['precio'] ?? $this->getServicePrice($validated['servicio'], $validated['tipo_servicio']);
+
+        Appointment::create([
+            'client_id'        => $client->id,
+            'appointment_date' => $datetime,
+            'service_type'     => $validated['tipo_servicio'],
+            'service_name'     => strip_tags($validated['servicio']),
+            'employee_id'      => (int) $validated['empleado_id'],
+            'price'            => $price,
+            'observations'     => isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null,
+            'status'           => 'pending',
+        ]);
+
+        return redirect()->route('panel.citas')->with('success', 'Cita creada correctamente.');
     }
 
     public function deleteAppointment(Request $request, $id)
@@ -268,6 +345,27 @@ class PanelController extends Controller
         }
     }
 
+    private function getServicePrice(string $serviceName, string $serviceType): string
+    {
+        $promoActive = now() >= new \DateTime('2026-09-28T00:00:00+02:00')
+                    && now() < new \DateTime('2026-10-12T00:01:00+02:00');
+
+        $prices = [
+            'barberia' => [
+                'Corte Normal'  => ['normal' => 12, 'promo' => 10],
+                'Corte + Barba' => ['normal' => 15, 'promo' => 13],
+                'Solo Barba'    => ['normal' => 4,  'promo' => 4],
+            ],
+        ];
+
+        if (isset($prices[$serviceType][$serviceName])) {
+            $p = $prices[$serviceType][$serviceName];
+            return (string) ($promoActive ? $p['promo'] : $p['normal']);
+        }
+
+        return 'Consultar';
+    }
+
     // ─────────────────────────────────────────────────
     // ESTADÍSTICAS
     // ─────────────────────────────────────────────────
@@ -280,16 +378,20 @@ class PanelController extends Controller
             return redirect()->route('panel.estadisticas', ['type' => 'barberia']);
         }
 
-        $baseQuery = Appointment::where('status', 'completed');
-
         $statType = 'general';
         if ($user->role === 'barber' || $type === 'barberia') {
-            $baseQuery->where('service_type', 'barberia');
             $statType = 'barberia';
         } elseif ($user->role === 'hairdresser' || $type === 'peluqueria_infantil') {
-            $baseQuery->where('service_type', 'peluqueria_infantil');
             $statType = 'peluqueria_infantil';
         }
+
+        $serviceTypeFilter = $statType !== 'general' ? $statType : null;
+
+        $baseQuery = Appointment::where('status', 'completed');
+        if ($serviceTypeFilter) $baseQuery->where('service_type', $serviceTypeFilter);
+
+        $allQuery = Appointment::whereIn('status', ['completed', 'no-show']);
+        if ($serviceTypeFilter) $allQuery->where('service_type', $serviceTypeFilter);
 
         $hoy = Carbon::today();
 
@@ -347,25 +449,22 @@ class PanelController extends Controller
                 ];
             });
 
-        // 5. Clientes penalizados
+        // 5. Clientes penalizados (datos resumidos para el badge)
         $clientesPenalizadosQuery = Client::where('penalty_flag', true);
-        if ($statType !== 'general') {
-            $clientesPenalizadosQuery->whereHas('appointments', function ($q) use ($statType) {
-                $q->where('service_type', $statType);
+        if ($serviceTypeFilter) {
+            $clientesPenalizadosQuery->whereHas('appointments', function ($q) use ($serviceTypeFilter) {
+                $q->where('service_type', $serviceTypeFilter);
             });
         }
         $clientesPenalizados = $clientesPenalizadosQuery->count();
 
-        // 6. Tasa de asistencia
-        $queryBase2 = Appointment::whereIn('status', ['completed', 'no-show']);
-        if ($statType !== 'general') {
-            $queryBase2->where('service_type', $statType === 'barberia' ? 'barberia' : 'peluqueria_infantil');
-        }
-        $totalCitas       = $queryBase2->count();
+        // 6. Tasa de asistencia (de todos los tiempos)
+        $totalCitas       = (clone $allQuery)->count();
         $citasCompletadas = (clone $baseQuery)->count();
+        $citasNoShow      = (clone $allQuery)->where('status', 'no-show')->count();
         $tasaAsistencia   = $totalCitas > 0 ? round(($citasCompletadas / $totalCitas) * 100, 1) : 0;
 
-        // 7. Hora punta — usando Carbon para compatibilidad MySQL / PostgreSQL / SQLite
+        // 7. Hora punta — usando todas las citas completadas de todos los tiempos
         $horaPunta = 'N/A';
         $horaCounts = [];
         $allCompleted = (clone $baseQuery)->select('appointment_date')->get();
@@ -378,7 +477,7 @@ class PanelController extends Controller
             $horaPunta = array_key_first($horaCounts);
         }
 
-        // 8. Día punta
+        // 8. Día punta (todos los tiempos)
         $diasSemana = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sábado'];
         $diaCounts  = [];
         foreach ($allCompleted as $appt) {
@@ -390,6 +489,14 @@ class PanelController extends Controller
             arsort($diaCounts);
             $diaPunta = $diasSemana[array_key_first($diaCounts)] ?? 'N/A';
         }
+
+        // 9. Historial de cortes por día (para drill-down)
+        $cortesHistorial = (clone $baseQuery)
+            ->select(DB::raw('DATE(appointment_date) as dia'), DB::raw('count(*) as total'))
+            ->groupBy('dia')
+            ->orderBy('dia', 'desc')
+            ->get()
+            ->map(fn($r) => ['dia' => $r->dia, 'total' => $r->total]);
 
         return Inertia::render('Panel/Statistics', [
             'stats' => [
@@ -410,14 +517,95 @@ class PanelController extends Controller
                 'servicios'           => $servicios,
                 'empleados'           => $empleados,
                 'clientesPenalizados' => $clientesPenalizados,
+                'citasCompletadas'    => $citasCompletadas,
+                'citasNoShow'         => $citasNoShow,
                 'tasaAsistencia'      => $tasaAsistencia,
                 'horaPunta'           => $horaPunta,
                 'diaPunta'            => $diaPunta,
+                'cortesHistorial'     => $cortesHistorial,
             ],
             'user' => [
                 'name' => $user->name,
                 'role' => $user->role,
             ],
         ]);
+    }
+
+    // API: Drill-down de estadísticas (citas por año/mes/semana/día)
+    public function statsDrillDown(Request $request)
+    {
+        $user = Auth::user();
+        $type    = $request->string('type', 'barberia')->toString();
+        $period  = $request->string('period', 'day')->toString(); // day|week|month|year
+        $filter  = $request->string('filter', '')->toString();    // e.g. '2026-09', '2026'
+        $status  = $request->string('status', 'completed')->toString(); // completed|no-show
+
+        $allowedStatuses = ['completed', 'no-show'];
+        if (!in_array($status, $allowedStatuses)) $status = 'completed';
+
+        $query = Appointment::with('client')
+            ->where('status', $status);
+
+        if ($user->role === 'barber') $type = 'barberia';
+        if ($user->role === 'hairdresser') $type = 'peluqueria_infantil';
+
+        if ($type !== 'general') $query->where('service_type', $type);
+
+        // Apply filter
+        if ($period === 'month' && $filter) {
+            [$year, $month] = explode('-', $filter . '-01');
+            $query->whereYear('appointment_date', $year)->whereMonth('appointment_date', $month);
+        } elseif ($period === 'year' && $filter) {
+            $query->whereYear('appointment_date', $filter);
+        } elseif ($period === 'day' && $filter) {
+            $query->whereDate('appointment_date', $filter);
+        }
+
+        $appointments = $query->orderBy('appointment_date')->get()->map(fn($a) => [
+            'id'       => $a->id,
+            'nombre'   => ($a->client?->name ?? '—') . ' ' . ($a->client?->surname ?? ''),
+            'telefono' => $a->client?->phone ?? '',
+            'email'    => $a->client?->email ?? '',
+            'servicio' => $a->service_name ?? '',
+            'fecha'    => Carbon::parse($a->appointment_date)->format('Y-m-d'),
+            'hora'     => Carbon::parse($a->appointment_date)->format('H:i'),
+            'estado'   => $a->status,
+        ]);
+
+        return response()->json(['appointments' => $appointments]);
+    }
+
+    // API: Clientes penalizados (datos completos para el modal)
+    public function statsPenalizados(Request $request)
+    {
+        $user = Auth::user();
+        $type = $request->string('type', 'barberia')->toString();
+
+        if ($user->role === 'barber') $type = 'barberia';
+        if ($user->role === 'hairdresser') $type = 'peluqueria_infantil';
+
+        $query = Client::where('penalty_flag', true);
+        if ($type !== 'general') {
+            $query->whereHas('appointments', fn($q) => $q->where('service_type', $type));
+        }
+
+        $penalizados = $query->withCount([
+            'appointments as total_citas',
+            'appointments as citas_completadas' => fn($q) => $q->where('status', 'completed'),
+            'appointments as citas_no_show'     => fn($q) => $q->where('status', 'no-show'),
+        ])->get()->map(fn($c) => [
+            'id'                  => $c->id,
+            'nombre'              => $c->name . ' ' . $c->surname,
+            'email'               => $c->email,
+            'telefono'            => $c->phone,
+            'total_citas'         => $c->total_citas,
+            'citas_completadas'   => $c->citas_completadas,
+            'citas_no_show'       => $c->citas_no_show,
+            'missed_appointments' => $c->missed_appointments ?? 0,
+            'loyalty_points'      => $c->loyalty_points ?? 0,
+            'consecutive_misses'  => $c->consecutive_misses ?? 0,
+        ]);
+
+        return response()->json(['penalizados' => $penalizados]);
     }
 }

@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import { Calendar, BarChart3, LogOut, Menu, X, User as UserIcon } from 'lucide-react';
+import { Calendar, BarChart3, LogOut, Menu, X, User as UserIcon, ShoppingBag, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -45,6 +45,7 @@ export default function PanelLayout({ children, title, user }: Props) {
 
     const NavLinks = () => (
         <>
+            {/* CITAS */}
             <Link
                 href="/panel/citas"
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
@@ -57,6 +58,7 @@ export default function PanelLayout({ children, title, user }: Props) {
                 <span>Citas</span>
             </Link>
             
+            {/* ESTADÍSTICAS */}
             {user.role === 'superadmin' ? (
                 <>
                     <Link
@@ -94,6 +96,61 @@ export default function PanelLayout({ children, title, user }: Props) {
                     <BarChart3 className="w-5 h-5" />
                     <span>Estadísticas</span>
                 </Link>
+            )}
+
+            {/* PRODUCTOS Y SERVICIOS (solo barber/hairdresser/superadmin) */}
+            {user.role !== 'superadmin' && (
+                <>
+                    <Link
+                        href="/panel/tienda"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/tienda')
+                                ? 'bg-white/10 text-white font-bold'
+                                : 'text-steel hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        <ShoppingBag className="w-5 h-5" />
+                        <span>Productos y Servicios</span>
+                    </Link>
+
+                    <Link
+                        href="/panel/tienda#local"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url === '/panel/tienda' && typeof window !== 'undefined' && window.location.hash === '#local'
+                                ? 'bg-white/10 text-white font-bold'
+                                : 'text-steel hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        <MapPin className="w-5 h-5" />
+                        <span>Local</span>
+                    </Link>
+                </>
+            )}
+
+            {/* Para superadmin también mostramos tienda */}
+            {user.role === 'superadmin' && (
+                <>
+                    <div className="border-t border-white/5 my-2" />
+                    <p className="px-4 text-[9px] uppercase tracking-widest text-steel/50 font-bold">Barbería</p>
+                    <Link
+                        href="/panel/tienda"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/tienda')
+                                ? 'bg-white/10 text-white font-bold'
+                                : 'text-steel hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        <ShoppingBag className="w-5 h-5" />
+                        <span className="text-sm">Productos y Servicios</span>
+                    </Link>
+                    <Link
+                        href="/panel/tienda#local"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-steel hover:text-white hover:bg-white/5"
+                    >
+                        <MapPin className="w-5 h-5" />
+                        <span className="text-sm">Local</span>
+                    </Link>
+                </>
             )}
         </>
     );
@@ -145,7 +202,7 @@ export default function PanelLayout({ children, title, user }: Props) {
                     </span>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+                <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
                     <NavLinks />
                 </nav>
 

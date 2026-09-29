@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
+    private function isPromoActive(): bool
+    {
+        $now = now();
+        $start = new \DateTime('2026-09-28T00:00:00+02:00');
+        $end   = new \DateTime('2026-10-12T00:01:00+02:00');
+        return $now >= $start && $now < $end;
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -24,6 +32,7 @@ class BookingController extends Controller
             'tipo_servicio' => 'required|string', // barberia or peluqueria_infantil
             'precio' => 'required|string',
             'observaciones' => 'nullable|string|max:1000',
+            'barbero_id'    => 'nullable|integer|between:1,2', // barbero elegido en el modal
         ]);
 
         try {
@@ -111,9 +120,19 @@ class BookingController extends Controller
             $employeeId = 1;
             
             if ($validated['tipo_servicio'] === 'barberia') {
-                $employeeId = $this->assignBarber($validated['fecha'], $validated['hora'], $duration);
-                if (!$employeeId) {
-                    return response()->json(['success' => false, 'message' => 'Lo sentimos, esa hora acaba de ser reservada por otro cliente. Por favor, elige otra hora.'], 400);
+                // Si el usuario eligió barbero en el modal, verificar que esté libre
+                if (!empty($validated['barbero_id'])) {
+                    $preferredId = (int) $validated['barbero_id'];
+                    if ($this->isEmployeeFree($preferredId, $validated['fecha'], $validated['hora'], $duration)) {
+                        $employeeId = $preferredId;
+                    } else {
+                        return response()->json(['success' => false, 'message' => 'Lo sentimos, ese barbero ya tiene una cita en ese horario. Por favor, elige otro.'], 400);
+                    }
+                } else {
+                    $employeeId = $this->assignBarber($validated['fecha'], $validated['hora'], $duration);
+                    if (!$employeeId) {
+                        return response()->json(['success' => false, 'message' => 'Lo sentimos, esa hora acaba de ser reservada por otro cliente. Por favor, elige otra hora.'], 400);
+                    }
                 }
             } else {
                 // Infantil (Mariely = employee 3)
@@ -124,15 +143,28 @@ class BookingController extends Controller
                 }
             }
 
+            // Calcular precio correcto (aplicar promo si está activa)
+            $precio = $validated['precio'];
+            if ($this->isPromoActive() && $validated['tipo_servicio'] === 'barberia') {
+                $promoPrices = [
+                    'Corte Normal'  => '10',
+                    'Corte + Barba' => '13',
+                    'Solo Barba'    => '4',
+                ];
+                if (isset($promoPrices[$validated['servicio']]) && $precio !== 'Gratis') {
+                    $precio = $promoPrices[$validated['servicio']];
+                }
+            }
+
             $appointment = Appointment::create([
-                'client_id' => $client->id,
+                'client_id'        => $client->id,
                 'appointment_date' => $datetime,
-                'service_type' => $validated['tipo_servicio'],
-                'service_name' => $validated['servicio'],
-                'employee_id' => $employeeId,
-                'price' => $validated['precio'],
-                'observations' => $validated['observaciones'],
-                'status' => 'pending',
+                'service_type'     => $validated['tipo_servicio'],
+                'service_name'     => $validated['servicio'],
+                'employee_id'      => $employeeId,
+                'price'            => $precio,
+                'observations'     => $validated['observaciones'],
+                'status'           => 'pending',
             ]);
 
             return response()->json(['success' => true, 'appointment_id' => $appointment->id]);
@@ -202,6 +234,36 @@ class BookingController extends Controller
         }
 
         return response()->json(['available_slots' => $availableSlots]);
+    }
+
+    // Endpoint: disponibilidad de cada barbero en una hora y fecha específica
+    public function getBarbersAvailability(Request $request)
+    {
+        $request->validate([
+            'date'     => 'required|date',
+            'time'     => 'required|string',
+            'duration' => 'required|integer',
+        ]);
+
+        $date     = $request->date;
+        $time     = $request->time;
+        $duration = (int) $request->duration;
+
+        $barbers = [
+            1 => 'Luis',
+            2 => 'Carlos',
+        ];
+
+        $result = [];
+        foreach ($barbers as $id => $name) {
+            $result[] = [
+                'id'        => $id,
+                'name'      => $name,
+                'available' => $this->isEmployeeFree($id, $date, $time, $duration),
+            ];
+        }
+
+        return response()->json(['barbers' => $result]);
     }
 
     private function getServiceDuration($serviceName)

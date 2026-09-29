@@ -15,6 +15,33 @@ import 'react-day-picker/dist/style.css';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+// CSS para colorear de amarillo el calendario del panel
+const panelCalendarCss = `
+  .rdp-panel .rdp-nav_button, .rdp-panel .rdp-nav_icon, .rdp-panel .rdp-chevron {
+    color: #fbbf24 !important;
+    fill: #fbbf24 !important;
+    stroke: #fbbf24 !important;
+  }
+  .rdp-panel .rdp-selected .rdp-day_button, .rdp-panel button.rdp-selected {
+    background-color: #fbbf24 !important;
+    color: #000 !important;
+    border: 2px solid #fbbf24 !important;
+    border-radius: 50% !important;
+    font-weight: bold !important;
+  }
+  .rdp-panel .rdp-today .rdp-day_button, .rdp-panel button.rdp-today {
+    color: #fbbf24 !important;
+    font-weight: bold;
+  }
+  .rdp-panel .rdp-button:hover:not([disabled]) {
+    background-color: #27272a !important;
+    color: #fbbf24 !important;
+    border-radius: 50%;
+  }
+  .rdp-panel .rdp-dropdown { background-color: #111 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; }
+  .rdp-panel .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+`;
+
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
 }
@@ -153,15 +180,15 @@ function AppointmentForm({ formData, setFormData, user }: any) {
                             onChange={e => setFormData((p: any) => ({...p, apellidos: e.target.value}))} />
                     </div>
                     <div>
-                        <label className="text-xs text-steel/70 mb-1 block">Teléfono *</label>
-                        <input required type="text" maxLength={30}
+                        <label className="text-xs text-steel/70 mb-1 block">Teléfono <span className="text-steel/40">(opcional)</span></label>
+                        <input type="text" maxLength={30}
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                             value={formData.telefono}
                             onChange={e => setFormData((p: any) => ({...p, telefono: e.target.value}))} />
                     </div>
                     <div>
-                        <label className="text-xs text-steel/70 mb-1 block">Email *</label>
-                        <input required type="email" maxLength={255}
+                        <label className="text-xs text-steel/70 mb-1 block">Email <span className="text-steel/40">(opcional)</span></label>
+                        <input type="email" maxLength={255}
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                             value={formData.email}
                             onChange={e => setFormData((p: any) => ({...p, email: e.target.value}))} />
@@ -229,7 +256,7 @@ function AppointmentForm({ formData, setFormData, user }: any) {
 
             <div>
                 <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-3">Fecha y Hora</p>
-                <div className="bg-carbon/50 p-3 rounded-2xl border border-white/10 flex justify-center mb-3 overflow-hidden">
+                <div className="bg-carbon/50 p-3 rounded-2xl border border-white/10 flex justify-center mb-3 overflow-hidden rdp-panel">
                     <DayPicker
                         mode="single"
                         selected={formData.fecha}
@@ -391,12 +418,13 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     const createAppointment = (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.fecha || !formData.hora || !formData.servicio) return;
-        router.post('/api/booking', {
+        router.post('/panel/citas', {
             ...formData,
             fecha: format(formData.fecha, 'yyyy-MM-dd'),
         }, {
             preserveScroll: true,
-            onSuccess: () => { setShowNewModal(false); setFormData(emptyForm); router.reload(); },
+            onSuccess: () => { setShowNewModal(false); setFormData(emptyForm); },
+            onError: (errors) => { console.error('Error al crear cita:', errors); },
         });
     };
 
@@ -423,6 +451,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
 
     return (
         <PanelLayout title="Citas" user={user}>
+            <style>{panelCalendarCss}</style>
             <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
 
                 {/* Header */}
