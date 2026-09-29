@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 import PanelLayout from './Layout';
 import { Plus, Edit2, Trash2, X, Save, Image, Upload, ShoppingBag, Scissors, MapPin, Camera, Video, Eye, EyeOff, Move } from 'lucide-react';
@@ -213,6 +213,12 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
     const [mediaPreview, setMediaPreview] = useState<string | null>(null);
 
+    // Catalog state
+    const [catalogModal, setCatalogModal] = useState<{ mode: 'create' | 'edit'; item?: any } | null>(null);
+    const [catalogCaption, setCatalogCaption] = useState('');
+    const [catalogFile, setCatalogFile] = useState<File | null>(null);
+    const [catalogPreview, setCatalogPreview] = useState<string | null>(null);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isBarber = shopType === 'barberia';
@@ -338,6 +344,38 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
         router.delete(`/panel/tienda/local/${id}`, { preserveScroll: true });
     };
 
+    // ── Catalog ──────────────────────────────────────────────────────────────
+    const openCreateCatalog = () => {
+        setCatalogCaption('');
+        setCatalogFile(null);
+        setCatalogPreview(null);
+        setCatalogModal({ mode: 'create' });
+    };
+
+    const openEditCatalog = (item: any) => {
+        setCatalogCaption(item.caption || '');
+        setCatalogFile(null);
+        setCatalogPreview(item.photo_url);
+        setCatalogModal({ mode: 'edit', item });
+    };
+
+    const saveCatalog = () => {
+        setIsSubmitting(true);
+        const fd = new FormData();
+        fd.append('caption', catalogCaption);
+        if (catalogFile) fd.append('photo', catalogFile);
+
+        const url = catalogModal?.mode === 'edit' ? `/panel/tienda/catalogo/${catalogModal.item.id}` : '/panel/tienda/catalogo';
+        router.post(url, fd as any, {
+            onSuccess: () => setCatalogModal(null),
+            onFinish: () => setIsSubmitting(false),
+        });
+    };
+
+    const deleteCatalog = (id: number) => {
+        if (confirm('¿Eliminar foto del catálogo?')) router.delete(`/panel/tienda/catalogo/${id}`);
+    };
+
     // ── Helper: File Input ────────────────────────────────────────────────────
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setter: any, previewSetter: any) => {
@@ -351,7 +389,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
 
     const tabs = [
         { id: 'services', label: 'Servicios', icon: Scissors },
-        { id: 'products', label: 'Productos', icon: ShoppingBag },
+        ...(isBarber ? [{ id: 'products', label: 'Productos', icon: ShoppingBag }] : []),
         { id: 'local', label: 'Local', icon: MapPin },
         ...(isHairdresser ? [{ id: 'catalog', label: 'Catálogo', icon: Camera }] : []),
     ];
@@ -470,7 +508,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                         <motion.div key="catalog" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                             <div className="flex items-center justify-between mb-4">
                                 <p className="text-steel text-sm">{catalogPhotos.length} foto{catalogPhotos.length !== 1 ? 's' : ''}</p>
-                                <button onClick={() => { setMediaFile(null); setMediaPreview(null); setMediaCaption(''); setMediaModal(true); }}
+                                <button onClick={openCreateCatalog}
                                     className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-void font-bold rounded-xl text-sm hover:bg-amber-300 transition-colors">
                                     <Plus className="w-4 h-4" /> Añadir Foto
                                 </button>
@@ -482,12 +520,19 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                     <p className="text-xs mt-1">Añade fotos de cortes para el catálogo de la web</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                                    {catalogPhotos.map((p: any) => (
-                                        <MediaCard key={p.id} media={{ ...p, media_type: 'photo' }} onDelete={(id: number) => {
-                                            if (!confirm('¿Eliminar esta foto?')) return;
-                                            router.delete(`/panel/tienda/catalogo/${id}`, { preserveScroll: true });
-                                        }} />
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {catalogPhotos.map((c: any) => (
+                                        <div key={c.id} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-white/10 bg-carbon">
+                                            <img src={c.photo_url} alt="catalog" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                                <button onClick={() => openEditCatalog(c)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-amber-400 hover:text-void transition-colors">
+                                                    <Edit2 className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={() => deleteCatalog(c.id)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-red-500 transition-colors">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             )}
@@ -711,6 +756,47 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                             </div>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            {/* ── MODAL: CATÁLOGO ── */}
+            <AnimatePresence>
+                {catalogModal && (
+                    <FormModal
+                        title={catalogModal.mode === 'create' ? 'Añadir al Catálogo' : 'Editar Foto'}
+                        onClose={() => setCatalogModal(null)}
+                        onSave={saveCatalog}
+                        isSubmitting={isSubmitting}
+                        fields={
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Pie de foto (opcional)</label>
+                                    <input type="text" value={catalogCaption} onChange={e => setCatalogCaption(e.target.value)}
+                                        className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto *</label>
+                                    {catalogPreview && (
+                                        <div className="mb-3 relative aspect-[3/4] max-w-[200px] mx-auto rounded-xl overflow-hidden border border-white/10">
+                                            <img src={catalogPreview} alt="preview" className="w-full h-full object-cover" />
+                                            <button onClick={() => { setCatalogFile(null); setCatalogPreview(null); }}
+                                                className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:text-red-400">
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    )}
+                                    {!catalogPreview && (
+                                        <label className="flex items-center justify-center gap-3 p-6 bg-carbon border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-amber-400 transition-colors">
+                                            <Upload className="w-5 h-5 text-steel" />
+                                            <span className="text-steel text-sm">Seleccionar foto...</span>
+                                            <input type="file" accept="image/*" className="hidden"
+                                                onChange={e => handleFileChange(e, setCatalogFile, setCatalogPreview)} />
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+                        }
+                    />
                 )}
             </AnimatePresence>
         </PanelLayout>

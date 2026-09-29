@@ -109,8 +109,8 @@ export default function PanelLayout({ children, title, user }: Props) {
                                 : 'text-steel hover:text-white hover:bg-white/5'
                         }`}
                     >
-                        <ShoppingBag className="w-5 h-5" />
-                        <span>Productos y Servicios</span>
+                        {user.role === 'hairdresser' ? <Camera className="w-5 h-5" /> : <ShoppingBag className="w-5 h-5" />}
+                        <span>{user.role === 'hairdresser' ? 'Servicios y Catálogo' : 'Productos y Servicios'}</span>
                     </Link>
 
                     <Link

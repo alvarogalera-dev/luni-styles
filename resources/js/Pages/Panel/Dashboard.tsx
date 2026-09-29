@@ -17,7 +17,7 @@ import { twMerge } from 'tailwind-merge';
 
 // CSS para colorear de amarillo el calendario del panel
 const panelCalendarCss = `
-  .rdp { --rdp-accent-color: transparent; margin: 0; }
+  .rdp { --rdp-accent-color: #fbbf24; margin: 0; }
   .rdp-day, .rdp-cell { border: none !important; background: transparent !important; border-radius: 50% !important; }
   .rdp-button, .rdp-day_button {
     border-radius: 50% !important;
