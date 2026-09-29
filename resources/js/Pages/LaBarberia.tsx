@@ -13,7 +13,7 @@ function isOpeningPromoActive(): boolean {
 }
 
 interface Meta { title: string; description: string; }
-interface Props { meta: Meta; }
+interface Props { meta: Meta; services?: any[]; products?: any[]; localMedia?: any[]; }
 
 const team = [
   {
@@ -32,32 +32,7 @@ const team = [
   },
 ];
 
-const services = [
-  {
-    name: 'Corte Normal',
-    price: '12€',
-    promoPrice: '10€',
-    duration: '30 min',
-    includes: 'Corte de pelo · Lavado · Cejas',
-    img: '/images/fade.webp',
-  },
-  {
-    name: 'Corte + Barba',
-    price: '15€',
-    promoPrice: '13€',
-    duration: '45–60 min',
-    includes: 'Corte de pelo · Lavado · Cejas · Barba',
-    img: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    name: 'Barba',
-    price: '4€',
-    promoPrice: '4€',
-    duration: '15–30 min',
-    includes: 'Arreglo de barba',
-    img: '/images/barba.avif',
-  },
-];
+// Services are passed dynamically
 
 // Carrusel: 3 fotos + 1 video, se repiten para scroll infinito
 const CAROUSEL_ITEMS = [
@@ -84,9 +59,14 @@ const CAROUSEL_ITEMS = [
 ];
 
 // ─── Carrusel automático infinito ─────────────────────────────────────────────
-function GalleryCarousel() {
-  // Duplicamos los items para el truco de scroll infinito sin saltos
-  const items = [...CAROUSEL_ITEMS, ...CAROUSEL_ITEMS];
+function GalleryCarousel({ localMedia }: { localMedia: any[] }) {
+  // Fallback to static if empty
+  const defaultMedia = [
+    { type: 'image', url: '', fallbackUrl: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1200&auto=format&fit=crop' },
+    { type: 'image', url: '', fallbackUrl: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop' },
+    { type: 'image', url: '', fallbackUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1200&auto=format&fit=crop' },
+  ];
+  const items = localMedia.length > 0 ? [...localMedia, ...localMedia, ...localMedia] : [...defaultMedia, ...defaultMedia, ...defaultMedia];
 
   return (
     <div className="relative w-full overflow-hidden flex">
@@ -103,37 +83,40 @@ function GalleryCarousel() {
         }}
         className="flex gap-3 md:gap-5 w-max"
       >
-        {items.map((item, i) => (
-          <div
-            key={i}
-            className="shrink-0 w-[78vw] sm:w-[55vw] md:w-[38vw] lg:w-[30vw] h-[220px] md:h-[380px] rounded-2xl overflow-hidden relative bg-carbon"
-          >
-            {item.type === 'image' ? (
-              <img
-                src={item.src}
-                alt={item.alt}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <video
-                src={item.src}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 bg-void/10" />
-          </div>
-        ))}
+        {items.map((item, i) => {
+          const src = item.url ? `/storage/${item.url}` : item.fallbackUrl;
+          return (
+            <div
+              key={i}
+              className="shrink-0 w-[78vw] sm:w-[55vw] md:w-[38vw] lg:w-[30vw] h-[220px] md:h-[380px] rounded-2xl overflow-hidden relative bg-carbon"
+            >
+              {item.type === 'image' ? (
+                <img
+                  src={src}
+                  alt={item.title || "Galería Barbería"}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <video
+                  src={src}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-void/10" />
+            </div>
+          );
+        })}
       </motion.div>
     </div>
   );
 }
 
-export default function LaBarberia({ meta }: Props) {
+export default function LaBarberia({ meta, services = [], products = [], localMedia = [] }: Props) {
   const teamRef = useRef<HTMLDivElement>(null);
   const teamInView = useInView(teamRef, { once: true, margin: '-10%' });
   const promoActive = isOpeningPromoActive();
@@ -168,23 +151,16 @@ export default function LaBarberia({ meta }: Props) {
             {/* Mobile: vertical stack | Tablet+: grid 3 cols */}
             <div className="flex flex-col md:grid md:grid-cols-3 gap-5 md:gap-8">
               {services.map((svc, i) => {
-                // Map service index to modal service id
-                const serviceIds = ['b1', 'b2', 'b3'];
-                const BARBERIA_SERVICES = [
-                  { id: 'b1', name: 'Corte Normal', subtitle: 'Corte de pelo, lavado y arreglo de cejas.', duration: 30, durationLabel: '30 min', price: 12 },
-                  { id: 'b2', name: 'Corte + Barba', subtitle: 'Corte completo más arreglo y perfilado de barba con navaja y productos premium.', duration: 60, durationLabel: '45–60 min', price: 15 },
-                  { id: 'b3', name: 'Solo Barba', subtitle: 'Arreglo, perfilado y acabado de barba.', duration: 20, durationLabel: '15–30 min', price: 4 },
-                ];
-                const modalSvc = BARBERIA_SERVICES[i];
+                const imgUrl = svc.photo_url ? (svc.photo_url.startsWith('http') ? svc.photo_url : `/storage/${svc.photo_url}`) : 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop';
                 return (
                   <button
                     key={i}
-                    onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'barberia', preSelectedService: modalSvc } }))}
+                    onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'barberia', preSelectedService: svc } }))}
                     className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors text-left w-full"
                   >
                     <div className="h-44 md:h-56 overflow-hidden">
                       <img
-                        src={svc.img}
+                        src={imgUrl}
                         alt={svc.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         loading="lazy"
@@ -195,23 +171,16 @@ export default function LaBarberia({ meta }: Props) {
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg md:text-2xl font-display font-bold leading-tight">{svc.name}</h3>
                         <div className="shrink-0 ml-2 text-right">
-                          {promoActive && svc.promoPrice && svc.promoPrice !== svc.price ? (
-                            <>
-                              <span className="text-steel line-through text-sm block">{svc.price}</span>
-                              <span className="text-xl md:text-2xl font-black text-amber-400">{svc.promoPrice}</span>
-                            </>
-                          ) : (
-                            <span className="text-xl md:text-2xl font-black text-amber-400">{svc.price}</span>
-                          )}
+                            <span className="text-xl md:text-2xl font-black text-amber-400">{svc.price !== 'Consultar' ? `${svc.price}€` : svc.price}</span>
                         </div>
                       </div>
                       {/* Duration */}
                       <div className="flex items-center gap-1.5 text-steel text-[10px] uppercase tracking-wider mb-3">
                         <Clock className="w-3 h-3 shrink-0" />
-                        {svc.duration}
+                        {svc.duration} min
                       </div>
                       {/* Includes */}
-                      <p className="text-ash text-xs md:text-sm leading-relaxed">{svc.includes}</p>
+                      <p className="text-ash text-xs md:text-sm leading-relaxed">{svc.description}</p>
                       <span className="mt-4 inline-block text-[10px] font-bold tracking-widest uppercase text-amber-400/60 group-hover:text-amber-400 transition-colors">Reservar →</span>
                     </div>
                   </button>
@@ -230,115 +199,31 @@ export default function LaBarberia({ meta }: Props) {
             </div>
             
             <div className="flex flex-col md:grid md:grid-cols-2 gap-5 md:gap-8 max-w-4xl mx-auto">
-              {/* Producto Rojo */}
-              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
-                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
-                  <img
-                    src="/products/redone-aqua-hair-red.png"
-                    alt="RedOne Aqua Hair Wax Roja"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Aqua Hair Wax</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
+              {products.map((prod, i) => {
+                const imgUrl = prod.photo_url ? (prod.photo_url.startsWith('http') || prod.photo_url.startsWith('/') ? prod.photo_url : `/storage/${prod.photo_url}`) : 'https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=800&auto=format&fit=crop';
+                return (
+                  <div key={i} className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
+                    <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
+                      <img
+                        src={imgUrl}
+                        alt={prod.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg md:text-xl font-display font-bold leading-tight">{prod.name}</h3>
+                        <span className="text-xl font-black text-amber-400 shrink-0 ml-2">{prod.price}€</span>
+                      </div>
+                      <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">{prod.tag} &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
+                      <p className="text-ash text-xs md:text-sm leading-relaxed">
+                        {prod.description}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Cera &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
-                  <p className="text-ash text-xs md:text-sm leading-relaxed">
-                    Fijación extrema y brillo duradero. Fórmula a base de agua ideal para peinados que necesitan máxima sujeción sin dejar residuos.
-                  </p>
-                </div>
-              </div>
-
-              {/* Producto Negro */}
-              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
-                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
-                  <img
-                    src="/products/redone-aqua-hair-black.png"
-                    alt="RedOne Black Gel Wax"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">RedOne Black Gel Wax</h3>
-                    <span className="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
-                  </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gel Fijador &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
-                  <p className="text-ash text-xs md:text-sm leading-relaxed">
-                    Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.
-                  </p>
-                </div>
-              </div>
-
-              {/* Gafas 1 */}
-              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
-                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
-                  <img
-                    src="/images/gafas2.jpg"
-                    alt="Gafas Classic Blue"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Classic Blue</h3>
-                    <span class="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
-                  </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
-                  <p className="text-ash text-xs md:text-sm leading-relaxed">
-                    Montura clásica de acetato negro con cristales tintados en azul para un look atemporal.
-                  </p>
-                </div>
-              </div>
-
-              {/* Gafas 2 */}
-              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
-                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
-                  <img
-                    src="/images/gafas1.png"
-                    alt="Gafas Clear Ice"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Clear Ice</h3>
-                    <span class="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
-                  </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
-                  <p className="text-ash text-xs md:text-sm leading-relaxed">
-                    Diseño moderno con montura transparente y cristales azules, perfectas para destacar.
-                  </p>
-                </div>
-              </div>
-
-              {/* Gafas 3 */}
-              <div className="group relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-colors flex flex-col sm:flex-row">
-                <div className="h-48 sm:h-auto sm:w-2/5 overflow-hidden bg-white/5">
-                  <img
-                    src="/images/gafas3.png"
-                    alt="Gafas Retro Amber"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-5 md:p-7 flex-1 flex flex-col justify-center">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg md:text-xl font-display font-bold leading-tight">Gafas Retro Amber</h3>
-                    <span class="text-xl font-black text-amber-400 shrink-0 ml-2">6€</span>
-                  </div>
-                  <p className="text-amber-400/80 text-[10px] uppercase tracking-wider mb-3">Gafas &nbsp;<span className="text-white/30">·</span>&nbsp; <span className="text-white/40">Comprar en tienda</span></p>
-                  <p className="text-ash text-xs md:text-sm leading-relaxed">
-                    Estilo vintage de montura negra y cristales ámbar, protegiendo tus ojos con elegancia y carácter.
-                  </p>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -382,7 +267,7 @@ export default function LaBarberia({ meta }: Props) {
             <h2 className="font-display font-black text-3xl md:text-5xl text-white tracking-tighter">El Local.</h2>
             <p className="text-steel mt-3 text-sm">Nuestro segundo hogar.</p>
           </div>
-          <GalleryCarousel />
+          <GalleryCarousel localMedia={localMedia} />
         </section>
 
         {/* ── Reserva ── */}

@@ -140,6 +140,8 @@ class PanelController extends Controller
             ];
         });
 
+        $dbServices = \App\Models\Service::where('active', true)->get();
+
         return Inertia::render('Panel/Dashboard', [
             'appointments' => $appointments,
             'total'        => $total,
@@ -156,6 +158,7 @@ class PanelController extends Controller
                 'name' => $user->name,
                 'role' => $user->role,
             ],
+            'dbServices' => $dbServices,
         ]);
     }
 

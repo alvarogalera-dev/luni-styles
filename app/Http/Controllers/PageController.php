@@ -19,7 +19,14 @@ class PageController extends Controller
 
     public function laBarberia(): Response
     {
+        $services = \App\Models\Service::where('shop_type', 'barberia')->where('active', true)->orderBy('sort_order')->get();
+        $products = \App\Models\Product::where('shop_type', 'barberia')->where('active', true)->orderBy('sort_order')->get();
+        $localMedia = \App\Models\LocalMedia::where('shop_type', 'barberia')->where('active', true)->orderBy('sort_order')->get();
+
         return Inertia::render('LaBarberia', [
+            'services' => $services,
+            'products' => $products,
+            'localMedia' => $localMedia,
             'meta' => [
                 'title'       => 'La Barbería',
                 'description' => 'Servicios de barbería premium: cortes, barba, tratamientos y más.',
@@ -29,7 +36,14 @@ class PageController extends Controller
 
     public function peluqueriaInfantil(): Response
     {
+        $services = \App\Models\Service::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
+        $localMedia = \App\Models\LocalMedia::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
+        $catalogPhotos = \App\Models\CatalogPhoto::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
+
         return Inertia::render('PeluqueriaInfantil', [
+            'services' => $services,
+            'localMedia' => $localMedia,
+            'catalogPhotos' => $catalogPhotos,
             'meta' => [
                 'title'       => 'Peluquería Infantil',
                 'description' => 'Cortes de cabello para los más pequeños en un ambiente cómodo y divertido.',

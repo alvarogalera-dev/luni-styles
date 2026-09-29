@@ -243,3 +243,41 @@ body:has([data-theme="kids"]) {
 .goog-te-banner-frame.skiptranslate, #goog-gt-tt, .goog-te-balloon-frame, #google_translate_element { display: none !important; }
 body { top: 0px !important; }
 .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+
+/* --- OVERRIDES AGRESIVOS PARA REACT-DAY-PICKER (CALENDARIO) --- */
+.rdp {
+  --rdp-accent-color: #fbbf24 !important;
+  --rdp-background-color: #27272a !important;
+}
+
+/* Forzar que las flechas de navegación sean amarillas */
+.rdp-nav_button, .rdp-nav_icon, .rdp-chevron, .rdp-nav svg {
+  color: #fbbf24 !important;
+  fill: #fbbf24 !important;
+  stroke: #fbbf24 !important;
+}
+
+/* Forzar el día de hoy (círculo interior y texto) */
+.rdp-day_today {
+  color: #fbbf24 !important;
+  font-weight: 900 !important;
+}
+.rdp-day_today::after {
+  background-color: #fbbf24 !important;
+}
+
+/* Forzar día seleccionado (círculo y texto interior) */
+.rdp-day_selected, .rdp-day_selected:focus, .rdp-day_selected:hover,
+.rdp-selected, .rdp-selected:focus, .rdp-selected:hover,
+.rdp-selected .rdp-day_button, .rdp-selected .rdp-button {
+  background-color: #fbbf24 !important;
+  color: #000 !important;
+  font-weight: 900 !important;
+  outline: none !important;
+  border-color: #fbbf24 !important;
+}
+
+/* Forzar hover de los dias */
+.rdp-day_button:hover, .rdp-button:hover:not([disabled]) {
+  background-color: #27272a !important;
+}

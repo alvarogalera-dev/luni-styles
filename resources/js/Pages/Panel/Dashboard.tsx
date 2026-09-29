@@ -52,16 +52,7 @@ const esCapitalized = {
     }
 };
 
-const BARBERIA_SERVICES = [
-    { id: 'b1', name: 'Corte Normal',  duration: 30, price: '12' },
-    { id: 'b2', name: 'Corte + Barba', duration: 60, price: '15' },
-    { id: 'b3', name: 'Solo Barba',    duration: 30, price: '4'  },
-];
-const INFANTIL_SERVICES = [
-    { id: 'k1', name: 'Corte Infantil', duration: 45, price: 'Consultar' },
-    { id: 'k2', name: 'Peinados',       duration: 45, price: 'Consultar' },
-    { id: 'k3', name: 'Accesorios',     duration: 30, price: 'Consultar' },
-];
+// Servicies are now dynamic from DB
 const TIME_SLOTS = [
     '16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'
 ];
@@ -78,13 +69,13 @@ interface Filters {
 }
 
 // ─── HELPER: calendario picado de slots ───
-function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingHora }: any) {
+function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingHora, dbServices = [] }: any) {
     const [slots, setSlots] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!fecha || !servicio) { setSlots([]); return; }
-        const currentServices = tipo_servicio === 'barberia' ? BARBERIA_SERVICES : INFANTIL_SERVICES;
+        const currentServices = dbServices.filter((s: any) => s.shop_type === tipo_servicio);
         const found = currentServices.find(s => s.name === servicio);
         const duration = found ? found.duration : 30;
         setLoading(true);
@@ -214,8 +205,8 @@ function BarberPicker({ fecha, hora, duration, value, onChange }: any) {
 }
 
 // ─── FORM COMPARTIDO para crear/editar ───
-function AppointmentForm({ formData, setFormData, user }: any) {
-    const currentServices = formData.tipo_servicio === 'barberia' ? BARBERIA_SERVICES : INFANTIL_SERVICES;
+function AppointmentForm({ formData, setFormData, user, dbServices = [] }: any) {
+    const currentServices = dbServices.filter((s: any) => s.shop_type === formData.tipo_servicio);
 
     // Auto-precio cuando cambia servicio
     useEffect(() => {
@@ -335,6 +326,7 @@ function AppointmentForm({ formData, setFormData, user }: any) {
                     value={formData.hora}
                     onChange={(t: string) => setFormData((p: any) => ({...p, hora: t, empleado_id: null}))}
                     existingHora={null}
+                    dbServices={dbServices}
                 />
                 {formData.tipo_servicio === 'barberia' && (
                     <BarberPicker
@@ -410,7 +402,7 @@ function ConfirmModal({ data, onCancel, onConfirm }: any) {
 }
 
 // ─── COMPONENTE PRINCIPAL ───
-export default function Dashboard({ appointments, total, page, perPage, filters, user }: any) {
+export default function Dashboard({ appointments, total, page, perPage, filters, user, dbServices = [] }: any) {
     const [selectedAppt, setSelectedAppt] = useState<any>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [showNewModal, setShowNewModal] = useState(false);
@@ -857,7 +849,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                             <div className="p-4">
                                 {isEditMode ? (
                                     <div>
-                                        <AppointmentForm formData={formData} setFormData={setFormData} user={user} />
+                                        <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} />
                                         <div className="flex gap-3 pt-4 mt-4 border-t border-white/10">
                                             <button onClick={saveEdit}
                                                 disabled={!formData.hora || !formData.fecha || !formData.servicio}
@@ -992,7 +984,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                 </button>
                             </div>
                             <form onSubmit={createAppointment} className="p-4">
-                                <AppointmentForm formData={formData} setFormData={setFormData} user={user} />
+                                <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} />
                                 <button type="submit"
                                     disabled={!formData.hora || !formData.fecha || !formData.servicio}
                                     className="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-400 mt-5 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors flex items-center justify-center gap-2">

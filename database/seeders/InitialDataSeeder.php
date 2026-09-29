@@ -69,10 +69,55 @@ class InitialDataSeeder extends Seeder
         // Barberia Product
         Product::firstOrCreate(['shop_type' => 'barberia', 'name' => 'RedOne Aqua Hair Wax'], [
             'description' => 'Fijación extrema y brillo duradero. Fórmula a base de agua ideal para peinados que necesitan máxima sujeción sin dejar residuos.',
-            'tag' => 'Cera',
+            'tags' => 'Cera',
             'price' => 6,
             'sort_order' => 1,
             'photo_url' => '/products/redone-aqua-hair-red.png'
         ]);
+
+        Product::firstOrCreate(['shop_type' => 'barberia', 'name' => 'RedOne Black Gel Wax'], [
+            'description' => 'Fijación fuerte con acabado natural. Efecto gel que proporciona un look estructurado y limpio durante todo el día.',
+            'tag' => 'Gel Fijador',
+            'price' => 6,
+            'sort_order' => 2,
+            'photo_url' => '/products/redone-aqua-hair-black.png'
+        ]);
+
+        Product::firstOrCreate(['shop_type' => 'barberia', 'name' => 'Gafas Classic Blue'], [
+            'description' => 'Montura clásica de acetato negro con cristales tintados en azul para un look atemporal.',
+            'tag' => 'Gafas',
+            'price' => 6,
+            'sort_order' => 3,
+            'photo_url' => '/images/gafas2.jpg'
+        ]);
+
+        Product::firstOrCreate(['shop_type' => 'barberia', 'name' => 'Gafas Clear Ice'], [
+            'description' => 'Diseño moderno con montura transparente y cristales azules, perfectas para destacar.',
+            'tag' => 'Gafas',
+            'price' => 6,
+            'sort_order' => 4,
+            'photo_url' => '/images/gafas1.png'
+        ]);
+
+        Product::firstOrCreate(['shop_type' => 'barberia', 'name' => 'Gafas Retro Amber'], [
+            'description' => 'Estilo vintage de montura negra y cristales ámbar, protegiendo tus ojos con elegancia y carácter.',
+            'tag' => 'Gafas',
+            'price' => 6,
+            'sort_order' => 5,
+            'photo_url' => '/images/gafas3.png'
+        ]);
+
+        // Peluqueria Catalog Photos
+        $catalogIds = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12];
+        foreach ($catalogIds as $index => $id) {
+            \App\Models\CatalogPhoto::firstOrCreate(
+                ['shop_type' => 'peluqueria_infantil', 'url' => "catalogo/$id.jpg"],
+                [
+                    'caption' => "Estilo #$id",
+                    'active' => true,
+                    'sort_order' => $index + 1
+                ]
+            );
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import { Calendar, BarChart3, LogOut, Menu, X, User as UserIcon, ShoppingBag, MapPin } from 'lucide-react';
+import { Calendar, BarChart3, LogOut, Menu, X, User as UserIcon, ShoppingBag, MapPin, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -144,8 +144,12 @@ export default function PanelLayout({ children, title, user }: Props) {
                         <span className="text-sm">Productos y Servicios</span>
                     </Link>
                     <Link
-                        href="/panel/tienda#local"
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-steel hover:text-white hover:bg-white/5"
+                        href="/panel/local"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/local')
+                                ? 'bg-white/10 text-white font-bold'
+                                : 'text-steel hover:text-white hover:bg-white/5'
+                        }`}
                     >
                         <MapPin className="w-5 h-5" />
                         <span className="text-sm">Local</span>

@@ -5,46 +5,18 @@ import { useRef, useState } from 'react';
 import { Calendar, Clock, X } from 'lucide-react';
 
 interface Meta { title: string; description: string; }
-interface Props { meta: Meta; }
+interface Props { meta: Meta; services?: any[]; catalogPhotos?: any[]; localMedia?: any[]; }
 
 const team = [
   { name: 'Mariely', role: 'CEO & PELUQUERA', years: '50 años', specialty: 'CORTES INFANTILES', initial: 'M' },
 ];
 
-const services = [
-  {
-    name: 'Corte Infantil',
-    duration: '30 – 60 min',
-    desc: 'Corte profesional para niños, niñas y adolescentes.',
-    img: '/images/corte.webp',
-    serviceId: 'k1',
-  },
-  {
-    name: 'Peinados',
-    duration: '30 – 60 min',
-    desc: 'Trenzas, coletas, ondas y peinados especiales para niñas.',
-    img: '/images/peinados.jpg',
-    serviceId: 'k2',
-  },
-  {
-    name: 'Accesorios',
-    duration: '15 – 30 min',
-    desc: 'Coletas, lazos, broches y brillos para el look de las pequeñas.',
-    img: '/images/coleta.jpg',
-    serviceId: 'k3',
-  },
-];
+// Services and media are passed dynamically
 
-const gallery = [
-  'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=1200&auto=format&fit=crop',
-];
-
-export default function PeluqueriaInfantil({ meta }: Props) {
+export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos = [], localMedia = [] }: Props) {
   const teamRef = useRef<HTMLDivElement>(null);
   const teamInView = useInView(teamRef, { once: true, margin: '-10%' });
-  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
     <RootLayout meta={meta}>
@@ -64,33 +36,35 @@ export default function PeluqueriaInfantil({ meta }: Props) {
                 ¿No sabéis qué hacerle? Aquí os dejamos algunas de nuestras creaciones para que podáis traerlas de referencia. ¡Nuestras peques siempre salen guapísimas!
               </p>
             </div>
-            {/* 11 fotos: la 6.jpg es duplicado de la 1.jpg, se omite */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-              {[1,2,3,4,5,7,8,9,10,11,12].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setSelectedImage(n)}
-                  className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500 w-full text-left"
-                >
-                  <img
-                    src={`/images/catalogo/${n}.jpg`}
-                    alt={`Peinado infantil referencia`}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="bg-white/90 backdrop-blur-sm text-emerald-700 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
-                      Ver inspiración
-                    </span>
-                  </div>
-                  <div className="absolute top-2 left-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="bg-emerald-600/90 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full shadow-md">
-                      #STYLE-{n.toString().padStart(2, '0')}
-                    </span>
-                  </div>
-                </button>
-              ))}
+              {catalogPhotos.map((photo, index) => {
+                const imgUrl = photo.url ? `/storage/${photo.url}` : `/images/catalogo/${(index % 12) + 1}.jpg`;
+                return (
+                  <button
+                    key={photo.id}
+                    onClick={() => setSelectedImage(imgUrl)}
+                    className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500 w-full text-left"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={photo.caption || 'Catálogo'}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="bg-white/90 backdrop-blur-sm text-emerald-700 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
+                        Ver inspiración
+                      </span>
+                    </div>
+                    <div className="absolute top-2 left-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="bg-emerald-600/90 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full shadow-md">
+                        #STYLE-{photo.id.toString().padStart(2, '0')}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
             <div className="text-center mt-10">
               <p className="text-slate-400 text-xs md:text-sm">
@@ -110,30 +84,25 @@ export default function PeluqueriaInfantil({ meta }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {services.map((svc, i) => {
-                const INFANTIL_SERVICES = [
-                  { id: 'k1', name: 'Corte Infantil', subtitle: 'Corte profesional para niños, niñas y adolescentes.', duration: 45, durationLabel: '30 – 60 min' },
-                  { id: 'k2', name: 'Peinados', subtitle: 'Trenzas, coletas, ondas y peinados especiales para niñas.', duration: 45, durationLabel: '30 – 60 min' },
-                  { id: 'k3', name: 'Accesorios', subtitle: 'Coletas, lazos, broches y brillos para el look de las pequeñas.', duration: 20, durationLabel: '15 – 30 min' },
-                ];
-                const modalSvc = INFANTIL_SERVICES[i];
+                const imgUrl = svc.photo_url ? `/storage/${svc.photo_url}` : 'https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=600&auto=format&fit=crop';
                 return (
                   <button
                     key={i}
-                    onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil', preSelectedService: modalSvc } }))}
+                    onClick={() => document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil', preSelectedService: svc } }))}
                     className="group relative bg-white border border-emerald-100 rounded-2xl overflow-hidden hover:border-emerald-300 transition-colors shadow-sm hover:shadow-xl hover:shadow-emerald-100/50 text-left w-full"
                   >
                     <div className="h-48 md:h-64 overflow-hidden bg-slate-100">
-                      <img src={svc.img} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <img src={imgUrl} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     </div>
                     <div className="p-6 md:p-8">
                       <h3 className="text-xl md:text-2xl font-display font-bold text-slate-900 mb-3">{svc.name}</h3>
                       <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase tracking-wider mb-2 font-bold">
-                        <Clock className="w-3 h-3" /> {svc.duration}
+                        <Clock className="w-3 h-3" /> {svc.duration} min
                       </div>
                       <p className="text-emerald-600/80 text-[10px] uppercase tracking-wider mb-3 font-bold">
                         Horario &nbsp;<span className="text-slate-300">·</span>&nbsp; <span className="text-slate-400">16:00 – 21:00 · L–V</span>
                       </p>
-                      <p className="text-slate-600 text-sm md:text-base leading-relaxed">{svc.desc}</p>
+                      <p className="text-slate-600 text-sm md:text-base leading-relaxed">{svc.description}</p>
                       <span className="mt-4 inline-block text-[10px] font-bold tracking-widest uppercase text-emerald-500/60 group-hover:text-emerald-500 transition-colors">Reservar →</span>
                     </div>
                   </button>
@@ -180,24 +149,31 @@ export default function PeluqueriaInfantil({ meta }: Props) {
             <h2 className="font-display font-black text-4xl md:text-5xl text-slate-900 tracking-tighter">El Local.</h2>
             <p className="text-slate-500 mt-4 text-sm">Nuestro segundo hogar.</p>
           </div>
-          <div className="relative w-full overflow-hidden">
-            <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-emerald-50/30 to-transparent z-10 pointer-events-none" />
-            <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-emerald-50/30 to-transparent z-10 pointer-events-none" />
-            <motion.div
-              animate={{ x: ['0%', '-50%'] }}
-              transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
-              className="flex gap-4 md:gap-6 w-max"
-            >
-              {[...gallery, ...gallery].map((img, i) => (
-                <div
-                  key={i}
-                  className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
-                >
-                  <img src={img} alt="Galería local peluquería infantil" className="w-full h-full object-cover" loading="lazy" />
-                </div>
-              ))}
-            </motion.div>
-          </div>
+            <div className="relative w-full overflow-hidden">
+              <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-emerald-50/30 to-transparent z-10 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-emerald-50/30 to-transparent z-10 pointer-events-none" />
+              <motion.div
+                animate={{ x: ['0%', '-50%'] }}
+                transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
+                className="flex gap-4 md:gap-6 w-max"
+              >
+                {[...localMedia, ...localMedia, ...localMedia].map((media, i) => {
+                  const src = media.url ? `/storage/${media.url}` : 'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop';
+                  return (
+                    <div
+                      key={i}
+                      className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
+                    >
+                      {media.type === 'video' ? (
+                        <video src={src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                      ) : (
+                        <img src={src} alt="Galería local peluquería infantil" className="w-full h-full object-cover" loading="lazy" />
+                      )}
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </div>
         </section>
 
         {/* ── Reserva Calendario ── */}
@@ -240,7 +216,7 @@ export default function PeluqueriaInfantil({ meta }: Props) {
               
               <div className="aspect-[4/5] sm:aspect-square w-full bg-slate-100 relative">
                 <img
-                  src={`/images/catalogo/${selectedImage}.jpg`}
+                  src={selectedImage}
                   alt="Inspiración Infantil"
                   className="w-full h-full object-contain sm:object-cover"
                 />
