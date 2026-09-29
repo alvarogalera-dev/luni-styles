@@ -35,12 +35,6 @@ class ShopController extends Controller
             ->orderBy('id')
             ->get();
 
-        $localMedia = LocalMedia::where('shop_type', $shopType)
-            ->where('active', true)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
-
         $catalogPhotos = [];
         if ($shopType === 'peluqueria_infantil') {
             $catalogPhotos = CatalogPhoto::where('shop_type', $shopType)
@@ -53,10 +47,27 @@ class ShopController extends Controller
         return Inertia::render('Panel/Shop', [
             'services'      => $services,
             'products'      => $products,
-            'localMedia'    => $localMedia,
             'catalogPhotos' => $catalogPhotos,
             'shopType'      => $shopType,
             'user'          => ['name' => $user->name, 'role' => $user->role],
+        ]);
+    }
+
+    public function local()
+    {
+        $user = Auth::user();
+        $shopType = $this->getShopType($user);
+
+        $localMedia = LocalMedia::where('shop_type', $shopType)
+            ->where('active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        return Inertia::render('Panel/Local', [
+            'localMedia' => $localMedia,
+            'shopType'   => $shopType,
+            'user'       => ['name' => $user->name, 'role' => $user->role],
         ]);
     }
 
@@ -71,10 +82,10 @@ class ShopController extends Controller
 
         $validated = $request->validate([
             'name'             => 'required|string|max:150',
-            'description'      => 'nullable|string|max:1000',
-            'duration_label'   => 'nullable|string|max:50',
+            'description'      => 'required|string|max:1000',
+            'duration_label'   => 'required|string|max:50',
             'duration_minutes' => 'required|integer|min:5|max:480',
-            'price'            => $shopType === 'peluqueria_infantil' ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
+            'price'            => 'required|numeric|min:0',
             'promo_price'      => 'nullable|numeric|min:0',
             'photo'            => 'nullable|file|image|max:5120',
             'photo_url'        => 'nullable|string|max:500',
@@ -112,14 +123,12 @@ class ShopController extends Controller
 
         $service = Service::where('shop_type', $shopType)->findOrFail((int) $id);
 
-        $priceRule = $shopType === 'peluqueria_infantil' ? 'nullable|numeric|min:0' : 'nullable|numeric|min:0';
-
         $validated = $request->validate([
             'name'             => 'required|string|max:150',
-            'description'      => 'nullable|string|max:1000',
-            'duration_label'   => 'nullable|string|max:50',
+            'description'      => 'required|string|max:1000',
+            'duration_label'   => 'required|string|max:50',
             'duration_minutes' => 'required|integer|min:5|max:480',
-            'price'            => $priceRule,
+            'price'            => 'required|numeric|min:0',
             'promo_price'      => 'nullable|numeric|min:0',
             'photo'            => 'nullable|file|image|max:5120',
             'photo_url'        => 'nullable|max:500',
@@ -170,7 +179,7 @@ class ShopController extends Controller
 
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
-            'tag'         => 'nullable|string|max:50',
+            'tag'         => 'required|string|max:50',
             'description' => 'required|string|max:1000',
             'price'       => 'required|numeric|min:0',
             'photo'       => 'nullable|file|image|max:5120',
@@ -209,7 +218,7 @@ class ShopController extends Controller
 
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
-            'tag'         => 'nullable|string|max:50',
+            'tag'         => 'required|string|max:50',
             'description' => 'required|string|max:1000',
             'price'       => 'required|numeric|min:0',
             'photo'       => 'nullable|file|image|max:5120',

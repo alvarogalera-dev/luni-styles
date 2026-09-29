@@ -59,8 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/panel/api/stats/drill', [PanelController::class, 'statsDrillDown'])->name('panel.stats.drill');
     Route::get('/panel/api/stats/penalizados', [PanelController::class, 'statsPenalizados'])->name('panel.stats.penalizados');
 
-    // Shop (Servicios, Productos, Local, Catálogo)
+    // Shop (Servicios, Productos, Catálogo)
     Route::get('/panel/tienda', [ShopController::class, 'index'])->name('panel.tienda');
+    Route::get('/panel/local', [ShopController::class, 'local'])->name('panel.local');
 
     // Services
     Route::post('/panel/tienda/servicios', [ShopController::class, 'storeService'])->name('panel.tienda.servicios.store');

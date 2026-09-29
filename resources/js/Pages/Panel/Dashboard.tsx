@@ -17,20 +17,21 @@ import { twMerge } from 'tailwind-merge';
 
 // CSS para colorear de amarillo el calendario del panel
 const panelCalendarCss = `
-  .rdp { --rdp-accent-color: #fbbf24; margin: 0; }
+  .rdp { --rdp-accent-color: #fbbf24 !important; --rdp-background-color: #27272a !important; margin: 0; }
   .rdp-day, .rdp-cell { border: none !important; background: transparent !important; border-radius: 50% !important; }
   .rdp-button, .rdp-day_button {
     border-radius: 50% !important;
     border: none !important;
     width: 40px !important; height: 40px !important;
   }
-  .rdp-day_selected, .rdp-day_selected:hover {
+  .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
     background-color: #fbbf24 !important;
     color: #000 !important;
-    font-weight: bold;
+    font-weight: bold !important;
   }
-  .rdp-day_today { color: #fbbf24; font-weight: bold; }
-  .rdp-button:hover:not([disabled]) { background-color: #27272a; color: white; }
+  .rdp-day_today { color: #fbbf24 !important; font-weight: bold !important; }
+  .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: white !important; }
+  .rdp-nav_button svg { fill: #fbbf24 !important; color: #fbbf24 !important; }
   .rdp-nav_button, .rdp-nav_icon { color: #fbbf24 !important; fill: #fbbf24 !important; }
   .rdp-dropdown { background-color: #111 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; }
   .rdp-dropdown option { background-color: #161616 !important; color: white !important; }

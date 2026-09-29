@@ -177,13 +177,13 @@ function FormModal({ title, fields, values, onChange, onSave, onClose, isSubmitt
 }
 
 // ── MAIN PAGE ─────────────────────────────────────────────────────────────────
-export default function Shop({ services, products, localMedia, catalogPhotos, shopType, user }: any) {
-    const [activeTab, setActiveTab] = useState<'services' | 'products' | 'local' | 'catalog'>('services');
+export default function Shop({ services, products, catalogPhotos, shopType, user }: any) {
+    const [activeTab, setActiveTab] = useState<'services' | 'products' | 'catalog'>('services');
 
     useEffect(() => {
         const handleHashChange = () => {
             const hash = window.location.hash.replace('#', '');
-            if (['services', 'products', 'local', 'catalog'].includes(hash)) {
+            if (['services', 'products', 'catalog'].includes(hash)) {
                 setActiveTab(hash as any);
             } else {
                 setActiveTab('services');
@@ -205,13 +205,6 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     const [productForm, setProductForm] = useState<any>({});
     const [productPhoto, setProductPhoto] = useState<File | null>(null);
     const [productPhotoPreview, setProductPhotoPreview] = useState<string | null>(null);
-
-    // Media state
-    const [mediaModal, setMediaModal] = useState(false);
-    const [mediaFile, setMediaFile] = useState<File | null>(null);
-    const [mediaCaption, setMediaCaption] = useState('');
-    const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
-    const [mediaPreview, setMediaPreview] = useState<string | null>(null);
 
     // Catalog state
     const [catalogModal, setCatalogModal] = useState<{ mode: 'create' | 'edit'; item?: any } | null>(null);
@@ -355,7 +348,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     const openEditCatalog = (item: any) => {
         setCatalogCaption(item.caption || '');
         setCatalogFile(null);
-        setCatalogPreview(item.photo_url);
+        setCatalogPreview(item.url);
         setCatalogModal({ mode: 'edit', item });
     };
 
@@ -390,7 +383,6 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
     const tabs = [
         { id: 'services', label: 'Servicios', icon: Scissors },
         ...(isBarber ? [{ id: 'products', label: 'Productos', icon: ShoppingBag }] : []),
-        { id: 'local', label: 'Local', icon: MapPin },
         ...(isHairdresser ? [{ id: 'catalog', label: 'Catálogo', icon: Camera }] : []),
     ];
 
@@ -477,32 +469,6 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                         </motion.div>
                     )}
 
-                    {/* ── TAB: Local ── */}
-                    {activeTab === 'local' && (
-                        <motion.div key="local" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                            <div className="flex items-center justify-between mb-4">
-                                <p className="text-steel text-sm">{localMedia.length} archivo{localMedia.length !== 1 ? 's' : ''}</p>
-                                <button onClick={() => { setMediaFile(null); setMediaPreview(null); setMediaCaption(''); setMediaModal(true); }}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-void font-bold rounded-xl text-sm hover:bg-amber-300 transition-colors">
-                                    <Plus className="w-4 h-4" /> Subir Archivo
-                                </button>
-                            </div>
-                            {localMedia.length === 0 ? (
-                                <div className="text-center py-20 text-steel">
-                                    <MapPin className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                    <p className="font-bold">Sin fotos/vídeos del local</p>
-                                    <p className="text-xs mt-1">Sube fotos y videos que aparecerán en el carrusel del sitio web</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                                    {localMedia.map((m: any) => (
-                                        <MediaCard key={m.id} media={m} onDelete={deleteMedia} />
-                                    ))}
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-
                     {/* ── TAB: Catálogo (solo peluquería) ── */}
                     {activeTab === 'catalog' && isHairdresser && (
                         <motion.div key="catalog" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
@@ -523,7 +489,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                                     {catalogPhotos.map((c: any) => (
                                         <div key={c.id} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-white/10 bg-carbon">
-                                            <img src={c.photo_url} alt="catalog" className="w-full h-full object-cover" />
+                                            <img src={c.url} alt="catalog" className="w-full h-full object-cover" />
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                                 <button onClick={() => openEditCatalog(c)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-amber-400 hover:text-void transition-colors">
                                                     <Edit2 className="w-4 h-4" />
@@ -640,7 +606,7 @@ export default function Shop({ services, products, localMedia, catalogPhotos, sh
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Etiqueta</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Etiqueta *</label>
                                     <input type="text" placeholder="ej: Cera mate" value={productForm.tag} onChange={e => setProductForm((p: any) => ({...p, tag: e.target.value}))}
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>

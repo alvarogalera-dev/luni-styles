@@ -114,9 +114,9 @@ export default function PanelLayout({ children, title, user }: Props) {
                     </Link>
 
                     <Link
-                        href="/panel/tienda#local"
+                        href="/panel/local"
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                            url === '/panel/tienda' && typeof window !== 'undefined' && window.location.hash === '#local'
+                            url.startsWith('/panel/local')
                                 ? 'bg-white/10 text-white font-bold'
                                 : 'text-steel hover:text-white hover:bg-white/5'
                         }`}
