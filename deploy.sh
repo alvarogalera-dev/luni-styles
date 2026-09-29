@@ -9,9 +9,12 @@ echo "Iniciando despliegue automático desde GitHub"
 echo "Fecha: $(date)"
 echo "=========================================="
 
-# Bajar últimos cambios
-echo "-> 1/5 Ejecutando git pull..."
+# Bajar últimos cambios y resguardar BBDD
+echo "-> 1/5 Guardando BBDD y actualizando código..."
+cp database/database.sqlite database/database.sqlite.bak || true
+git stash
 git pull origin main
+mv database/database.sqlite.bak database/database.sqlite || true
 
 # Cargar Node/NPM (Ajuste para CloudPanel)
 export NVM_DIR="$HOME/.nvm"

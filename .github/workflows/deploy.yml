@@ -30,9 +30,17 @@ jobs:
             # Configure git
             git config pull.rebase false
             
+            # Backup DB safely
+            cp database/database.sqlite database/database.sqlite.bak || true
+            
+            git stash
+            
             # Pull latest changes using token
             git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/alvarogalera-dev/luni-styles.git
             git pull origin main
+            
+            # Restore DB
+            mv database/database.sqlite.bak database/database.sqlite || true
             
             # Install PHP dependencies
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
