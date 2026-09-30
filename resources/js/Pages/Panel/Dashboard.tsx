@@ -169,7 +169,7 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
 }
 
 // ─── HELPER: Selector de barbero en tiempo real ───
-function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id }: any) {
+function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, user }: any) {
     const [barbers, setBarbers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -218,20 +218,26 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id }
                 </div>
             ) : (
                 <div className="grid grid-cols-2 gap-2">
-                    {barbers.map((b) => (
-                        <button
-                            key={b.id} type="button" disabled={!b.available}
-                            onClick={() => onChange(b.id)}
-                            className={cn(
-                                'relative flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all border',
-                                !b.available ? 'opacity-40 cursor-not-allowed bg-[#0a0a0a] border-white/5 text-steel/50' :
-                                value === b.id ? 'bg-amber-400 text-void border-amber-400 shadow-lg' :
-                                'bg-[#111] text-ash border-white/10 hover:border-amber-400/50 hover:text-white'
-                            )}>
-                            <span className={!b.available ? 'line-through' : ''}>{b.name}</span>
-                            {!b.available && <X className="w-3 h-3 absolute right-2 top-2 text-steel/40" />}
-                        </button>
-                    ))}
+                    {barbers.map((b) => {
+                        const canForce = user?.role === 'superadmin' || user?.role === 'barber';
+                        const isDisabled = !b.available && !canForce;
+                        return (
+                            <button
+                                key={b.id} type="button" disabled={isDisabled}
+                                onClick={() => onChange(b.id)}
+                                className={cn(
+                                    'relative flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all border',
+                                    !b.available && !isDisabled ? 'bg-[#111] text-ash border-red-500/30 hover:border-red-500 hover:text-white' :
+                                    isDisabled ? 'opacity-40 cursor-not-allowed bg-[#0a0a0a] border-white/5 text-steel/50' :
+                                    value === b.id ? 'bg-amber-400 text-void border-amber-400 shadow-lg' :
+                                    'bg-[#111] text-ash border-white/10 hover:border-amber-400/50 hover:text-white',
+                                    value === b.id && !b.available && canForce ? 'bg-red-500 text-white border-red-500 shadow-red-500/20' : ''
+                                )}>
+                                <span className={!b.available && isDisabled ? 'line-through' : ''}>{b.name}</span>
+                                {!b.available && <X className="w-3 h-3 absolute right-2 top-2 text-steel/40" />}
+                            </button>
+                        );
+                    })}
                 </div>
             )}
         </div>
@@ -308,32 +314,27 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                             </select>
                         </div>
                     )}
-                    <div>
+                    <div className={formData.tipo_servicio === 'barberia' ? "col-span-2" : ""}>
                         <label className="text-xs text-steel/70 mb-1 block">Servicio *</label>
                         <select required
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
                             value={formData.servicio}
-                            onChange={e => setFormData((p: any) => ({...p, servicio: e.target.value, hora: null}))}>
+                            onChange={e => setFormData((p: any) => ({...p, servicio: e.target.value, hora: null, empleado_id: formData.tipo_servicio === 'peluqueria_infantil' ? 3 : null}))}>
                             <option value="" disabled>Selecciona...</option>
                             {currentServices.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                         </select>
                     </div>
-                    <div>
-                        <label className="text-xs text-steel/70 mb-1 block">Empleado *</label>
-                        <select required
-                            className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
-                            value={formData.empleado_id || ''}
-                            onChange={e => setFormData((p: any) => ({...p, empleado_id: Number(e.target.value), hora: null}))}>
-                            {formData.tipo_servicio === 'peluqueria_infantil' ? (
+                    {formData.tipo_servicio === 'peluqueria_infantil' && (
+                        <div>
+                            <label className="text-xs text-steel/70 mb-1 block">Empleado</label>
+                            <select
+                                className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
+                                value={formData.empleado_id || 3}
+                                onChange={e => setFormData((p: any) => ({...p, empleado_id: Number(e.target.value)}))}>
                                 <option value={3}>Mariely (Infantil)</option>
-                            ) : (
-                                <>
-                                    <option value={1}>Luis (Barbero)</option>
-                                    <option value={2}>Carlos (Barbero)</option>
-                                </>
-                            )}
-                        </select>
-                    </div>
+                            </select>
+                        </div>
+                    )}
                     <div className="col-span-2">
                         <label className="text-xs text-steel/70 mb-1 block">Precio (automático)</label>
                         <input type="text" readOnly
@@ -375,6 +376,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         value={formData.empleado_id}
                         onChange={(id: number | null) => setFormData((p: any) => ({...p, empleado_id: id}))}
                         appointment_id={appointment_id}
+                        user={user}
                     />
                 )}
             </div>
