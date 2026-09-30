@@ -511,6 +511,10 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
         }, {
             preserveScroll: true,
             onSuccess: () => { setIsEditMode(false); setSelectedAppt(null); },
+            onError: (errors) => {
+                console.error("Validation errors:", errors);
+                alert("Validation errors: " + JSON.stringify(errors));
+            }
         });
     };
 

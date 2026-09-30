@@ -231,21 +231,23 @@ class PanelController extends Controller
         ]);
 
         $client = $appointment->client;
-        $client->update([
-            'name'    => strip_tags($validated['nombre']),
-            'surname' => isset($validated['apellidos']) ? strip_tags($validated['apellidos']) : '',
-            'phone'   => strip_tags($validated['telefono']),
-            'email'   => $validated['email'] ?? $client->email,
-        ]);
+        if ($client) {
+            $client->update([
+                'name'    => strip_tags((string) $validated['nombre']),
+                'surname' => isset($validated['apellidos']) ? strip_tags((string) $validated['apellidos']) : '',
+                'phone'   => strip_tags((string) $validated['telefono']),
+                'email'   => $validated['email'] ?? $client->email,
+            ]);
+        }
 
         $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
 
-        $appointment->service_name = strip_tags($validated['servicio']);
+        $appointment->service_name = strip_tags((string) $validated['servicio']);
         $appointment->service_type = $validated['tipo_servicio'];
         $appointment->employee_id = (int) $validated['empleado_id'];
         $appointment->appointment_date = $datetime;
-        $appointment->price = isset($validated['precio']) ? strip_tags($validated['precio']) : $appointment->price;
-        $appointment->observations = isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null;
+        $appointment->price = isset($validated['precio']) ? strip_tags((string) $validated['precio']) : $appointment->price;
+        $appointment->observations = isset($validated['observaciones']) ? strip_tags((string) $validated['observaciones']) : null;
         $appointment->save();
 
         return back();
@@ -293,8 +295,8 @@ class PanelController extends Controller
             $client = Client::create([
                 'email'               => $inputEmail ?? 'sin-email@panel.local',
                 'known_emails'        => $inputEmail ?? '',
-                'name'                => strip_tags(trim($validated['nombre'])),
-                'surname'             => isset($validated['apellidos']) ? strip_tags(trim($validated['apellidos'])) : '',
+                'name'                => strip_tags(trim((string) $validated['nombre'])),
+                'surname'             => isset($validated['apellidos']) ? strip_tags(trim((string) $validated['apellidos'])) : '',
                 'phone'               => $inputPhone ?? '',
                 'known_phones'        => $inputPhone ?? '',
                 'total_appointments'  => 1,
@@ -303,8 +305,8 @@ class PanelController extends Controller
             ]);
         } else {
             $client->update([
-                'name'    => strip_tags(trim($validated['nombre'])),
-                'surname' => strip_tags(trim($validated['apellidos'])),
+                'name'    => strip_tags(trim((string) $validated['nombre'])),
+                'surname' => isset($validated['apellidos']) ? strip_tags(trim((string) $validated['apellidos'])) : '',
                 'total_appointments' => $client->total_appointments + 1,
             ]);
         }
@@ -318,10 +320,10 @@ class PanelController extends Controller
         $appt->client_id = $client->id;
         $appt->appointment_date = $datetime;
         $appt->service_type = $validated['tipo_servicio'];
-        $appt->service_name = strip_tags($validated['servicio']);
+        $appt->service_name = strip_tags((string) $validated['servicio']);
         $appt->employee_id = (int) $validated['empleado_id'];
         $appt->price = $price;
-        $appt->observations = isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null;
+        $appt->observations = isset($validated['observaciones']) ? strip_tags((string) $validated['observaciones']) : null;
         $appt->status = 'pending';
         $appt->save();
 
