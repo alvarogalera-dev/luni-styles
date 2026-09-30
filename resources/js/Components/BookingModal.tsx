@@ -173,7 +173,6 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
     }
     const fetchBarbers = async () => {
       setIsLoadingBarbers(true);
-      setSelectedBarberId(null);
       try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         const res = await fetch('/api/barbers-availability', {
@@ -186,7 +185,15 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
           }),
         });
         const data = await res.json();
-        setBarbersAvailability(data.barbers || []);
+        const barbers = data.barbers || [];
+        setBarbersAvailability(barbers);
+        
+        // Only reset selected barber if they are no longer available
+        setSelectedBarberId((prev: number | null) => {
+          if (prev === null) return null;
+          const stillAvailable = barbers.find((b: any) => b.id === prev)?.available;
+          return stillAvailable ? prev : null;
+        });
       } catch (e) {
         setBarbersAvailability([]);
       } finally {
@@ -481,6 +488,8 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               font-weight: bold !important;
                               border: 2px solid #fbbf24 !important;
                               box-shadow: none !important;
+                              outline: none !important;
+                              --tw-ring-shadow: none !important;
                             }
                             .rdp-today, .rdp-day_today {
                               border: none !important;

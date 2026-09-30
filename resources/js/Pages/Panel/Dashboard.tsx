@@ -141,7 +141,7 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
 }
 
 // ─── HELPER: Selector de barbero en tiempo real ───
-function BarberPicker({ fecha, hora, duration, value, onChange }: any) {
+function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id }: any) {
     const [barbers, setBarbers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -155,7 +155,8 @@ function BarberPicker({ fecha, hora, duration, value, onChange }: any) {
             body: JSON.stringify({
                 date: format(fecha, 'yyyy-MM-dd'),
                 time: hora,
-                duration: duration || 30
+                duration: duration || 30,
+                appointment_id: appointment_id
             }),
         })
         .then(r => r.json())
@@ -210,7 +211,7 @@ function BarberPicker({ fecha, hora, duration, value, onChange }: any) {
 }
 
 // ─── FORM COMPARTIDO para crear/editar ───
-function AppointmentForm({ formData, setFormData, user, dbServices = [] }: any) {
+function AppointmentForm({ formData, setFormData, user, dbServices = [], appointment_id }: any) {
     const currentServices = dbServices.filter((s: any) => s.shop_type === formData.tipo_servicio);
 
     // Auto-precio cuando cambia servicio
@@ -340,6 +341,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [] }: any) 
                         duration={currentServices.find(s => s.name === formData.servicio)?.duration}
                         value={formData.empleado_id}
                         onChange={(id: number | null) => setFormData((p: any) => ({...p, empleado_id: id}))}
+                        appointment_id={appointment_id}
                     />
                 )}
             </div>
@@ -854,7 +856,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                             <div className="p-4">
                                 {isEditMode ? (
                                     <div>
-                                        <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} />
+                                        <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={selectedAppt.id} />
                                         <div className="flex gap-3 pt-4 mt-4 border-t border-white/10">
                                             <button onClick={saveEdit}
                                                 disabled={!formData.hora || !formData.fecha || !formData.servicio}
@@ -989,7 +991,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                 </button>
                             </div>
                             <form onSubmit={createAppointment} className="p-4">
-                                <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} />
+                                <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={null} />
                                 <button type="submit"
                                     disabled={!formData.hora || !formData.fecha || !formData.servicio}
                                     className="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-400 mt-5 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors flex items-center justify-center gap-2">

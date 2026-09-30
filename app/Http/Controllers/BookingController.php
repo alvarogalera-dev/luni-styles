@@ -248,6 +248,7 @@ class BookingController extends Controller
         $date     = $request->date;
         $time     = $request->time;
         $duration = (int) $request->duration;
+        $excludeId = $request->has('appointment_id') ? (int) $request->appointment_id : null;
 
         $barbers = [
             1 => 'Luis',
@@ -259,7 +260,7 @@ class BookingController extends Controller
             $result[] = [
                 'id'        => $id,
                 'name'      => $name,
-                'available' => $this->isEmployeeFree($id, $date, $time, $duration),
+                'available' => $this->isEmployeeFree($id, $date, $time, $duration, $excludeId),
             ];
         }
 
@@ -291,16 +292,21 @@ class BookingController extends Controller
         return null;
     }
 
-    private function isEmployeeFree($employeeId, $date, $time, $durationMinutes)
+    private function isEmployeeFree($employeeId, $date, $time, $durationMinutes, $excludeAppointmentId = null)
     {
         $start = Carbon::parse($date . ' ' . $time);
         $end = $start->copy()->addMinutes($durationMinutes);
 
         // Check if there are any appointments for this employee that overlap with [start, end)
-        $conflicts = Appointment::where('employee_id', $employeeId)
+        $query = Appointment::where('employee_id', $employeeId)
             ->whereDate('appointment_date', $date)
-            ->where('status', '!=', 'cancelled')
-            ->get();
+            ->where('status', '!=', 'cancelled');
+            
+        if ($excludeAppointmentId) {
+            $query->where('id', '!=', $excludeAppointmentId);
+        }
+        
+        $conflicts = $query->get();
 
         foreach ($conflicts as $appt) {
             $apptStart = Carbon::parse($appt->appointment_date);
