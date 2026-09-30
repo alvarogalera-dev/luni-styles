@@ -464,7 +464,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                             ) : (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                                     {catalogPhotos.map((c: any) => {
-                                        const cUrl = c.url.startsWith('http') || c.url.startsWith('/') ? c.url : (c.url.startsWith('images/') ? `/${c.url}` : `/storage/${c.url}`);
+                                        const cUrl = c.url.startsWith('http') || c.url.startsWith('/') ? c.url : (c.url.startsWith('images/') ? `/${c.url}` : (c.url.startsWith('catalogo/') ? `/images/${c.url}` : `/storage/${c.url}`));
                                         return (
                                         <div key={c.id} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-white/10 bg-carbon">
                                             <img src={cUrl} alt="catalog" className="w-full h-full object-cover" />
@@ -651,7 +651,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                     <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto * (Archivo o URL)</label>
                                     {catalogPreview && (
                                         <div className="mb-3 relative aspect-[3/4] max-w-[200px] mx-auto rounded-xl overflow-hidden border border-white/10">
-                                            <img src={catalogPreview.startsWith('http') || catalogPreview.startsWith('/') ? catalogPreview : (catalogPreview.startsWith('images/') ? `/${catalogPreview}` : `/storage/${catalogPreview}`)} alt="preview" className="w-full h-full object-cover" />
+                                            <img src={catalogPreview.startsWith('http') || catalogPreview.startsWith('/') ? catalogPreview : (catalogPreview.startsWith('images/') ? `/${catalogPreview}` : (catalogPreview.startsWith('catalogo/') ? `/images/${catalogPreview}` : `/storage/${catalogPreview}`))} alt="preview" className="w-full h-full object-cover" />
                                             <button onClick={() => { setCatalogFile(null); setCatalogPhotoUrl(''); setCatalogPreview(null); }}
                                                 className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:text-red-400">
                                                 <X className="w-4 h-4" />
