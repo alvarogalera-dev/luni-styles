@@ -100,7 +100,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                         <Clock className="w-3 h-3" /> {svc.duration_label || `${svc.duration_minutes} min`}
                       </div>
                       <p className="text-emerald-600/80 text-[10px] uppercase tracking-wider mb-3 font-bold">
-                        Horario &nbsp;<span className="text-slate-300">·</span>&nbsp; <span className="text-slate-400">16:00 – 21:00 · L–V</span>
+                        Consultar &nbsp;<span className="text-slate-300">·</span>&nbsp; <span className="text-slate-400">por teléfono</span>
                       </p>
                       <p className="text-slate-600 text-sm md:text-base leading-relaxed">{svc.description}</p>
                       <span className="mt-4 inline-block text-[10px] font-bold tracking-widest uppercase text-emerald-500/60 group-hover:text-emerald-500 transition-colors">Reservar →</span>
