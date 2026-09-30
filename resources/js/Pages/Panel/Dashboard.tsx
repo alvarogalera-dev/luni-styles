@@ -308,27 +308,32 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                             </select>
                         </div>
                     )}
-                    <div className={formData.tipo_servicio === 'barberia' ? "col-span-2" : ""}>
+                    <div>
                         <label className="text-xs text-steel/70 mb-1 block">Servicio *</label>
                         <select required
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
                             value={formData.servicio}
-                            onChange={e => setFormData((p: any) => ({...p, servicio: e.target.value, hora: null, empleado_id: formData.tipo_servicio === 'peluqueria_infantil' ? 3 : null}))}>
+                            onChange={e => setFormData((p: any) => ({...p, servicio: e.target.value, hora: null}))}>
                             <option value="" disabled>Selecciona...</option>
                             {currentServices.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                         </select>
                     </div>
-                    {formData.tipo_servicio === 'peluqueria_infantil' && (
-                        <div>
-                            <label className="text-xs text-steel/70 mb-1 block">Empleado</label>
-                            <select
-                                className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
-                                value={formData.empleado_id || 3}
-                                onChange={e => setFormData((p: any) => ({...p, empleado_id: Number(e.target.value)}))}>
+                    <div>
+                        <label className="text-xs text-steel/70 mb-1 block">Empleado *</label>
+                        <select required
+                            className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
+                            value={formData.empleado_id || ''}
+                            onChange={e => setFormData((p: any) => ({...p, empleado_id: Number(e.target.value), hora: null}))}>
+                            {formData.tipo_servicio === 'peluqueria_infantil' ? (
                                 <option value={3}>Mariely (Infantil)</option>
-                            </select>
-                        </div>
-                    )}
+                            ) : (
+                                <>
+                                    <option value={1}>Luis (Barbero)</option>
+                                    <option value={2}>Carlos (Barbero)</option>
+                                </>
+                            )}
+                        </select>
+                    </div>
                     <div className="col-span-2">
                         <label className="text-xs text-steel/70 mb-1 block">Precio (automático)</label>
                         <input type="text" readOnly
