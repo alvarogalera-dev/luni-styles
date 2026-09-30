@@ -240,14 +240,13 @@ class PanelController extends Controller
 
         $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
 
-        $appointment->update([
-            'service_name'     => strip_tags($validated['servicio']),
-            'service_type'     => $validated['tipo_servicio'],
-            'employee_id'      => (int) $validated['empleado_id'],
-            'appointment_date' => $datetime,
-            'price'            => isset($validated['precio']) ? strip_tags($validated['precio']) : $appointment->price,
-            'observations'     => isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null,
-        ]);
+        $appointment->service_name = strip_tags($validated['servicio']);
+        $appointment->service_type = $validated['tipo_servicio'];
+        $appointment->employee_id = (int) $validated['empleado_id'];
+        $appointment->appointment_date = $datetime;
+        $appointment->price = isset($validated['precio']) ? strip_tags($validated['precio']) : $appointment->price;
+        $appointment->observations = isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null;
+        $appointment->save();
 
         return back();
     }
@@ -315,16 +314,16 @@ class PanelController extends Controller
         // Determine price with promo logic
         $price = $validated['precio'] ?? $this->getServicePrice($validated['servicio'], $validated['tipo_servicio']);
 
-        Appointment::create([
-            'client_id'        => $client->id,
-            'appointment_date' => $datetime,
-            'service_type'     => $validated['tipo_servicio'],
-            'service_name'     => strip_tags($validated['servicio']),
-            'employee_id'      => (int) $validated['empleado_id'],
-            'price'            => $price,
-            'observations'     => isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null,
-            'status'           => 'pending',
-        ]);
+        $appt = new Appointment();
+        $appt->client_id = $client->id;
+        $appt->appointment_date = $datetime;
+        $appt->service_type = $validated['tipo_servicio'];
+        $appt->service_name = strip_tags($validated['servicio']);
+        $appt->employee_id = (int) $validated['empleado_id'];
+        $appt->price = $price;
+        $appt->observations = isset($validated['observaciones']) ? strip_tags($validated['observaciones']) : null;
+        $appt->status = 'pending';
+        $appt->save();
 
         return redirect()->route('panel.citas')->with('success', 'Cita creada correctamente.');
     }
