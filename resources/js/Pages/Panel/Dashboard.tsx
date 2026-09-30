@@ -17,29 +17,57 @@ import { twMerge } from 'tailwind-merge';
 
 // CSS para colorear de amarillo el calendario del panel
 const panelCalendarCss = `
-  .rdp { --rdp-accent-color: #fbbf24 !important; --rdp-background-color: #27272a !important; margin: 0; }
+  .rdp { --rdp-accent-color: transparent; margin: 0; }
   .rdp-day, .rdp-cell { border: none !important; background: transparent !important; border-radius: 50% !important; }
   .rdp-button, .rdp-day_button {
     border-radius: 50% !important;
     border: none !important;
-    width: 40px !important; height: 40px !important;
-  }
-  .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
-    background-color: transparent !important;
-    color: #ffffff !important;
-    font-weight: bold !important;
+    box-shadow: none !important;
     outline: none !important;
-    border: 2px solid #fbbf24 !important;
+    background: transparent !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .rdp-button:hover:not([disabled]) {
+    background-color: #27272a !important;
+    color: #fbbf24 !important;
+  }
+  .rdp-selected, .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
     box-shadow: none !important;
     --tw-ring-shadow: none !important;
   }
-  .rdp-day_today { color: #ffffff !important; font-weight: bold !important; }
-  .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: white !important; }
-  .rdp-button:focus, .rdp-day_button:focus, .rdp-nav_button:focus { outline: none !important; box-shadow: none !important; }
-  .rdp-nav_button svg { fill: #fbbf24 !important; color: #fbbf24 !important; }
-  .rdp-nav_button, .rdp-nav_icon { color: #fbbf24 !important; fill: #fbbf24 !important; stroke: #fbbf24 !important; }
-  .rdp-dropdown { background-color: #111 !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; }
+  .rdp-selected .rdp-button, .rdp-selected .rdp-day_button, button.rdp-selected, button.rdp-day_selected {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border: 2px solid #fbbf24 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    --tw-ring-shadow: none !important;
+  }
+  .rdp-today:not(.rdp-selected) .rdp-button, .rdp-today:not(.rdp-selected) .rdp-day_button, button.rdp-today:not(.rdp-day_selected), button.rdp-day_today:not(.rdp-day_selected) {
+    border: none !important;
+    color: #fbbf24 !important;
+    font-weight: bold !important;
+    background: transparent !important;
+  }
+  .rdp-nav_button, .rdp-nav_icon, .rdp-chevron {
+    color: #fbbf24 !important;
+    fill: #fbbf24 !important;
+    stroke: #fbbf24 !important;
+  }
+  .rdp-outside { opacity: 0.3 !important; pointer-events: none; }
+  .rdp-caption_label { text-transform: capitalize; }
+  @media (max-width: 400px) {
+    .rdp { transform: scale(0.88); transform-origin: top center; }
+  }
+  .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
   .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+  .rdp-caption_dropdowns { display: flex; gap: 8px; justify-content: center; }
+  .rdp-vhidden { display: none !important; }
 `;
 
 function cn(...inputs: (string | undefined | null | false)[]) {

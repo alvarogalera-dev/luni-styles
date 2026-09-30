@@ -473,14 +473,19 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               box-shadow: none !important;
                               outline: none !important;
                               background: transparent !important;
+                              width: 40px !important;
+                              height: 40px !important;
                             }
                             .rdp-button:hover:not([disabled]) {
                               background-color: #27272a !important;
                               color: #fbbf24 !important;
                             }
-                            .rdp-selected, .rdp-day_selected {
+                            .rdp-selected, .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
+                              background-color: transparent !important;
                               border: none !important;
-                              background: transparent !important;
+                              outline: none !important;
+                              box-shadow: none !important;
+                              --tw-ring-shadow: none !important;
                             }
                             .rdp-selected .rdp-button, .rdp-selected .rdp-day_button, button.rdp-selected, button.rdp-day_selected {
                               background-color: transparent !important;
@@ -491,14 +496,11 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               outline: none !important;
                               --tw-ring-shadow: none !important;
                             }
-                            .rdp-today, .rdp-day_today {
+                            .rdp-today:not(.rdp-selected) .rdp-button, .rdp-today:not(.rdp-selected) .rdp-day_button, button.rdp-today:not(.rdp-day_selected), button.rdp-day_today:not(.rdp-day_selected) {
                               border: none !important;
-                              background: transparent !important;
-                            }
-                            .rdp-today .rdp-button, .rdp-today .rdp-day_button, button.rdp-today, button.rdp-day_today {
-                              border: none !important;
-                              color: #ffffff !important;
+                              color: #fbbf24 !important;
                               font-weight: bold !important;
+                              background: transparent !important;
                             }
                             .rdp-nav_button, .rdp-nav_icon, .rdp-chevron {
                               color: #fbbf24 !important;
