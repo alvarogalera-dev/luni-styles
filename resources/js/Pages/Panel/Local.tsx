@@ -29,8 +29,8 @@ function MediaCard({ media, onDelete, onEdit }: any) {
                 </>
             )}
             {media.caption && (
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3 border-t border-white/10 z-10">
-                    <p className="text-white text-xs font-bold truncate text-center">{media.caption}</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-3 border-t border-white/10 z-10">
+                    <p className="text-slate-900 text-xs font-bold truncate text-center">{media.caption}</p>
                 </div>
             )}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
