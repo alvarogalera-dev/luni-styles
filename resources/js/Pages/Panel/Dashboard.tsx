@@ -17,36 +17,43 @@ import { twMerge } from 'tailwind-merge';
 
 // CSS para colorear de amarillo el calendario del panel
 const panelCalendarCss = `
-  /* Common */
+  /* Default / Barberia */
   .rdp { --rdp-accent-color: transparent; margin: 0; }
   .rdp-day, .rdp-cell { border: none !important; background: transparent !important; border-radius: 50% !important; }
   .rdp-button, .rdp-day_button {
     border-radius: 50% !important; border: none !important; box-shadow: none !important; outline: none !important;
     background: transparent !important; width: 40px !important; height: 40px !important;
   }
+  .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: #fbbf24 !important; }
   .rdp-selected, .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
     background-color: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; --tw-ring-shadow: none !important;
   }
+  .rdp-selected .rdp-button, .rdp-selected .rdp-day_button, button.rdp-selected, button.rdp-day_selected {
+    background-color: transparent !important; color: #ffffff !important; font-weight: bold !important; border: 2px solid #fbbf24 !important;
+    box-shadow: none !important; outline: none !important; --tw-ring-shadow: none !important;
+  }
+  .rdp-today:not(.rdp-selected) .rdp-button, .rdp-today:not(.rdp-selected) .rdp-day_button, button.rdp-today:not(.rdp-day_selected), button.rdp-day_today:not(.rdp-day_selected) {
+    border: none !important; color: #fbbf24 !important; font-weight: bold !important; background: transparent !important;
+  }
+  .rdp-nav_button, .rdp-nav_icon, .rdp-chevron { color: #fbbf24 !important; fill: #fbbf24 !important; stroke: #fbbf24 !important; }
   .rdp-outside { opacity: 0.3 !important; pointer-events: none; }
   .rdp-caption_label { text-transform: capitalize; }
   @media (max-width: 400px) { .rdp { transform: scale(0.88); transform-origin: top center; } }
+  .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
+  .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
   .rdp-caption_dropdowns { display: flex; gap: 8px; justify-content: center; }
   .rdp-vhidden { display: none !important; }
 
-  /* BARBERIA (Amber) */
-  .rdp-panel-barberia .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: #fbbf24 !important; }
-  .rdp-panel-barberia button.rdp-day_selected { color: #ffffff !important; font-weight: bold !important; border: 2px solid #fbbf24 !important; }
-  .rdp-panel-barberia button.rdp-day_today:not(.rdp-day_selected) { color: #fbbf24 !important; font-weight: bold !important; }
-  .rdp-panel-barberia .rdp-nav_button, .rdp-panel-barberia .rdp-nav_icon, .rdp-panel-barberia .rdp-chevron { color: #fbbf24 !important; fill: #fbbf24 !important; stroke: #fbbf24 !important; }
-  .rdp-panel-barberia .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
-  .rdp-panel-barberia .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
-
-  /* PELUQUERIA (Emerald & Black on White) */
+  /* PELUQUERIA OVERRIDES */
   .rdp-panel-peluqueria .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
-  .rdp-panel-peluqueria button.rdp-day_selected { color: #000000 !important; font-weight: bold !important; border: 2px solid #10b981 !important; }
-  .rdp-panel-peluqueria button.rdp-day_today:not(.rdp-day_selected) { color: #10b981 !important; font-weight: bold !important; }
+  .rdp-panel-peluqueria button.rdp-day_selected, .rdp-panel-peluqueria .rdp-selected .rdp-button, .rdp-panel-peluqueria .rdp-selected .rdp-day_button { 
+      color: #000000 !important; font-weight: bold !important; border: 2px solid #10b981 !important; 
+  }
+  .rdp-panel-peluqueria button.rdp-day_today:not(.rdp-day_selected), .rdp-panel-peluqueria .rdp-today:not(.rdp-selected) .rdp-button { 
+      color: #10b981 !important; font-weight: bold !important; 
+  }
   .rdp-panel-peluqueria .rdp-nav_button, .rdp-panel-peluqueria .rdp-nav_icon, .rdp-panel-peluqueria .rdp-chevron { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
-  .rdp-panel-peluqueria .rdp-dropdown { background-color: transparent !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
+  .rdp-panel-peluqueria .rdp-dropdown { background-color: transparent !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1) !important; }
   .rdp-panel-peluqueria .rdp-dropdown option { background-color: #fff !important; color: #000 !important; }
   .rdp-panel-peluqueria .rdp-head_cell { color: #10b981 !important; }
   .rdp-panel-peluqueria .rdp-day:not(.rdp-day_disabled) { color: #000000 !important; }
@@ -244,13 +251,26 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
     );
 }
 
+const COUNTRY_CODES = [
+  { code: '+34', iso: 'es', maxLength: 9, isOther: false },
+  { code: '+33', iso: 'fr', maxLength: 9, isOther: false },
+  { code: '+351', iso: 'pt', maxLength: 9, isOther: false },
+  { code: '+44', iso: 'gb', maxLength: 10, isOther: false },
+  { code: '+1', iso: 'us', maxLength: 10, isOther: false },
+  { code: '+54', iso: 'ar', maxLength: 10, isOther: false },
+  { code: '+57', iso: 'co', maxLength: 10, isOther: false },
+  { code: '+52', iso: 'mx', maxLength: 10, isOther: false },
+  { code: 'Otro', iso: 'other', maxLength: 15, isOther: true },
+];
+
 // ─── FORM COMPARTIDO para crear/editar ───
 function AppointmentForm({ formData, setFormData, user, dbServices = [], appointment_id, selectedAppt }: any) {
     const currentServices = dbServices.filter((s: any) => s.shop_type === formData.tipo_servicio);
     const [loyaltyData, setLoyaltyData] = useState<{exists: boolean, loyalty_points: number, penalty_flag: boolean} | null>(null);
+    const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
 
     useEffect(() => {
-        if (formData.telefono && formData.telefono.replace(/\D/g, '').length === 9 && formData.tipo_servicio === 'barberia') {
+        if (formData.telefono && formData.telefono.replace(/\D/g, '').length >= 8 && formData.tipo_servicio === 'barberia') {
             fetch('/api/client-loyalty?phone=' + formData.telefono.replace(/\D/g, ''))
                 .then(res => res.json())
                 .then(data => {
@@ -272,7 +292,17 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
         <div className="space-y-5">
             {/* Datos cliente */}
             <div>
-                <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-3">Datos del Cliente</p>
+                <div className="flex items-center justify-between mb-3">
+                    <p className="text-[10px] uppercase text-steel font-bold tracking-widest">Datos del Cliente</p>
+                    {loyaltyData && formData.tipo_servicio === 'barberia' && (
+                        <div className="flex items-center gap-1.5 bg-amber-400/10 px-2 py-1 rounded-md border border-amber-400/30">
+                            <svg className="w-3.5 h-3.5 text-amber-400 fill-amber-400" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
+                                Cortes acumulados: {loyaltyData.loyalty_points}
+                            </span>
+                        </div>
+                    )}
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Nombre *</label>
@@ -290,18 +320,69 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     </div>
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Teléfono *</label>
-                        <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-steel/50 text-sm select-none pointer-events-none font-medium">
-                                +34
-                            </span>
-                            <input required type="tel" maxLength={9}
-                                className="w-full bg-carbon border border-white/10 rounded-xl p-3 pl-11 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                        <div className="flex gap-2 relative">
+                            <button
+                                type="button"
+                                onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
+                                className="w-[100px] bg-carbon border border-white/10 rounded-xl px-2 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors flex items-center justify-center gap-1.5"
+                            >
+                                {formData.phonePrefix === 'Otro' ? (
+                                    <span>🌍 Otro</span>
+                                ) : (
+                                    <>
+                                        <img src={`https://flagcdn.com/w20/${COUNTRY_CODES.find(c => c.code === formData.phonePrefix)?.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
+                                        <span>{formData.phonePrefix}</span>
+                                    </>
+                                )}
+                            </button>
+                            <input required type="tel" 
+                                pattern={formData.phonePrefix === 'Otro' ? `[0-9]{8,15}` : `[0-9]{${COUNTRY_CODES.find(c => c.code === formData.phonePrefix)?.maxLength || 9}}`}
+                                maxLength={formData.phonePrefix === 'Otro' ? 15 : COUNTRY_CODES.find(c => c.code === formData.phonePrefix)?.maxLength || 9}
+                                className="flex-1 bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                                 value={formData.telefono}
                                 onChange={e => {
-                                    const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+                                    const val = e.target.value.replace(/\D/g, '');
                                     setFormData((p: any) => ({...p, telefono: val}));
                                 }} />
                         </div>
+                        {showPhoneDropdown && (
+                            <div className="absolute z-[100] mt-1 w-[300px] max-h-40 overflow-y-auto bg-[#111] border border-white/10 rounded-xl p-1.5 grid grid-cols-2 gap-1 custom-scrollbar shadow-2xl">
+                                {COUNTRY_CODES.map((c) => (
+                                    <button
+                                        key={c.code}
+                                        type="button"
+                                        onClick={() => {
+                                            setFormData((p: any) => ({...p, phonePrefix: c.code, customPrefix: '', telefono: ''}));
+                                            setShowPhoneDropdown(false);
+                                        }}
+                                        className="flex items-center gap-2 px-2.5 py-2 text-xs text-bone hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                                    >
+                                        {c.isOther ? (
+                                            <span>🌍 Otro</span>
+                                        ) : (
+                                            <>
+                                                <img src={`https://flagcdn.com/w20/${c.iso}.png`} alt="" className="w-4 h-3 object-cover rounded-sm" />
+                                                <span>{c.code}</span>
+                                            </>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        {formData.phonePrefix === 'Otro' && (
+                            <div className="mt-2">
+                                <label className="text-[10px] uppercase text-steel/70 mb-1 block">Prefijo Manual</label>
+                                <input
+                                    required
+                                    value={formData.customPrefix}
+                                    type="text"
+                                    placeholder="+XX"
+                                    maxLength={5}
+                                    onChange={e => setFormData((p: any) => ({...p, customPrefix: e.target.value.replace(/[^0-9+]/g, '')}))}
+                                    className="w-full bg-carbon border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                                />
+                            </div>
+                        )}
                     </div>
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Email <span className="text-steel/40">(opcional)</span></label>
@@ -517,7 +598,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     });
 
     const emptyForm = {
-        nombre: '', apellidos: '', telefono: '', email: '',
+        nombre: '', apellidos: '', telefono: '', phonePrefix: '+34', customPrefix: '', email: '',
         fecha: undefined as Date | undefined,
         hora: null as string | null,
         servicio: '',
@@ -544,10 +625,30 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     };
 
     const startEdit = () => {
+        let prefix = '+34';
+        let customPref = '';
+        let phoneNum = selectedAppt.telefono || '';
+        
+        if (phoneNum.includes(' ')) {
+            const parts = phoneNum.split(' ');
+            const pfx = parts[0];
+            phoneNum = parts.slice(1).join('').replace(/\D/g, '');
+            if (COUNTRY_CODES.find(c => c.code === pfx)) {
+                prefix = pfx;
+            } else {
+                prefix = 'Otro';
+                customPref = pfx;
+            }
+        } else {
+            phoneNum = phoneNum.replace(/\D/g, '');
+        }
+
         setFormData({
             nombre:        selectedAppt.nombre,
             apellidos:     selectedAppt.apellidos || '',
-            telefono:      selectedAppt.telefono  || '',
+            telefono:      phoneNum,
+            phonePrefix:   prefix,
+            customPrefix:  customPref,
             email:         selectedAppt.email     || '',
             fecha:         selectedAppt.fecha ? new Date(selectedAppt.fecha) : undefined,
             hora:          selectedAppt.hora,
@@ -564,6 +665,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
         if (!formData.fecha || !formData.hora || !formData.servicio) return;
         router.put(`/panel/citas/${selectedAppt.id}`, {
             ...formData,
+            telefono: (formData.phonePrefix === 'Otro' ? formData.customPrefix : formData.phonePrefix) + ' ' + formData.telefono,
             fecha: format(formData.fecha, 'yyyy-MM-dd'),
             precio: formData.precio !== null && formData.precio !== undefined ? String(formData.precio) : null,
         }, {
@@ -581,6 +683,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
         if (!formData.fecha || !formData.hora || !formData.servicio) return;
         router.post('/panel/citas', {
             ...formData,
+            telefono: (formData.phonePrefix === 'Otro' ? formData.customPrefix : formData.phonePrefix) + ' ' + formData.telefono,
             fecha: format(formData.fecha, 'yyyy-MM-dd'),
             precio: formData.precio !== null && formData.precio !== undefined ? String(formData.precio) : null,
         }, {
@@ -687,7 +790,10 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                     captionLayout="dropdown-buttons"
                                                     fromYear={2026}
                                                     toYear={2035}
-                                                    className="text-sm font-medium"
+                                                    className={cn(
+                                                        "text-sm font-medium",
+                                                        localFilters.service_type === 'peluqueria_infantil' ? "rdp-panel-peluqueria text-black" : "text-bone"
+                                                    )}
                                                 />
                                             </motion.div>
                                         </>

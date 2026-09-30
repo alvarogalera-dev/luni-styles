@@ -442,9 +442,9 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                   )}
                                 </div>
                               ) : isKids ? (
-                                <div className="shrink-0 text-right">
-                                  <span className="text-[10px] md:text-xs text-emerald-600 font-bold bg-emerald-500/10 px-2 py-1 rounded-md">
-                                    Consultar precio por tfno.
+                                <div className="shrink-0 text-right max-w-[120px]">
+                                  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-2 py-1 rounded-md block text-center leading-tight">
+                                    {(svc as any).etiqueta || 'CONSULTAR PRECIO POR TELÉFONO'}
                                   </span>
                                 </div>
                               ) : null}
@@ -483,8 +483,8 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               height: 40px !important;
                             }
                             .rdp-button:hover:not([disabled]) {
-                              background-color: #27272a !important;
-                              color: #fbbf24 !important;
+                              background-color: ${serviceType === 'infantil' ? '#f3f4f6' : '#27272a'} !important;
+                              color: ${serviceType === 'infantil' ? '#10b981' : '#fbbf24'} !important;
                             }
                             .rdp-selected, .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
                               background-color: transparent !important;
@@ -495,34 +495,38 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             }
                             .rdp-selected .rdp-button, .rdp-selected .rdp-day_button, button.rdp-selected, button.rdp-day_selected {
                               background-color: transparent !important;
-                              color: #ffffff !important;
+                              color: ${serviceType === 'infantil' ? '#000000' : '#ffffff'} !important;
                               font-weight: bold !important;
-                              border: 2px solid #fbbf24 !important;
+                              border: 2px solid ${serviceType === 'infantil' ? '#10b981' : '#fbbf24'} !important;
                               box-shadow: none !important;
                               outline: none !important;
                               --tw-ring-shadow: none !important;
                             }
                             .rdp-today:not(.rdp-selected) .rdp-button, .rdp-today:not(.rdp-selected) .rdp-day_button, button.rdp-today:not(.rdp-day_selected), button.rdp-day_today:not(.rdp-day_selected) {
                               border: none !important;
-                              color: #fbbf24 !important;
+                              color: ${serviceType === 'infantil' ? '#10b981' : '#fbbf24'} !important;
                               font-weight: bold !important;
                               background: transparent !important;
                             }
                             .rdp-nav_button, .rdp-nav_icon, .rdp-chevron {
-                              color: #fbbf24 !important;
-                              fill: #fbbf24 !important;
-                              stroke: #fbbf24 !important;
+                              color: ${serviceType === 'infantil' ? '#10b981' : '#fbbf24'} !important;
+                              fill: ${serviceType === 'infantil' ? '#10b981' : '#fbbf24'} !important;
+                              stroke: ${serviceType === 'infantil' ? '#10b981' : '#fbbf24'} !important;
                             }
                             .rdp-outside { opacity: 0.3 !important; pointer-events: none; }
-                            .rdp-caption_label { text-transform: capitalize; }
+                            .rdp-caption_label { text-transform: capitalize; ${serviceType === 'infantil' ? 'color: #000 !important;' : ''} }
                             @media (max-width: 400px) {
                               .rdp { transform: scale(0.88); transform-origin: top center; }
                             }
-                            .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
-                            .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+                            .rdp-dropdown { background-color: transparent !important; color: ${serviceType === 'infantil' ? '#000' : 'white'} !important; border: 1px solid rgba(${serviceType === 'infantil' ? '0,0,0,0.1' : '255,255,255,0.1'}) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
+                            .rdp-dropdown option { background-color: ${serviceType === 'infantil' ? '#fff' : '#161616'} !important; color: ${serviceType === 'infantil' ? '#000' : 'white'} !important; }
                             .rdp-caption_dropdowns { display: flex; gap: 8px; justify-content: center; }
                             .rdp-vhidden { display: none !important; }
-
+                            ${serviceType === 'infantil' ? `
+                              .rdp-head_cell { color: #10b981 !important; }
+                              .rdp-day:not(.rdp-day_disabled) { color: #000000 !important; }
+                              .rdp-day_disabled { color: #a1a1aa !important; }
+                            ` : ''}
                           `}</style>
                             <DayPicker
                               mode="single"

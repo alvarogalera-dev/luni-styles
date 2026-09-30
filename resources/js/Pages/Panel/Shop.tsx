@@ -221,7 +221,11 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     // ── Services ──────────────────────────────────────────────────────────────
 
     const openCreateService = () => {
-        setServiceForm({ name: '', description: '', duration_minutes: 30, duration_label: '', price: '', promo_price: '', photo_url: '' });
+        setServiceForm({ 
+            name: '', description: '', duration_minutes: 30, duration_label: '', 
+            price: '', promo_price: '', photo_url: '', 
+            etiqueta: isHairdresser ? 'CONSULTAR PRECIO POR TELÉFONO' : '' 
+        });
         setServicePhoto(null);
         setServicePhotoPreview(null);
         setServiceModal({ mode: 'create' });
@@ -236,6 +240,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
             price: item.price?.toString() || '',
             promo_price: item.promo_price?.toString() || '',
             photo_url: item.photo_url || '',
+            etiqueta: item.etiqueta || '',
         });
         setServicePhoto(null);
         setServicePhotoPreview(item.photo_url || null);
@@ -536,6 +541,14 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                                 onChange={e => setServiceForm((p: any) => ({...p, promo_price: e.target.value}))}
                                                 className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                         </div>
+                                    </div>
+                                )}
+                                {isHairdresser && (
+                                    <div>
+                                        <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Etiqueta (precio)</label>
+                                        <input type="text" placeholder="CONSULTAR PRECIO POR TELÉFONO" value={serviceForm.etiqueta}
+                                            onChange={e => setServiceForm((p: any) => ({...p, etiqueta: e.target.value}))}
+                                            className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                     </div>
                                 )}
                                 <div>

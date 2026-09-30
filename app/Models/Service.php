@@ -9,7 +9,7 @@ class Service extends Model
     protected $fillable = [
         'shop_type', 'name', 'description', 'duration_label',
         'duration_minutes', 'price', 'promo_price', 'photo_url',
-        'sort_order', 'active',
+        'sort_order', 'active', 'etiqueta',
     ];
 
     protected $casts = [
