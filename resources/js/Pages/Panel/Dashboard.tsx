@@ -118,7 +118,13 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ date: format(fecha, 'yyyy-MM-dd'), service_type: tipo_servicio, duration }),
         })
-        .then(r => r.json())
+        .then(async (r) => {
+            if (!r.ok) {
+                const text = await r.text();
+                throw new Error(`Status: ${r.status}, Body: ${text}`);
+            }
+            return r.json();
+        })
         .then(data => {
             let available: string[] = data.available_slots || [];
             // Re-incluir hora existente si es edición del mismo día
@@ -128,7 +134,11 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
             }
             setSlots(available);
         })
-        .catch(() => setSlots([]))
+        .catch((e) => {
+            console.error("Error fetching slots:", e);
+            alert("Error fetching available slots: " + e.message);
+            setSlots([]);
+        })
         .finally(() => setLoading(false));
     }, [fecha, servicio, tipo_servicio]);
 
@@ -187,7 +197,13 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
                 appointment_id: appointment_id
             }),
         })
-        .then(r => r.json())
+        .then(async (r) => {
+            if (!r.ok) {
+                const text = await r.text();
+                throw new Error(`Status: ${r.status}, Body: ${text}`);
+            }
+            return r.json();
+        })
         .then(data => {
             const list = data.barbers || [];
             setBarbers(list);
@@ -201,7 +217,11 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
                 }
             }
         })
-        .catch(() => setBarbers([]))
+        .catch((e) => {
+            console.error("Error fetching barbers:", e);
+            alert("Error fetching barbers: " + e.message);
+            setBarbers([]);
+        })
         .finally(() => setLoading(false));
     }, [fecha, hora, duration]);
 
