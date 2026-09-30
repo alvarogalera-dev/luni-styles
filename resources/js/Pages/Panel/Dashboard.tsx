@@ -508,6 +508,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
         router.put(`/panel/citas/${selectedAppt.id}`, {
             ...formData,
             fecha: format(formData.fecha, 'yyyy-MM-dd'),
+            precio: formData.precio !== null && formData.precio !== undefined ? String(formData.precio) : null,
         }, {
             preserveScroll: true,
             onSuccess: () => { setIsEditMode(false); setSelectedAppt(null); },
@@ -524,10 +525,14 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
         router.post('/panel/citas', {
             ...formData,
             fecha: format(formData.fecha, 'yyyy-MM-dd'),
+            precio: formData.precio !== null && formData.precio !== undefined ? String(formData.precio) : null,
         }, {
             preserveScroll: true,
             onSuccess: () => { setShowNewModal(false); setFormData(emptyForm); },
-            onError: (errors) => { console.error('Error al crear cita:', errors); },
+            onError: (errors) => {
+                console.error('Error al crear cita:', errors);
+                alert("Validation errors: " + JSON.stringify(errors));
+            },
         });
     };
 
