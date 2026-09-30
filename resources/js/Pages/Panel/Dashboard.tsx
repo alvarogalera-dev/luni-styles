@@ -46,13 +46,17 @@ const panelCalendarCss = `
 
   /* PELUQUERIA OVERRIDES */
   .rdp-panel-peluqueria .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
-  .rdp-panel-peluqueria button.rdp-day_selected, .rdp-panel-peluqueria .rdp-selected .rdp-button, .rdp-panel-peluqueria .rdp-selected .rdp-day_button { 
+  .rdp-panel-peluqueria .rdp-selected, .rdp-panel-peluqueria .rdp-day_selected, .rdp-panel-peluqueria .rdp-day_selected:hover, .rdp-panel-peluqueria .rdp-day_selected:focus {
+      background-color: transparent !important;
+  }
+  .rdp-panel-peluqueria button.rdp-day_selected, .rdp-panel-peluqueria button.rdp-selected, .rdp-panel-peluqueria .rdp-selected .rdp-button, .rdp-panel-peluqueria .rdp-selected .rdp-day_button { 
       color: #000000 !important; font-weight: bold !important; border: 2px solid #10b981 !important; 
   }
-  .rdp-panel-peluqueria button.rdp-day_today:not(.rdp-day_selected), .rdp-panel-peluqueria .rdp-today:not(.rdp-selected) .rdp-button { 
+  .rdp-panel-peluqueria button.rdp-day_today:not(.rdp-day_selected), .rdp-panel-peluqueria button.rdp-today:not(.rdp-day_selected), .rdp-panel-peluqueria .rdp-today:not(.rdp-selected) .rdp-button, .rdp-panel-peluqueria .rdp-today:not(.rdp-selected) .rdp-day_button { 
       color: #10b981 !important; font-weight: bold !important; 
   }
-  .rdp-panel-peluqueria .rdp-nav_button, .rdp-panel-peluqueria .rdp-nav_icon, .rdp-panel-peluqueria .rdp-chevron { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
+  .rdp-panel-peluqueria .rdp-nav_button, .rdp-panel-peluqueria .rdp-nav_icon, .rdp-panel-peluqueria .rdp-chevron,
+  .rdp-panel-peluqueria svg.rdp-nav_icon { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
   .rdp-panel-peluqueria .rdp-dropdown { background-color: transparent !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1) !important; }
   .rdp-panel-peluqueria .rdp-dropdown option { background-color: #fff !important; color: #000 !important; }
   .rdp-panel-peluqueria .rdp-head_cell { color: #10b981 !important; }
@@ -270,23 +274,46 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
     const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
 
     useEffect(() => {
-        if (formData.telefono && formData.telefono.replace(/\D/g, '').length >= 8 && formData.tipo_servicio === 'barberia') {
-            fetch('/api/client-loyalty?phone=' + formData.telefono.replace(/\D/g, ''))
-                .then(res => res.json())
-                .then(data => {
-                    if (data.exists) setLoyaltyData(data);
-                    else setLoyaltyData(null);
-                }).catch(() => setLoyaltyData(null));
+        if (formData.tipo_servicio === 'barberia' && (
+            (formData.telefono && formData.telefono.replace(/\D/g, '').length >= 8) || 
+            (formData.email && formData.email.includes('@')) || 
+            (formData.nombre && formData.nombre.trim() !== '')
+        )) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            fetch('/api/client-loyalty-check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '' },
+                body: JSON.stringify({
+                    phone: formData.telefono ? formData.telefono.replace(/\D/g, '') : '',
+                    email: formData.email || '',
+                    nombre: formData.nombre || '',
+                    apellidos: formData.apellidos || ''
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.exists) {
+                    setLoyaltyData(data);
+                } else {
+                    setLoyaltyData(null);
+                }
+            }).catch(() => setLoyaltyData(null));
         } else {
             setLoyaltyData(null);
         }
-    }, [formData.telefono, formData.tipo_servicio]);
+    }, [formData.telefono, formData.email, formData.nombre, formData.apellidos, formData.tipo_servicio]);
 
     // Auto-precio cuando cambia servicio
     useEffect(() => {
         const found = currentServices.find(s => s.name === formData.servicio);
-        if (found) setFormData((p: any) => ({ ...p, precio: found.price }));
-    }, [formData.servicio, formData.tipo_servicio]);
+        if (found) {
+            if (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9 && formData.tipo_servicio === 'barberia') {
+                setFormData((p: any) => ({ ...p, precio: 'Gratis' }));
+            } else {
+                setFormData((p: any) => ({ ...p, precio: found.price }));
+            }
+        }
+    }, [formData.servicio, formData.tipo_servicio, loyaltyData]);
 
     return (
         <div className="space-y-5">
@@ -295,10 +322,13 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                 <div className="flex items-center justify-between mb-3">
                     <p className="text-[10px] uppercase text-steel font-bold tracking-widest">Datos del Cliente</p>
                     {loyaltyData && formData.tipo_servicio === 'barberia' && (
-                        <div className="flex items-center gap-1.5 bg-amber-400/10 px-2 py-1 rounded-md border border-amber-400/30">
-                            <svg className="w-3.5 h-3.5 text-amber-400 fill-amber-400" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
-                                Cortes acumulados: {loyaltyData.loyalty_points}
+                        <div className={cn(
+                            "flex items-center gap-1.5 px-2 py-1 rounded-md border",
+                            loyaltyData.loyalty_points >= 9 ? "bg-emerald-500/10 border-emerald-500/30" : "bg-amber-400/10 border-amber-400/30"
+                        )}>
+                            <svg className={cn("w-3.5 h-3.5", loyaltyData.loyalty_points >= 9 ? "text-emerald-400 fill-emerald-400" : "text-amber-400 fill-amber-400")} viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", loyaltyData.loyalty_points >= 9 ? "text-emerald-400" : "text-amber-400")}>
+                                {loyaltyData.loyalty_points >= 9 ? "¡CORTE GRATIS! (10º CORTE)" : `Cortes acumulados: ${loyaltyData.loyalty_points}`}
                             </span>
                         </div>
                     )}
@@ -653,7 +683,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
             fecha:         selectedAppt.fecha ? new Date(selectedAppt.fecha) : undefined,
             hora:          selectedAppt.hora,
             servicio:      selectedAppt.servicio,
-            tipo_servicio: selectedAppt.tipo_servicio,
+            tipo_servicio: selectedAppt.tipo_servicio === 'infantil' ? 'peluqueria_infantil' : selectedAppt.tipo_servicio,
             empleado_id:   selectedAppt.empleado_id,
             precio:        selectedAppt.precio,
             observaciones: selectedAppt.observaciones || '',

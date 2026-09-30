@@ -194,14 +194,48 @@ class BookingController extends Controller
         ]);
     }
 
-    public function clientLoyaltyByPhone(Request $request)
+    public function clientLoyaltyCheck(Request $request)
     {
-        $request->validate(['phone' => 'required|string']);
-        $cleanPhone = str_replace(' ', '', $request->phone);
-        
-        $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)
-                    ->orWhere(DB::raw("REPLACE(known_phones, ' ', '')"), 'LIKE', '%' . $cleanPhone . '%')
-                    ->first();
+        $inputEmail = strtolower(trim($request->email ?? ''));
+        $inputPhone = trim($request->phone ?? '');
+        $cleanPhone = str_replace(' ', '', $inputPhone);
+        $inputName = strtolower(trim(($request->nombre ?? '') . ' ' . ($request->apellidos ?? '')));
+
+        $client = null;
+
+        // 1. Email match
+        if (!empty($inputEmail)) {
+            $client = Client::where('email', $inputEmail)
+                ->orWhere('known_emails', 'LIKE', '%' . $inputEmail . '%')
+                ->first();
+        }
+
+        // 2. Phone match
+        if (!$client && !empty($cleanPhone)) {
+            $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)
+                ->orWhere(DB::raw("REPLACE(known_phones, ' ', '')"), 'LIKE', '%' . $cleanPhone . '%')
+                ->first();
+        }
+
+        // 3. Name match
+        if (!$client && trim($inputName) !== '') {
+            $allClients = Client::all();
+            $bestMatch = null;
+            $highestSimilarity = 0;
+
+            foreach ($allClients as $c) {
+                $dbName = strtolower(trim($c->name . ' ' . $c->surname));
+                similar_text($inputName, $dbName, $percent);
+                
+                if ($percent > 90 && $percent > $highestSimilarity) {
+                    $highestSimilarity = $percent;
+                    $bestMatch = $c;
+                }
+            }
+            if ($bestMatch) {
+                $client = $bestMatch;
+            }
+        }
 
         if ($client) {
             return response()->json([

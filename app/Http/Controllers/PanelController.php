@@ -81,9 +81,13 @@ class PanelController extends Controller
         if ($user->role === 'barber') {
             $query->where('service_type', 'barberia');
         } elseif ($user->role === 'hairdresser') {
-            $query->where('service_type', 'peluqueria_infantil');
+            $query->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
         } elseif ($user->role === 'superadmin' && !empty($filterType)) {
-            $query->where('service_type', $filterType);
+            if ($filterType === 'peluqueria_infantil') {
+                $query->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+            } else {
+                $query->where('service_type', $filterType);
+            }
         }
 
         // Filtro por fecha (si hay fecha, filtrar por ese día)

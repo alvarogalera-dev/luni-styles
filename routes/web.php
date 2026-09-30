@@ -26,7 +26,7 @@ foreach ($locales as $locale) {
 // API Routes (Using web middleware for CSRF protection in Inertia)
 Route::post('/api/booking', [BookingController::class, 'store'])->name('api.booking.store');
 Route::post('/api/check-loyalty', [BookingController::class, 'checkLoyalty'])->name('api.check-loyalty');
-Route::get('/api/client-loyalty', [BookingController::class, 'clientLoyaltyByPhone'])->name('api.client-loyalty-by-phone');
+Route::post('/api/client-loyalty-check', [BookingController::class, 'clientLoyaltyCheck'])->name('api.client-loyalty-check');
 Route::post('/api/available-slots', [BookingController::class, 'getAvailableSlots'])->name('api.available-slots');
 // API para disponibilidad de barberos por hora (tiempo real en BookingModal)
 Route::post('/api/barbers-availability', [BookingController::class, 'getBarbersAvailability'])->name('api.barbers-availability');

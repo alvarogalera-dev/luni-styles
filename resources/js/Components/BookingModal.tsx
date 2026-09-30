@@ -1026,7 +1026,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                     fecha: date ? format(date, 'yyyy-MM-dd') : '',
                                     hora: time,
                                     servicio: selectedService?.name,
-                                    tipo_servicio: serviceType,
+                                    tipo_servicio: serviceType === 'infantil' ? 'peluqueria_infantil' : 'barberia',
                                     precio: (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9) ? 'Gratis' : (promoActive && !isKids && selectedService?.promoPrice ? String(selectedService.promoPrice) : selectedService?.price?.toString() || 'Variable'),
                                     observaciones: observations,
                                     barbero_id: selectedBarberId,
