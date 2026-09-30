@@ -109,8 +109,8 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
     useEffect(() => {
         if (!fecha || !servicio) { setSlots([]); return; }
         const currentServices = dbServices.filter((s: any) => s.shop_type === tipo_servicio);
-        const found = currentServices.find(s => s.name === servicio);
-        const duration = found ? found.duration : 30;
+        const found = currentServices.find((s: any) => s.name === servicio);
+        const duration = (found && found.duration) ? found.duration : 30;
         setLoading(true);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
         fetch('/api/available-slots', {
@@ -389,7 +389,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     <BarberPicker
                         fecha={formData.fecha}
                         hora={formData.hora}
-                        duration={currentServices.find(s => s.name === formData.servicio)?.duration}
+                        duration={(currentServices.find((s: any) => s.name === formData.servicio)?.duration) || 30}
                         value={formData.empleado_id}
                         onChange={(id: number | null) => setFormData((p: any) => ({...p, empleado_id: id}))}
                         appointment_id={appointment_id}
