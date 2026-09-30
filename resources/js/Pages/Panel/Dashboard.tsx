@@ -5,7 +5,7 @@ import {
     Plus, Search, X, Calendar as CalIcon, Clock, User,
     Phone, Mail, Edit2, Trash2, CheckCircle2, XCircle,
     Save, AlertTriangle, ChevronLeft, ChevronRight,
-    SlidersHorizontal, Tag, MapPin
+    SlidersHorizontal, Tag, MapPin, Star
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from 'react-day-picker';
@@ -17,57 +17,40 @@ import { twMerge } from 'tailwind-merge';
 
 // CSS para colorear de amarillo el calendario del panel
 const panelCalendarCss = `
+  /* Common */
   .rdp { --rdp-accent-color: transparent; margin: 0; }
   .rdp-day, .rdp-cell { border: none !important; background: transparent !important; border-radius: 50% !important; }
   .rdp-button, .rdp-day_button {
-    border-radius: 50% !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    background: transparent !important;
-    width: 40px !important;
-    height: 40px !important;
-  }
-  .rdp-button:hover:not([disabled]) {
-    background-color: #27272a !important;
-    color: #fbbf24 !important;
+    border-radius: 50% !important; border: none !important; box-shadow: none !important; outline: none !important;
+    background: transparent !important; width: 40px !important; height: 40px !important;
   }
   .rdp-selected, .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
-    background-color: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    --tw-ring-shadow: none !important;
-  }
-  .rdp-selected .rdp-button, .rdp-selected .rdp-day_button, button.rdp-selected, button.rdp-day_selected {
-    background-color: transparent !important;
-    color: #ffffff !important;
-    font-weight: bold !important;
-    border: 2px solid #fbbf24 !important;
-    box-shadow: none !important;
-    outline: none !important;
-    --tw-ring-shadow: none !important;
-  }
-  .rdp-today:not(.rdp-selected) .rdp-button, .rdp-today:not(.rdp-selected) .rdp-day_button, button.rdp-today:not(.rdp-day_selected), button.rdp-day_today:not(.rdp-day_selected) {
-    border: none !important;
-    color: #fbbf24 !important;
-    font-weight: bold !important;
-    background: transparent !important;
-  }
-  .rdp-nav_button, .rdp-nav_icon, .rdp-chevron {
-    color: #fbbf24 !important;
-    fill: #fbbf24 !important;
-    stroke: #fbbf24 !important;
+    background-color: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; --tw-ring-shadow: none !important;
   }
   .rdp-outside { opacity: 0.3 !important; pointer-events: none; }
   .rdp-caption_label { text-transform: capitalize; }
-  @media (max-width: 400px) {
-    .rdp { transform: scale(0.88); transform-origin: top center; }
-  }
-  .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
-  .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+  @media (max-width: 400px) { .rdp { transform: scale(0.88); transform-origin: top center; } }
   .rdp-caption_dropdowns { display: flex; gap: 8px; justify-content: center; }
   .rdp-vhidden { display: none !important; }
+
+  /* BARBERIA (Amber) */
+  .rdp-panel-barberia .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: #fbbf24 !important; }
+  .rdp-panel-barberia button.rdp-day_selected { color: #ffffff !important; font-weight: bold !important; border: 2px solid #fbbf24 !important; }
+  .rdp-panel-barberia button.rdp-day_today:not(.rdp-day_selected) { color: #fbbf24 !important; font-weight: bold !important; }
+  .rdp-panel-barberia .rdp-nav_button, .rdp-panel-barberia .rdp-nav_icon, .rdp-panel-barberia .rdp-chevron { color: #fbbf24 !important; fill: #fbbf24 !important; stroke: #fbbf24 !important; }
+  .rdp-panel-barberia .rdp-dropdown { background-color: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
+  .rdp-panel-barberia .rdp-dropdown option { background-color: #161616 !important; color: white !important; }
+
+  /* PELUQUERIA (Emerald & Black on White) */
+  .rdp-panel-peluqueria .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
+  .rdp-panel-peluqueria button.rdp-day_selected { color: #000000 !important; font-weight: bold !important; border: 2px solid #10b981 !important; }
+  .rdp-panel-peluqueria button.rdp-day_today:not(.rdp-day_selected) { color: #10b981 !important; font-weight: bold !important; }
+  .rdp-panel-peluqueria .rdp-nav_button, .rdp-panel-peluqueria .rdp-nav_icon, .rdp-panel-peluqueria .rdp-chevron { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
+  .rdp-panel-peluqueria .rdp-dropdown { background-color: transparent !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1) !important; border-radius: 6px !important; padding: 2px 6px !important; font-size: 14px !important; }
+  .rdp-panel-peluqueria .rdp-dropdown option { background-color: #fff !important; color: #000 !important; }
+  .rdp-panel-peluqueria .rdp-head_cell { color: #10b981 !important; }
+  .rdp-panel-peluqueria .rdp-day:not(.rdp-day_disabled) { color: #000000 !important; }
+  .rdp-panel-peluqueria .rdp-day_disabled { color: #a1a1aa !important; }
 `;
 
 function cn(...inputs: (string | undefined | null | false)[]) {
@@ -264,6 +247,20 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
 // ─── FORM COMPARTIDO para crear/editar ───
 function AppointmentForm({ formData, setFormData, user, dbServices = [], appointment_id, selectedAppt }: any) {
     const currentServices = dbServices.filter((s: any) => s.shop_type === formData.tipo_servicio);
+    const [loyaltyData, setLoyaltyData] = useState<{exists: boolean, loyalty_points: number, penalty_flag: boolean} | null>(null);
+
+    useEffect(() => {
+        if (formData.telefono && formData.telefono.replace(/\D/g, '').length === 9 && formData.tipo_servicio === 'barberia') {
+            fetch('/api/client-loyalty?phone=' + formData.telefono.replace(/\D/g, ''))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exists) setLoyaltyData(data);
+                    else setLoyaltyData(null);
+                }).catch(() => setLoyaltyData(null));
+        } else {
+            setLoyaltyData(null);
+        }
+    }, [formData.telefono, formData.tipo_servicio]);
 
     // Auto-precio cuando cambia servicio
     useEffect(() => {
@@ -293,10 +290,18 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     </div>
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Teléfono *</label>
-                        <input required type="text" maxLength={30}
-                            className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
-                            value={formData.telefono}
-                            onChange={e => setFormData((p: any) => ({...p, telefono: e.target.value}))} />
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-steel/50 text-sm select-none pointer-events-none font-medium">
+                                +34
+                            </span>
+                            <input required type="tel" maxLength={9}
+                                className="w-full bg-carbon border border-white/10 rounded-xl p-3 pl-11 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                                value={formData.telefono}
+                                onChange={e => {
+                                    const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+                                    setFormData((p: any) => ({...p, telefono: val}));
+                                }} />
+                        </div>
                     </div>
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Email <span className="text-steel/40">(opcional)</span></label>
@@ -306,6 +311,28 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                             onChange={e => setFormData((p: any) => ({...p, email: e.target.value}))} />
                     </div>
                 </div>
+                {loyaltyData && formData.tipo_servicio === 'barberia' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
+                        className="bg-amber-400/10 border border-amber-400/20 rounded-xl p-3 mt-3 flex items-start gap-3"
+                    >
+                        <div className="p-1.5 bg-amber-400/20 text-amber-400 rounded-lg shrink-0">
+                            <Star className="w-4 h-4 fill-amber-400" />
+                        </div>
+                        <div>
+                            <p className="text-[13px] font-bold text-white leading-tight mb-0.5">
+                                {loyaltyData.penalty_flag 
+                                    ? 'Cuenta penalizada'
+                                    : `Cortes acumulados: ${loyaltyData.loyalty_points}/9`}
+                            </p>
+                            <p className="text-[12px] text-steel leading-tight">
+                                {loyaltyData.penalty_flag 
+                                    ? 'No se acumulan puntos por inasistencia reciente.' 
+                                    : 'El 10º corte será gratis automáticamente.'}
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
             </div>
 
             {/* Servicio y empleado */}
@@ -332,7 +359,12 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         </div>
                     )}
                     <div className={formData.tipo_servicio === 'barberia' ? "col-span-2" : ""}>
-                        <label className="text-xs text-steel/70 mb-1 block">Servicio *</label>
+                        <div className="flex justify-between items-end mb-1">
+                            <label className="text-xs text-steel/70 block">Servicio *</label>
+                            {formData.tipo_servicio === 'peluqueria_infantil' && (
+                                <span className="text-[10px] text-emerald-400 font-medium bg-emerald-400/10 px-1.5 py-0.5 rounded">Consultar precio por tfno.</span>
+                            )}
+                        </div>
                         <select required
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
                             value={formData.servicio}
@@ -363,7 +395,12 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
 
             <div>
                 <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-3">Fecha y Hora</p>
-                <div className="bg-carbon/50 p-3 rounded-2xl border border-white/10 flex justify-center mb-3 overflow-hidden rdp-panel">
+                <div className={cn(
+                    "p-3 rounded-2xl border flex justify-center mb-3 overflow-hidden transition-colors duration-300",
+                    formData.tipo_servicio === 'peluqueria_infantil' 
+                        ? "bg-white border-white/20 rdp-panel-peluqueria" 
+                        : "bg-carbon/50 border-white/10 rdp-panel-barberia"
+                )}>
                     <DayPicker
                         mode="single"
                         selected={formData.fecha}
@@ -373,7 +410,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         fromYear={2026}
                         toYear={2035}
                         disabled={[{ before: new Date() }, { dayOfWeek: [0, 6] }]}
-                        className="text-sm font-medium"
+                        className={cn("text-sm font-medium", formData.tipo_servicio === 'peluqueria_infantil' ? "text-black" : "")}
                     />
                 </div>
                 <SlotPicker

@@ -428,7 +428,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                   {(svc as any).durationLabel ?? `${svc.duration} min`}
                                 </p>
                               </div>
-                              {(svc as any).price != null && (
+                              {(svc as any).price != null ? (
                                 <div className="shrink-0 text-right">
                                   {promoActive && !isKids && (svc as any).promoPrice && (svc as any).promoPrice !== (svc as any).price ? (
                                     <>
@@ -441,7 +441,13 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                     </div>
                                   )}
                                 </div>
-                              )}
+                              ) : isKids ? (
+                                <div className="shrink-0 text-right">
+                                  <span className="text-[10px] md:text-xs text-emerald-600 font-bold bg-emerald-500/10 px-2 py-1 rounded-md">
+                                    Consultar precio por tfno.
+                                  </span>
+                                </div>
+                              ) : null}
                             </button>
                           ))}
                         </div>

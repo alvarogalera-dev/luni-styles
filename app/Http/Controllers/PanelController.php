@@ -192,9 +192,11 @@ class PanelController extends Controller
                     $client->consecutive_attendances_after_penalty = 0;
                 }
             } else {
-                $client->loyalty_points = ($client->loyalty_points ?? 0) + 1;
-                if ($client->loyalty_points > 9) {
-                    $client->loyalty_points = 1;
+                if ($appointment->service_type === 'barberia') {
+                    $client->loyalty_points = ($client->loyalty_points ?? 0) + 1;
+                    if ($client->loyalty_points > 9) {
+                        $client->loyalty_points = 1;
+                    }
                 }
             }
         } elseif ($validated['status'] === 'no-show') {
