@@ -242,7 +242,7 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
 }
 
 // ─── FORM COMPARTIDO para crear/editar ───
-function AppointmentForm({ formData, setFormData, user, dbServices = [], appointment_id }: any) {
+function AppointmentForm({ formData, setFormData, user, dbServices = [], appointment_id, selectedAppt }: any) {
     const currentServices = dbServices.filter((s: any) => s.shop_type === formData.tipo_servicio);
 
     // Auto-precio cuando cambia servicio
@@ -888,7 +888,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                             <div className="p-4">
                                 {isEditMode ? (
                                     <div>
-                                        <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={selectedAppt.id} />
+                                        <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={selectedAppt.id} selectedAppt={selectedAppt} />
                                         <div className="flex gap-3 pt-4 mt-4 border-t border-white/10">
                                             <button onClick={saveEdit}
                                                 disabled={!formData.hora || !formData.fecha || !formData.servicio || !formData.empleado_id}
@@ -1023,7 +1023,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                 </button>
                             </div>
                             <form onSubmit={createAppointment} className="p-4">
-                                <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={null} />
+                                <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={null} selectedAppt={null} />
                                 <button type="submit"
                                     disabled={!formData.hora || !formData.fecha || !formData.servicio || !formData.empleado_id}
                                     className="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-400 mt-5 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors flex items-center justify-center gap-2">
