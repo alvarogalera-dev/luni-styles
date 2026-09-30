@@ -219,21 +219,18 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
             ) : (
                 <div className="grid grid-cols-2 gap-2">
                     {barbers.map((b) => {
-                        const canForce = user?.role === 'superadmin' || user?.role === 'barber';
-                        const isDisabled = !b.available && !canForce;
+                        const isDisabled = !b.available;
                         return (
                             <button
                                 key={b.id} type="button" disabled={isDisabled}
                                 onClick={() => onChange(b.id)}
                                 className={cn(
                                     'relative flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all border',
-                                    !b.available && !isDisabled ? 'bg-[#111] text-ash border-red-500/30 hover:border-red-500 hover:text-white' :
                                     isDisabled ? 'opacity-40 cursor-not-allowed bg-[#0a0a0a] border-white/5 text-steel/50' :
                                     value === b.id ? 'bg-amber-400 text-void border-amber-400 shadow-lg' :
-                                    'bg-[#111] text-ash border-white/10 hover:border-amber-400/50 hover:text-white',
-                                    value === b.id && !b.available && canForce ? 'bg-red-500 text-white border-red-500 shadow-red-500/20' : ''
+                                    'bg-[#111] text-ash border-white/10 hover:border-amber-400/50 hover:text-white'
                                 )}>
-                                <span className={!b.available && isDisabled ? 'line-through' : ''}>{b.name}</span>
+                                <span className={isDisabled ? 'line-through' : ''}>{b.name}</span>
                                 {!b.available && <X className="w-3 h-3 absolute right-2 top-2 text-steel/40" />}
                             </button>
                         );
@@ -365,7 +362,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     tipo_servicio={formData.tipo_servicio}
                     value={formData.hora}
                     onChange={(t: string) => setFormData((p: any) => ({...p, hora: t, empleado_id: null}))}
-                    existingHora={null}
+                    existingHora={appointment_id && selectedAppt && format(new Date(selectedAppt.fecha), 'yyyy-MM-dd') === format(formData.fecha, 'yyyy-MM-dd') ? selectedAppt.hora : null}
                     dbServices={dbServices}
                 />
                 {formData.tipo_servicio === 'barberia' && (
@@ -894,7 +891,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                         <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={selectedAppt.id} />
                                         <div className="flex gap-3 pt-4 mt-4 border-t border-white/10">
                                             <button onClick={saveEdit}
-                                                disabled={!formData.hora || !formData.fecha || !formData.servicio}
+                                                disabled={!formData.hora || !formData.fecha || !formData.servicio || !formData.empleado_id}
                                                 className="flex-1 bg-amber-400 text-void font-bold py-3 rounded-xl hover:bg-amber-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors">
                                                 <Save className="w-4 h-4" /> Guardar Cambios
                                             </button>
@@ -1028,7 +1025,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                             <form onSubmit={createAppointment} className="p-4">
                                 <AppointmentForm formData={formData} setFormData={setFormData} user={user} dbServices={dbServices} appointment_id={null} />
                                 <button type="submit"
-                                    disabled={!formData.hora || !formData.fecha || !formData.servicio}
+                                    disabled={!formData.hora || !formData.fecha || !formData.servicio || !formData.empleado_id}
                                     className="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-400 mt-5 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors flex items-center justify-center gap-2">
                                     <Plus className="w-4 h-4" /> Crear Reserva
                                 </button>
