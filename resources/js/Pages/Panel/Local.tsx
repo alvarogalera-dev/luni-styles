@@ -13,9 +13,9 @@ function MediaCard({ media, onDelete, onEdit }: any) {
             className="relative bg-[#111] border border-white/5 rounded-2xl overflow-hidden group aspect-square"
         >
             {media.media_type === 'video' ? (
-                <video src={media.url} className="w-full h-full object-cover" muted playsInline />
+                <video src={media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`} className="w-full h-full object-cover" muted playsInline />
             ) : (
-                <img src={media.url} alt={media.caption || ''} className="w-full h-full object-cover" loading="lazy" />
+                <img src={media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`} alt={media.caption || ''} className="w-full h-full object-cover" loading="lazy" />
             )}
             {media.media_type === 'video' && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

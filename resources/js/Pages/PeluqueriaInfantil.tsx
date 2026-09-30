@@ -38,7 +38,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
               {catalogPhotos.map((photo, index) => {
-                const imgUrl = photo.url ? `/storage/${photo.url}` : `/images/catalogo/${(index % 12) + 1}.jpg`;
+                const imgUrl = photo.url ? (photo.url.startsWith('http') || photo.url.startsWith('/') ? photo.url : `/storage/${photo.url}`) : `/images/catalogo/${(index % 12) + 1}.jpg`;
                 return (
                   <button
                     key={photo.id}
@@ -84,7 +84,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {services.map((svc, i) => {
-                const imgUrl = svc.photo_url ? `/storage/${svc.photo_url}` : 'https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=600&auto=format&fit=crop';
+                const imgUrl = svc.photo_url ? (svc.photo_url.startsWith('http') || svc.photo_url.startsWith('/') ? svc.photo_url : `/storage/${svc.photo_url}`) : 'https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=600&auto=format&fit=crop';
                 return (
                   <button
                     key={i}
@@ -158,7 +158,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                 className="flex gap-4 md:gap-6 w-max"
               >
                 {[...localMedia, ...localMedia, ...localMedia].map((media, i) => {
-                  const src = media.url ? `/storage/${media.url}` : 'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop';
+                  const src = media.url ? (media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`) : 'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop';
                   return (
                     <div
                       key={i}

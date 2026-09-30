@@ -84,7 +84,7 @@ function GalleryCarousel({ localMedia }: { localMedia: any[] }) {
         className="flex gap-3 md:gap-5 w-max"
       >
         {items.map((item, i) => {
-          const src = item.url ? `/storage/${item.url}` : item.fallbackUrl;
+          const src = item.url ? (item.url.startsWith('http') || item.url.startsWith('/') ? item.url : `/storage/${item.url}`) : item.fallbackUrl;
           return (
             <div
               key={i}
@@ -170,8 +170,15 @@ export default function LaBarberia({ meta, services = [], products = [], localMe
                       {/* Name & price on same row */}
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg md:text-2xl font-display font-bold leading-tight">{svc.name}</h3>
-                        <div className="shrink-0 ml-2 text-right">
+                        <div className="shrink-0 ml-2 text-right flex flex-col items-end">
+                          {svc.promo_price && svc.promo_price !== svc.price ? (
+                            <>
+                              <span className="text-steel/50 line-through text-xs">{svc.price}€</span>
+                              <span className="text-xl md:text-2xl font-black text-amber-400">{svc.promo_price}€</span>
+                            </>
+                          ) : (
                             <span className="text-xl md:text-2xl font-black text-amber-400">{svc.price !== 'Consultar' ? `${svc.price}€` : svc.price}</span>
+                          )}
                         </div>
                       </div>
                       {/* Duration */}

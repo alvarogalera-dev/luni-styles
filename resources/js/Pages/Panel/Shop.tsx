@@ -19,7 +19,7 @@ function ServiceCard({ service, onEdit, onDelete, isBarber }: any) {
         >
             {service.photo_url ? (
                 <img
-                    src={service.photo_url}
+                    src={service.photo_url.startsWith('http') || service.photo_url.startsWith('/') ? service.photo_url : `/storage/${service.photo_url}`}
                     alt={service.name}
                     className="w-full h-40 object-cover"
                     loading="lazy"
@@ -74,7 +74,7 @@ function ProductCard({ product, onEdit, onDelete }: any) {
             className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden flex flex-col"
         >
             {product.photo_url ? (
-                <img src={product.photo_url} alt={product.name} className="w-full h-40 object-cover" loading="lazy" />
+                <img src={product.photo_url.startsWith('http') || product.photo_url.startsWith('/') ? product.photo_url : `/storage/${product.photo_url}`} alt={product.name} className="w-full h-40 object-cover" loading="lazy" />
             ) : (
                 <div className="w-full h-40 bg-carbon/50 flex items-center justify-center border-b border-white/5">
                     <ShoppingBag className="w-8 h-8 text-steel/30" />
@@ -461,7 +461,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                                     {catalogPhotos.map((c: any) => (
                                         <div key={c.id} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-white/10 bg-carbon">
-                                            <img src={c.url} alt="catalog" className="w-full h-full object-cover" />
+                                            <img src={c.url.startsWith('http') || c.url.startsWith('/') ? c.url : `/storage/${c.url}`} alt="catalog" className="w-full h-full object-cover" />
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                                 <button onClick={() => openEditCatalog(c)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-amber-400 hover:text-void transition-colors">
                                                     <Edit2 className="w-4 h-4" />
