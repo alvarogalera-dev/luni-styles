@@ -42,7 +42,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                 return (
                   <button
                     key={photo.id}
-                    onClick={() => setSelectedPhoto({ url: imgUrl, id: photo.id })}
+                    onClick={() => setSelectedPhoto({ url: imgUrl, id: index + 1 })}
                     className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500 w-full text-left"
                   >
                     <img
@@ -59,7 +59,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                     </div>
                     <div className="absolute top-2 left-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                       <span className="bg-emerald-600/90 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full shadow-md">
-                        #STYLE-{photo.id.toString().padStart(2, '0')}
+                        #STYLE-{(index + 1).toString().padStart(2, '0')}
                       </span>
                     </div>
                   </button>
