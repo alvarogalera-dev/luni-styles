@@ -313,8 +313,8 @@ class PanelController extends Controller
 
         $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
 
-        // Determine price with promo logic
-        $price = $validated['precio'] ?? $this->getServicePrice($validated['servicio'], $validated['tipo_servicio']);
+        // Determine price
+        $price = isset($validated['precio']) ? strip_tags((string) $validated['precio']) : null;
 
         $appt = new Appointment();
         $appt->client_id = $client->id;
