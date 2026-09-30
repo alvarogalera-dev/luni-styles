@@ -18,13 +18,19 @@ function MediaCard({ media, onDelete, onEdit }: any) {
                 <img src={media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`} alt={media.caption || ''} className="w-full h-full object-cover" loading="lazy" />
             )}
             {media.media_type === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="bg-black/50 rounded-full p-2"><Video className="w-6 h-6 text-white" /></div>
-                </div>
+                <>
+                    <div className="absolute top-2 right-2 bg-red-500/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1 z-10">
+                        <Video className="w-3 h-3 text-white" />
+                        <span className="text-white text-[10px] font-bold uppercase tracking-wider">Vídeo</span>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                        <div className="bg-black/60 backdrop-blur-sm rounded-full p-4 border border-white/20"><Video className="w-8 h-8 text-white" /></div>
+                    </div>
+                </>
             )}
             {media.caption && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                    <p className="text-white text-xs truncate">{media.caption}</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3 border-t border-white/10 z-10">
+                    <p className="text-white text-xs font-bold truncate text-center">{media.caption}</p>
                 </div>
             )}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -51,6 +57,8 @@ export default function Local({ localMedia, user }: any) {
     const [mediaPreview, setMediaPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editMediaId, setEditMediaId] = useState<number | null>(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [saveConfirm, setSaveConfirm] = useState(false);
 
     const openNew = () => {
         setEditMediaId(null);
@@ -106,9 +114,11 @@ export default function Local({ localMedia, user }: any) {
         });
     };
 
-    const deleteMedia = (id: number) => {
-        if (confirm('¿Eliminar este archivo?')) {
-            router.delete(`/panel/tienda/local/${id}`);
+    const deleteMedia = () => {
+        if (deleteConfirmId) {
+            router.delete(`/panel/tienda/local/${deleteConfirmId}`, {
+                onSuccess: () => setDeleteConfirmId(null)
+            });
         }
     };
 
@@ -122,7 +132,16 @@ export default function Local({ localMedia, user }: any) {
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
-                    <p className="text-steel text-sm">{localMedia.length} archivo{localMedia.length !== 1 ? 's' : ''}</p>
+                    <p className="text-steel text-sm">
+                        {(() => {
+                            const pCount = localMedia.filter((m: any) => m.media_type === 'photo' || !m.media_type).length;
+                            const vCount = localMedia.filter((m: any) => m.media_type === 'video').length;
+                            const parts = [];
+                            if (pCount > 0) parts.push(`${pCount} foto${pCount !== 1 ? 's' : ''}`);
+                            if (vCount > 0) parts.push(`${vCount} vídeo${vCount !== 1 ? 's' : ''}`);
+                            return parts.length > 0 ? parts.join(' y ') : '0 archivos';
+                        })()}
+                    </p>
                     <button onClick={openNew}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-void font-bold rounded-xl text-sm hover:bg-amber-300 transition-colors">
                         <Plus className="w-4 h-4" /> Subir Archivo
@@ -138,7 +157,7 @@ export default function Local({ localMedia, user }: any) {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                         {localMedia.map((m: any) => (
-                            <MediaCard key={m.id} media={m} onDelete={deleteMedia} onEdit={openEdit} />
+                            <MediaCard key={m.id} media={m} onDelete={setDeleteConfirmId} onEdit={openEdit} />
                         ))}
                     </div>
                 )}
@@ -198,7 +217,7 @@ export default function Local({ localMedia, user }: any) {
                                             ) : (
                                                 <img src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" />
                                             )}
-                                            <button onClick={() => { setMediaFile(null); setMediaPreview(editMediaId && mediaUrl ? (mediaUrl.startsWith('http') || mediaUrl.startsWith('/') ? mediaUrl : `/storage/${mediaUrl}`) : null); }}
+                                            <button onClick={() => { setMediaFile(null); setMediaPreview(null); }}
                                                 className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:text-red-400">
                                                 <X className="w-4 h-4" />
                                             </button>
@@ -219,10 +238,50 @@ export default function Local({ localMedia, user }: any) {
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
                                 </div>
 
-                                <button disabled={isSubmitting || (!mediaFile && !mediaUrl && !editMediaId) || !mediaCaption.trim()} onClick={saveMedia}
+                                <button disabled={isSubmitting || (!mediaFile && !mediaUrl && !editMediaId) || !mediaCaption.trim() || (inputMode === 'file' && !mediaPreview)} onClick={() => setSaveConfirm(true)}
                                     className="w-full bg-amber-400 text-void font-bold py-3.5 rounded-xl hover:bg-amber-300 transition-colors disabled:opacity-50">
                                     {isSubmitting ? 'Guardando...' : (editMediaId ? 'Actualizar' : 'Subir')}
                                 </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Confirmar Borrado */}
+            <AnimatePresence>
+                {deleteConfirmId && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteConfirmId(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                            className="relative w-full max-w-sm bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl text-center">
+                            <Trash2 className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-white mb-2">¿Eliminar archivo?</h3>
+                            <p className="text-steel text-sm mb-6">Esta acción no se puede deshacer.</p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setDeleteConfirmId(null)} className="flex-1 py-3 bg-carbon text-white rounded-xl font-bold hover:bg-white/10 transition-colors">Cancelar</button>
+                                <button onClick={deleteMedia} className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-400 transition-colors">Eliminar</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Confirmar Guardado */}
+            <AnimatePresence>
+                {saveConfirm && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSaveConfirm(false)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                            className="relative w-full max-w-sm bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl text-center">
+                            <Upload className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-white mb-2">¿Confirmar cambios?</h3>
+                            <p className="text-steel text-sm mb-6">Se {editMediaId ? 'actualizará' : 'subirá'} el archivo en el carrusel del local.</p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setSaveConfirm(false)} className="flex-1 py-3 bg-carbon text-white rounded-xl font-bold hover:bg-white/10 transition-colors">Revisar</button>
+                                <button onClick={() => { setSaveConfirm(false); saveMedia(); }} className="flex-1 py-3 bg-amber-400 text-void rounded-xl font-bold hover:bg-amber-300 transition-colors">Confirmar</button>
                             </div>
                         </motion.div>
                     </div>
