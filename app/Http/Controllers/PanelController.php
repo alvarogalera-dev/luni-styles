@@ -255,79 +255,83 @@ class PanelController extends Controller
 
     public function createAppointment(Request $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $validated = $request->validate([
-            'nombre'        => 'required|string|max:100',
-            'apellidos'     => 'nullable|string|max:100',
-            'telefono'      => 'required|string|max:30',
-            'email'         => 'nullable|email|max:255',
-            'servicio'      => 'required|string|max:100',
-            'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
-            'empleado_id'   => 'required|integer|between:1,10',
-            'fecha'         => 'required|date_format:Y-m-d',
-            'hora'          => ['required', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
-            'precio'        => 'nullable|string|max:20',
-            'observaciones' => 'nullable|string|max:500',
-        ]);
-
-        // Restrict to appropriate service type
-        if ($user->role === 'barber') {
-            $validated['tipo_servicio'] = 'barberia';
-        } elseif ($user->role === 'hairdresser') {
-            $validated['tipo_servicio'] = 'peluqueria_infantil';
-        }
-
-        // Find or create client
-        $inputEmail = $validated['email'] ? strtolower(trim($validated['email'])) : null;
-        $inputPhone = $validated['telefono'] ? trim($validated['telefono']) : null;
-
-        $client = null;
-        if ($inputEmail) {
-            $client = Client::where('email', $inputEmail)->first();
-        }
-        if (!$client && $inputPhone) {
-            $cleanPhone = str_replace(' ', '', $inputPhone);
-            $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)->first();
-        }
-
-        if (!$client) {
-            $client = Client::create([
-                'email'               => $inputEmail ?? 'sin-email@panel.local',
-                'known_emails'        => $inputEmail ?? '',
-                'name'                => strip_tags(trim((string) $validated['nombre'])),
-                'surname'             => isset($validated['apellidos']) ? strip_tags(trim((string) $validated['apellidos'])) : '',
-                'phone'               => $inputPhone ?? '',
-                'known_phones'        => $inputPhone ?? '',
-                'total_appointments'  => 1,
-                'loyalty_points'      => 0,
-                'penalty_flag'        => false,
+            $validated = $request->validate([
+                'nombre'        => 'required|string|max:100',
+                'apellidos'     => 'nullable|string|max:100',
+                'telefono'      => 'required|string|max:30',
+                'email'         => 'nullable|email|max:255',
+                'servicio'      => 'required|string|max:100',
+                'tipo_servicio' => 'required|string|in:barberia,peluqueria_infantil',
+                'empleado_id'   => 'required|integer|between:1,10',
+                'fecha'         => 'required|date_format:Y-m-d',
+                'hora'          => ['required', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
+                'precio'        => 'nullable|string|max:20',
+                'observaciones' => 'nullable|string|max:500',
             ]);
-        } else {
-            $client->update([
-                'name'    => strip_tags(trim((string) $validated['nombre'])),
-                'surname' => isset($validated['apellidos']) ? strip_tags(trim((string) $validated['apellidos'])) : '',
-                'total_appointments' => $client->total_appointments + 1,
-            ]);
+
+            // Restrict to appropriate service type
+            if ($user->role === 'barber') {
+                $validated['tipo_servicio'] = 'barberia';
+            } elseif ($user->role === 'hairdresser') {
+                $validated['tipo_servicio'] = 'peluqueria_infantil';
+            }
+
+            // Find or create client
+            $inputEmail = $validated['email'] ? strtolower(trim($validated['email'])) : null;
+            $inputPhone = $validated['telefono'] ? trim($validated['telefono']) : null;
+
+            $client = null;
+            if ($inputEmail) {
+                $client = Client::where('email', $inputEmail)->first();
+            }
+            if (!$client && $inputPhone) {
+                $cleanPhone = str_replace(' ', '', $inputPhone);
+                $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)->first();
+            }
+
+            if (!$client) {
+                $client = Client::create([
+                    'email'               => $inputEmail ?? 'sin-email-' . uniqid() . '@panel.local',
+                    'known_emails'        => $inputEmail ?? '',
+                    'name'                => strip_tags(trim((string) $validated['nombre'])),
+                    'surname'             => isset($validated['apellidos']) ? strip_tags(trim((string) $validated['apellidos'])) : '',
+                    'phone'               => $inputPhone ?? '',
+                    'known_phones'        => $inputPhone ?? '',
+                    'total_appointments'  => 1,
+                    'loyalty_points'      => 0,
+                    'penalty_flag'        => false,
+                ]);
+            } else {
+                $client->update([
+                    'name'    => strip_tags(trim((string) $validated['nombre'])),
+                    'surname' => isset($validated['apellidos']) ? strip_tags(trim((string) $validated['apellidos'])) : '',
+                    'total_appointments' => $client->total_appointments + 1,
+                ]);
+            }
+
+            $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
+
+            // Determine price
+            $price = isset($validated['precio']) ? strip_tags((string) $validated['precio']) : null;
+
+            $appt = new Appointment();
+            $appt->client_id = $client->id;
+            $appt->appointment_date = $datetime;
+            $appt->service_type = $validated['tipo_servicio'];
+            $appt->service_name = strip_tags((string) $validated['servicio']);
+            $appt->employee_id = (int) $validated['empleado_id'];
+            $appt->price = $price;
+            $appt->observations = isset($validated['observaciones']) ? strip_tags((string) $validated['observaciones']) : null;
+            $appt->status = 'pending';
+            $appt->save();
+
+            return redirect()->route('panel.citas')->with('success', 'Cita creada correctamente.');
+        } catch (\Throwable $e) {
+            return back()->withErrors(['error' => 'Excepcion: ' . $e->getMessage() . ' en linea ' . $e->getLine()]);
         }
-
-        $datetime = Carbon::createFromFormat('Y-m-d H:i', $validated['fecha'] . ' ' . $validated['hora']);
-
-        // Determine price
-        $price = isset($validated['precio']) ? strip_tags((string) $validated['precio']) : null;
-
-        $appt = new Appointment();
-        $appt->client_id = $client->id;
-        $appt->appointment_date = $datetime;
-        $appt->service_type = $validated['tipo_servicio'];
-        $appt->service_name = strip_tags((string) $validated['servicio']);
-        $appt->employee_id = (int) $validated['empleado_id'];
-        $appt->price = $price;
-        $appt->observations = isset($validated['observaciones']) ? strip_tags((string) $validated['observaciones']) : null;
-        $appt->status = 'pending';
-        $appt->save();
-
-        return redirect()->route('panel.citas')->with('success', 'Cita creada correctamente.');
     }
 
     public function deleteAppointment(Request $request, $id)
