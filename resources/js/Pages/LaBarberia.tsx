@@ -90,10 +90,10 @@ function GalleryCarousel({ localMedia }: { localMedia: any[] }) {
               key={i}
               className="shrink-0 w-[78vw] sm:w-[55vw] md:w-[38vw] lg:w-[30vw] h-[220px] md:h-[380px] rounded-2xl overflow-hidden relative bg-carbon"
             >
-              {item.type === 'image' ? (
+              {(item.media_type === 'photo' || item.type === 'image') ? (
                 <img
                   src={src}
-                  alt={item.title || "Galería Barbería"}
+                  alt={item.caption || item.title || "Galería Barbería"}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />

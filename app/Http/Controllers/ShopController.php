@@ -308,19 +308,30 @@ class ShopController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'media'      => 'nullable|file|max:51200|mimes:jpg,jpeg,png,webp,gif,mp4,mov,avi,webm',
             'url'        => 'nullable|max:500',
+            'media_type' => 'nullable|in:photo,video',
         ]);
 
         $url = $media->url;
+        $mediaType = $media->media_type;
         if ($request->hasFile('media')) {
             $file = $request->file('media');
             $isVideo = in_array($file->getMimeType(), ['video/mp4', 'video/quicktime', 'video/avi', 'video/webm']);
             $url = $isVideo ? $this->uploadVideo($file, $shopType) : $this->uploadImage($file, 'local', $shopType);
+            $mediaType = $isVideo ? 'video' : 'photo';
         } elseif (isset($validated['url']) && !empty($validated['url'])) {
             $url = $validated['url'];
+            if (isset($validated['media_type'])) {
+                $mediaType = $validated['media_type'];
+            }
+        } else {
+            if (isset($validated['media_type'])) {
+                $mediaType = $validated['media_type'];
+            }
         }
 
         $media->update([
             'url'        => $url,
+            'media_type' => $mediaType,
             'caption'    => isset($validated['caption']) ? strip_tags($validated['caption']) : $media->caption,
             'sort_order' => isset($validated['sort_order']) ? (int)$validated['sort_order'] : $media->sort_order,
         ]);

@@ -69,7 +69,7 @@ export default function Local({ localMedia, user }: any) {
         setMediaUrl(media.url || '');
         setInputMode('url');
         setMediaFile(null);
-        setMediaPreview(media.url);
+        setMediaPreview(media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`);
         setMediaModal(true);
     };
 
@@ -174,20 +174,31 @@ export default function Local({ localMedia, user }: any) {
                                 </div>
 
                                 {inputMode === 'url' ? (
-                                    <div>
-                                        <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1 block flex items-center gap-1"><LinkIcon className="w-3 h-3"/> URL del {mediaType}</label>
-                                        <input type="text" placeholder="https://..." value={mediaUrl} onChange={e => { setMediaUrl(e.target.value); setMediaPreview(e.target.value); }}
-                                            className="w-full bg-carbon border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1 block flex items-center gap-1"><LinkIcon className="w-3 h-3"/> URL del {mediaType}</label>
+                                            <input type="text" placeholder="https://..." value={mediaUrl} onChange={e => { setMediaUrl(e.target.value); setMediaPreview(e.target.value); }}
+                                                className="w-full bg-carbon border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
+                                        </div>
+                                        {mediaPreview && (
+                                            <div className="relative">
+                                                {mediaType === 'video' ? (
+                                                    <video src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" muted playsInline autoPlay loop />
+                                                ) : (
+                                                    <img src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" />
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
-                                    mediaPreview && !mediaPreview.startsWith('http') ? (
+                                    mediaPreview ? (
                                         <div className="relative">
                                             {mediaType === 'video' ? (
                                                 <video src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" muted playsInline autoPlay loop />
                                             ) : (
                                                 <img src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" />
                                             )}
-                                            <button onClick={() => { setMediaFile(null); setMediaPreview(editMediaId ? mediaUrl : null); }}
+                                            <button onClick={() => { setMediaFile(null); setMediaPreview(editMediaId && mediaUrl ? (mediaUrl.startsWith('http') || mediaUrl.startsWith('/') ? mediaUrl : `/storage/${mediaUrl}`) : null); }}
                                                 className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:text-red-400">
                                                 <X className="w-4 h-4" />
                                             </button>

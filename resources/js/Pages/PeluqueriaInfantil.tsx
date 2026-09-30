@@ -157,21 +157,25 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                 transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
                 className="flex gap-4 md:gap-6 w-max"
               >
-                {[...localMedia, ...localMedia, ...localMedia].map((media, i) => {
-                  const src = media.url ? (media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`) : 'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop';
-                  return (
+                {(() => {
+                  const defaultMedia = [{ media_type: 'photo', url: 'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop', caption: 'Peluquería Infantil' }];
+                  const itemsToRender = localMedia.length > 0 ? localMedia : defaultMedia;
+                  return [...itemsToRender, ...itemsToRender, ...itemsToRender, ...itemsToRender].map((media, i) => {
+                    const src = media.url ? (media.url.startsWith('http') || media.url.startsWith('/') ? media.url : `/storage/${media.url}`) : 'https://images.unsplash.com/photo-1595475207225-428b62bda831?q=80&w=1200&auto=format&fit=crop';
+                    return (
                     <div
                       key={i}
                       className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
                     >
-                      {media.type === 'video' ? (
+                      {media.media_type === 'video' || media.type === 'video' ? (
                         <video src={src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
                       ) : (
-                        <img src={src} alt="Galería local peluquería infantil" className="w-full h-full object-cover" loading="lazy" />
+                        <img src={src} alt={media.caption || "Galería local peluquería infantil"} className="w-full h-full object-cover" loading="lazy" />
                       )}
                     </div>
                   );
-                })}
+                  });
+                })()}
               </motion.div>
             </div>
         </section>
