@@ -328,6 +328,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     };
 
     const saveCatalog = () => {
+        if (!catalogCaption.trim()) return alert('El pie de foto es obligatorio para el catálogo.');
         setIsSubmitting(true);
         const fd = new FormData();
         fd.append('caption', catalogCaption);
@@ -643,7 +644,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                         fields={
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Pie de foto (opcional)</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Pie de foto *</label>
                                     <input type="text" value={catalogCaption} onChange={e => setCatalogCaption(e.target.value)}
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>

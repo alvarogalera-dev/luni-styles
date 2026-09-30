@@ -16,7 +16,7 @@ const team = [
 export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos = [], localMedia = [] }: Props) {
   const teamRef = useRef<HTMLDivElement>(null);
   const teamInView = useInView(teamRef, { once: true, margin: '-10%' });
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<any | null>(null);
 
   return (
     <RootLayout meta={meta}>
@@ -42,7 +42,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                 return (
                   <button
                     key={photo.id}
-                    onClick={() => setSelectedImage(imgUrl)}
+                    onClick={() => setSelectedPhoto({ url: imgUrl, id: photo.id })}
                     className="group relative aspect-square rounded-2xl overflow-hidden bg-emerald-50 shadow-sm hover:shadow-xl hover:shadow-emerald-100/60 transition-all duration-500 w-full text-left"
                   >
                     <img
@@ -196,12 +196,12 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
 
       </div>
       <AnimatePresence>
-        {selectedImage !== null && (
+        {selectedPhoto !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedPhoto(null)}
             className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
           >
             <motion.div
@@ -212,7 +212,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
               className="relative max-w-2xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl"
             >
               <button
-                onClick={() => setSelectedImage(null)}
+                onClick={() => setSelectedPhoto(null)}
                 className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/50 backdrop-blur-md rounded-full text-slate-800 hover:bg-white hover:text-emerald-600 transition-colors shadow-sm"
               >
                 <X size={20} strokeWidth={3} />
@@ -220,7 +220,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
               
               <div className="aspect-[4/5] sm:aspect-square w-full bg-slate-100 relative">
                 <img
-                  src={selectedImage}
+                  src={selectedPhoto.url}
                   alt="Inspiración Infantil"
                   className="w-full h-full object-contain sm:object-cover"
                 />
@@ -228,13 +228,13 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
               
               <div className="p-6 md:p-8 text-center bg-emerald-50">
                 <p className="text-emerald-600 font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase mb-2">Referencia del Corte</p>
-                <h3 className="font-display font-black text-3xl text-slate-900 mb-4">#STYLE-{selectedImage.toString().padStart(2, '0')}</h3>
+                <h3 className="font-display font-black text-3xl text-slate-900 mb-4">#STYLE-{selectedPhoto.id.toString().padStart(2, '0')}</h3>
                 <p className="text-slate-600 text-sm max-w-md mx-auto">
                   ¿Te gusta este peinado? Dínos este código al reservar o enséñanos la foto cuando vengas a visitarnos.
                 </p>
                 <button
                   onClick={() => {
-                    setSelectedImage(null);
+                    setSelectedPhoto(null);
                     setTimeout(() => {
                       document.dispatchEvent(new CustomEvent('openBookingModal', { detail: { serviceType: 'infantil' } }));
                     }, 300);
