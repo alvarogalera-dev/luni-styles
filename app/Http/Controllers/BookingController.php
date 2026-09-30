@@ -211,12 +211,12 @@ class BookingController extends Controller
         ];
 
         $availableSlots = [];
-        $now = \Carbon\Carbon::now();
+        $now = \Carbon\Carbon::now('Europe/Madrid');
         $isToday = $date === $now->format('Y-m-d');
 
         foreach ($slots as $slot) {
             if ($isToday) {
-                $slotTime = \Carbon\Carbon::createFromFormat('H:i', $slot);
+                $slotTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $slot, 'Europe/Madrid');
                 if ($slotTime->lt($now)) {
                     continue;
                 }

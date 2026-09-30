@@ -25,14 +25,15 @@ const panelCalendarCss = `
     width: 40px !important; height: 40px !important;
   }
   .rdp-day_selected, .rdp-day_selected:hover, .rdp-day_selected:focus {
-    background-color: #fbbf24 !important;
-    color: #000 !important;
+    background-color: transparent !important;
+    color: #ffffff !important;
     font-weight: bold !important;
     outline: none !important;
+    border: 2px solid #fbbf24 !important;
     box-shadow: none !important;
     --tw-ring-shadow: none !important;
   }
-  .rdp-day_today { color: #fbbf24 !important; font-weight: bold !important; }
+  .rdp-day_today { color: #ffffff !important; font-weight: bold !important; }
   .rdp-button:hover:not([disabled]) { background-color: #27272a !important; color: white !important; }
   .rdp-button:focus, .rdp-day_button:focus, .rdp-nav_button:focus { outline: none !important; box-shadow: none !important; }
   .rdp-nav_button svg { fill: #fbbf24 !important; color: #fbbf24 !important; }

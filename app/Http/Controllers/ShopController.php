@@ -265,7 +265,7 @@ class ShopController extends Controller
             'media_type' => 'required|in:photo,video',
             'media'      => 'nullable|file|max:51200|mimes:jpg,jpeg,png,webp,gif,mp4,mov,avi,webm',
             'url'        => 'nullable|url|max:500',
-            'caption'    => 'nullable|string|max:255',
+            'caption'    => 'required|string|max:255',
         ]);
 
         $url = null;
@@ -304,7 +304,7 @@ class ShopController extends Controller
         $media = LocalMedia::where('shop_type', $shopType)->findOrFail((int) $id);
 
         $validated = $request->validate([
-            'caption'    => 'nullable|string|max:255',
+            'caption'    => 'required|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
             'media'      => 'nullable|file|max:51200|mimes:jpg,jpeg,png,webp,gif,mp4,mov,avi,webm',
             'url'        => 'nullable|max:500',
@@ -350,7 +350,7 @@ class ShopController extends Controller
         $validated = $request->validate([
             'photo'     => 'nullable|file|image|max:5120',
             'photo_url' => 'nullable|url|max:500',
-            'caption'   => 'nullable|string|max:255',
+            'caption'   => 'required|string|max:255',
         ]);
 
         $url = null;
@@ -383,7 +383,7 @@ class ShopController extends Controller
         $photo = CatalogPhoto::findOrFail((int) $id);
 
         $validated = $request->validate([
-            'caption'    => 'nullable|string|max:255',
+            'caption'    => 'required|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
             'photo'      => 'nullable|file|image|max:5120',
             'photo_url'  => 'nullable|max:500',

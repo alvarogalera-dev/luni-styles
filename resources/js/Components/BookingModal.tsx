@@ -477,7 +477,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             }
                             .rdp-selected .rdp-button, .rdp-selected .rdp-day_button, button.rdp-selected, button.rdp-day_selected {
                               background-color: transparent !important;
-                              color: #fbbf24 !important;
+                              color: #ffffff !important;
                               font-weight: bold !important;
                               border: 2px solid #fbbf24 !important;
                               box-shadow: none !important;
@@ -488,7 +488,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                             }
                             .rdp-today .rdp-button, .rdp-today .rdp-day_button, button.rdp-today, button.rdp-day_today {
                               border: none !important;
-                              color: #fbbf24 !important;
+                              color: #ffffff !important;
                               font-weight: bold !important;
                             }
                             .rdp-nav_button, .rdp-nav_icon, .rdp-chevron {

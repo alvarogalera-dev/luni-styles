@@ -39,11 +39,13 @@ class PageController extends Controller
         $services = \App\Models\Service::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
         $localMedia = \App\Models\LocalMedia::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
         $catalogPhotos = \App\Models\CatalogPhoto::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
+        $products = \App\Models\Product::where('shop_type', 'peluqueria_infantil')->where('active', true)->orderBy('sort_order')->get();
 
         return Inertia::render('PeluqueriaInfantil', [
             'services' => $services,
             'localMedia' => $localMedia,
             'catalogPhotos' => $catalogPhotos,
+            'products' => $products,
             'meta' => [
                 'title'       => 'Peluquería Infantil',
                 'description' => 'Cortes de cabello para los más pequeños en un ambiente cómodo y divertido.',

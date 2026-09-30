@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import PanelLayout from './Layout';
-import { Plus, Trash2, MapPin, Video, X, Upload } from 'lucide-react';
+import { Plus, Trash2, MapPin, Video, X, Upload, Edit2, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function MediaCard({ media, onDelete }: any) {
+function MediaCard({ media, onDelete, onEdit }: any) {
     return (
         <motion.div
             layout
@@ -28,6 +28,10 @@ function MediaCard({ media, onDelete }: any) {
                 </div>
             )}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <button onClick={() => onEdit(media)}
+                    className="p-2.5 rounded-xl bg-blue-500 text-white hover:bg-blue-400 transition-all">
+                    <Edit2 className="w-4 h-4" />
+                </button>
                 <button onClick={() => onDelete(media.id)}
                     className="p-2.5 rounded-xl bg-red-500 text-white hover:bg-red-400 transition-all">
                     <Trash2 className="w-4 h-4" />
@@ -42,8 +46,32 @@ export default function Local({ localMedia, user }: any) {
     const [mediaFile, setMediaFile] = useState<File | null>(null);
     const [mediaCaption, setMediaCaption] = useState('');
     const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
+    const [mediaUrl, setMediaUrl] = useState('');
+    const [inputMode, setInputMode] = useState<'file' | 'url'>('file');
     const [mediaPreview, setMediaPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [editMediaId, setEditMediaId] = useState<number | null>(null);
+
+    const openNew = () => {
+        setEditMediaId(null);
+        setMediaFile(null);
+        setMediaPreview(null);
+        setMediaCaption('');
+        setMediaUrl('');
+        setInputMode('file');
+        setMediaModal(true);
+    };
+
+    const openEdit = (media: any) => {
+        setEditMediaId(media.id);
+        setMediaType(media.media_type);
+        setMediaCaption(media.caption || '');
+        setMediaUrl(media.url || '');
+        setInputMode('url');
+        setMediaFile(null);
+        setMediaPreview(media.url);
+        setMediaModal(true);
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -55,14 +83,24 @@ export default function Local({ localMedia, user }: any) {
     };
 
     const saveMedia = () => {
-        if (!mediaFile) return;
+        if (!mediaCaption.trim()) return alert('El pie de foto es obligatorio');
+        if (inputMode === 'file' && !mediaFile && !editMediaId) return alert('Sube un archivo o pega una URL');
+        if (inputMode === 'url' && !mediaUrl) return alert('Sube un archivo o pega una URL');
+
         setIsSubmitting(true);
         const fd = new FormData();
-        fd.append('file', mediaFile);
+        if (inputMode === 'file' && mediaFile) {
+            fd.append('media', mediaFile);
+        } else if (inputMode === 'url' && mediaUrl) {
+            fd.append('url', mediaUrl);
+        }
         fd.append('media_type', mediaType);
         fd.append('caption', mediaCaption);
+        if (editMediaId) fd.append('id', editMediaId.toString());
 
-        router.post('/panel/tienda/local', fd as any, {
+        const targetUrl = editMediaId ? `/panel/tienda/local/${editMediaId}` : '/panel/tienda/local';
+
+        router.post(targetUrl, fd as any, {
             onSuccess: () => setMediaModal(false),
             onFinish: () => setIsSubmitting(false),
         });
@@ -85,7 +123,7 @@ export default function Local({ localMedia, user }: any) {
 
                 <div className="flex items-center justify-between mb-4">
                     <p className="text-steel text-sm">{localMedia.length} archivo{localMedia.length !== 1 ? 's' : ''}</p>
-                    <button onClick={() => { setMediaFile(null); setMediaPreview(null); setMediaCaption(''); setMediaModal(true); }}
+                    <button onClick={openNew}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-void font-bold rounded-xl text-sm hover:bg-amber-300 transition-colors">
                         <Plus className="w-4 h-4" /> Subir Archivo
                     </button>
@@ -100,7 +138,7 @@ export default function Local({ localMedia, user }: any) {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                         {localMedia.map((m: any) => (
-                            <MediaCard key={m.id} media={m} onDelete={deleteMedia} />
+                            <MediaCard key={m.id} media={m} onDelete={deleteMedia} onEdit={openEdit} />
                         ))}
                     </div>
                 )}
@@ -115,7 +153,7 @@ export default function Local({ localMedia, user }: any) {
                         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }}
                             className="relative w-full max-w-md bg-[#111] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
                             <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                                <h3 className="font-display font-black text-white text-lg">Subir Archivo</h3>
+                                <h3 className="font-display font-black text-white text-lg">{editMediaId ? 'Editar Archivo' : 'Subir Archivo'}</h3>
                                 <button onClick={() => setMediaModal(false)} className="text-steel hover:text-white">
                                     <X className="w-5 h-5" />
                                 </button>
@@ -128,36 +166,51 @@ export default function Local({ localMedia, user }: any) {
                                         className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${mediaType === 'video' ? 'bg-amber-400 text-void' : 'text-steel hover:text-white'}`}>Vídeo</button>
                                 </div>
 
-                                {mediaPreview ? (
-                                    <div className="relative">
-                                        {mediaType === 'video' ? (
-                                            <video src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" muted playsInline autoPlay loop />
-                                        ) : (
-                                            <img src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" />
-                                        )}
-                                        <button onClick={() => { setMediaFile(null); setMediaPreview(null); }}
-                                            className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:text-red-400">
-                                            <X className="w-4 h-4" />
-                                        </button>
+                                <div className="flex bg-carbon border border-white/5 rounded-xl p-1 mb-4">
+                                    <button onClick={() => setInputMode('file')}
+                                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors ${inputMode === 'file' ? 'bg-white/10 text-white' : 'text-steel hover:text-white'}`}>Subir Archivo</button>
+                                    <button onClick={() => setInputMode('url')}
+                                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors ${inputMode === 'url' ? 'bg-white/10 text-white' : 'text-steel hover:text-white'}`}>Pegar URL</button>
+                                </div>
+
+                                {inputMode === 'url' ? (
+                                    <div>
+                                        <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1 block flex items-center gap-1"><LinkIcon className="w-3 h-3"/> URL del {mediaType}</label>
+                                        <input type="text" placeholder="https://..." value={mediaUrl} onChange={e => { setMediaUrl(e.target.value); setMediaPreview(e.target.value); }}
+                                            className="w-full bg-carbon border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
                                     </div>
                                 ) : (
-                                    <label className="flex flex-col items-center justify-center py-10 bg-carbon border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-amber-400 transition-colors">
-                                        <Upload className="w-8 h-8 text-steel mb-2" />
-                                        <span className="text-steel font-bold text-sm">Seleccionar {mediaType === 'photo' ? 'Imagen' : 'Vídeo'}</span>
-                                        <input type="file" accept={mediaType === 'photo' ? 'image/*' : 'video/*'} className="hidden"
-                                            onChange={handleFileChange} />
-                                    </label>
+                                    mediaPreview && !mediaPreview.startsWith('http') ? (
+                                        <div className="relative">
+                                            {mediaType === 'video' ? (
+                                                <video src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" muted playsInline autoPlay loop />
+                                            ) : (
+                                                <img src={mediaPreview} className="w-full h-40 object-cover rounded-xl border border-white/10" />
+                                            )}
+                                            <button onClick={() => { setMediaFile(null); setMediaPreview(editMediaId ? mediaUrl : null); }}
+                                                className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:text-red-400">
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <label className="flex flex-col items-center justify-center py-10 bg-carbon border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-amber-400 transition-colors">
+                                            <Upload className="w-8 h-8 text-steel mb-2" />
+                                            <span className="text-steel font-bold text-sm">Seleccionar {mediaType === 'photo' ? 'Imagen' : 'Vídeo'}</span>
+                                            <input type="file" accept={mediaType === 'photo' ? 'image/*' : 'video/*'} className="hidden"
+                                                onChange={handleFileChange} />
+                                        </label>
+                                    )
                                 )}
 
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1 block">Pie de foto (opcional)</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1 block">Pie de foto (Obligatorio)</label>
                                     <input type="text" placeholder="Ej: Nueva fachada..." value={mediaCaption} onChange={e => setMediaCaption(e.target.value)}
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
                                 </div>
 
-                                <button disabled={isSubmitting || !mediaFile} onClick={saveMedia}
+                                <button disabled={isSubmitting || (!mediaFile && !mediaUrl && !editMediaId) || !mediaCaption.trim()} onClick={saveMedia}
                                     className="w-full bg-amber-400 text-void font-bold py-3.5 rounded-xl hover:bg-amber-300 transition-colors disabled:opacity-50">
-                                    {isSubmitting ? 'Guardando...' : 'Subir'}
+                                    {isSubmitting ? 'Guardando...' : (editMediaId ? 'Actualizar' : 'Subir')}
                                 </button>
                             </div>
                         </motion.div>

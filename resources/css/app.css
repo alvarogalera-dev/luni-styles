@@ -221,10 +221,10 @@ body:has([data-theme="kids"]) {
 [data-theme="kids"] .rdp-dropdown option { background-color: #ffffff !important; color: #111827 !important; }
 [data-theme="kids"] .rdp-button { color: #111827 !important; }
 [data-theme="kids"] .rdp-button[disabled] { color: #9ca3af !important; }
-[data-theme="kids"] .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
-[data-theme="kids"] .rdp-selected .rdp-button, [data-theme="kids"] button.rdp-selected { color: #10b981 !important; border-color: #10b981 !important; }
-[data-theme="kids"] .rdp-today .rdp-button, [data-theme="kids"] button.rdp-today { color: #10b981 !important; }
-[data-theme="kids"] .rdp-nav_button, [data-theme="kids"] .rdp-chevron { color: #10b981 !important; fill: #10b981 !important; }
+[data-theme="kids"] .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #fbbf24 !important; }
+[data-theme="kids"] .rdp-selected .rdp-button, [data-theme="kids"] button.rdp-selected { color: #ffffff !important; border-color: #fbbf24 !important; }
+[data-theme="kids"] .rdp-today .rdp-button, [data-theme="kids"] button.rdp-today { color: #ffffff !important; }
+[data-theme="kids"] .rdp-nav_button, [data-theme="kids"] .rdp-chevron { color: #fbbf24 !important; fill: #fbbf24 !important; }
 
 /* ── Split Theme Overrides ── */
 [data-theme="split"] {
@@ -259,22 +259,23 @@ body { top: 0px !important; }
 
 /* Forzar el día de hoy (círculo interior y texto) */
 .rdp-day_today {
-  color: #fbbf24 !important;
+  color: #ffffff !important;
   font-weight: 900 !important;
 }
 .rdp-day_today::after {
-  background-color: #fbbf24 !important;
+  background-color: transparent !important;
 }
 
 /* Forzar día seleccionado (círculo y texto interior) */
 .rdp-day_selected, .rdp-day_selected:focus, .rdp-day_selected:hover,
 .rdp-selected, .rdp-selected:focus, .rdp-selected:hover,
 .rdp-selected .rdp-day_button, .rdp-selected .rdp-button {
-  background-color: #fbbf24 !important;
-  color: #000 !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
   font-weight: 900 !important;
   outline: none !important;
-  border-color: #fbbf24 !important;
+  border: 2px solid #fbbf24 !important;
+  border-radius: 50% !important;
   box-shadow: none !important;
   --tw-ring-color: transparent !important;
   --tw-ring-shadow: none !important;
