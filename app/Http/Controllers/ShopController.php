@@ -360,7 +360,7 @@ class ShopController extends Controller
 
         $validated = $request->validate([
             'photo'     => 'nullable|file|image|max:5120',
-            'photo_url' => 'nullable|url|max:500',
+            'photo_url' => 'nullable|string|max:500',
             'caption'   => 'required|string|max:255',
         ]);
 

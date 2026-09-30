@@ -38,7 +38,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
               {catalogPhotos.map((photo, index) => {
-                const imgUrl = photo.url ? (photo.url.startsWith('http') || photo.url.startsWith('/') ? photo.url : `/storage/${photo.url}`) : `/images/catalogo/${(index % 12) + 1}.jpg`;
+                const imgUrl = photo.url ? (photo.url.startsWith('http') || photo.url.startsWith('/') ? photo.url : (photo.url.startsWith('images/') ? `/${photo.url}` : `/storage/${photo.url}`)) : `/images/catalogo/${(index % 12) + 1}.jpg`;
                 return (
                   <button
                     key={photo.id}

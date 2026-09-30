@@ -32,7 +32,7 @@ function ServiceCard({ service, onEdit, onDelete, isBarber }: any) {
             <div className="p-4 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-2">
                     <h3 className="font-bold text-white text-sm">{service.name}</h3>
-                    {service.price != null && (
+                    {service.price != null && isBarber && (
                         <div className="text-right shrink-0 ml-2">
                             {service.promo_price && service.promo_price !== service.price ? (
                                 <>
@@ -210,6 +210,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     const [catalogModal, setCatalogModal] = useState<{ mode: 'create' | 'edit'; item?: any } | null>(null);
     const [catalogCaption, setCatalogCaption] = useState('');
     const [catalogFile, setCatalogFile] = useState<File | null>(null);
+    const [catalogPhotoUrl, setCatalogPhotoUrl] = useState('');
     const [catalogPreview, setCatalogPreview] = useState<string | null>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -313,6 +314,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     const openCreateCatalog = () => {
         setCatalogCaption('');
         setCatalogFile(null);
+        setCatalogPhotoUrl('');
         setCatalogPreview(null);
         setCatalogModal({ mode: 'create' });
     };
@@ -320,6 +322,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     const openEditCatalog = (item: any) => {
         setCatalogCaption(item.caption || '');
         setCatalogFile(null);
+        setCatalogPhotoUrl(item.url || '');
         setCatalogPreview(item.url);
         setCatalogModal({ mode: 'edit', item });
     };
@@ -328,6 +331,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
         setIsSubmitting(true);
         const fd = new FormData();
         fd.append('caption', catalogCaption);
+        if (catalogPhotoUrl) fd.append('photo_url', catalogPhotoUrl);
         if (catalogFile) fd.append('photo', catalogFile);
 
         const url = catalogModal?.mode === 'edit' ? `/panel/tienda/catalogo/${catalogModal.item.id}` : '/panel/tienda/catalogo';
@@ -459,9 +463,11 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    {catalogPhotos.map((c: any) => (
+                                    {catalogPhotos.map((c: any) => {
+                                        const cUrl = c.url.startsWith('http') || c.url.startsWith('/') ? c.url : (c.url.startsWith('images/') ? `/${c.url}` : `/storage/${c.url}`);
+                                        return (
                                         <div key={c.id} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-white/10 bg-carbon">
-                                            <img src={c.url.startsWith('http') || c.url.startsWith('/') ? c.url : `/storage/${c.url}`} alt="catalog" className="w-full h-full object-cover" />
+                                            <img src={cUrl} alt="catalog" className="w-full h-full object-cover" />
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                                 <button onClick={() => openEditCatalog(c)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-amber-400 hover:text-void transition-colors">
                                                     <Edit2 className="w-4 h-4" />
@@ -471,7 +477,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
+                                    )})}
                                 </div>
                             )}
                         </motion.div>
@@ -642,24 +648,29 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                         className="w-full bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto *</label>
+                                    <label className="text-xs text-steel font-bold uppercase tracking-wider mb-1.5 block">Foto * (Archivo o URL)</label>
                                     {catalogPreview && (
                                         <div className="mb-3 relative aspect-[3/4] max-w-[200px] mx-auto rounded-xl overflow-hidden border border-white/10">
-                                            <img src={catalogPreview} alt="preview" className="w-full h-full object-cover" />
-                                            <button onClick={() => { setCatalogFile(null); setCatalogPreview(null); }}
+                                            <img src={catalogPreview.startsWith('http') || catalogPreview.startsWith('/') ? catalogPreview : (catalogPreview.startsWith('images/') ? `/${catalogPreview}` : `/storage/${catalogPreview}`)} alt="preview" className="w-full h-full object-cover" />
+                                            <button onClick={() => { setCatalogFile(null); setCatalogPhotoUrl(''); setCatalogPreview(null); }}
                                                 className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:text-red-400">
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
                                     )}
-                                    {!catalogPreview && (
-                                        <label className="flex items-center justify-center gap-3 p-6 bg-carbon border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-amber-400 transition-colors">
-                                            <Upload className="w-5 h-5 text-steel" />
-                                            <span className="text-steel text-sm">Seleccionar foto...</span>
-                                            <input type="file" accept="image/*" className="hidden"
-                                                onChange={e => handleFileChange(e, setCatalogFile, setCatalogPreview)} />
-                                        </label>
-                                    )}
+                                    <label className="flex items-center justify-center gap-3 p-6 bg-carbon border border-dashed border-white/20 rounded-xl cursor-pointer hover:border-amber-400 transition-colors">
+                                        <Upload className="w-5 h-5 text-steel" />
+                                        <span className="text-steel text-sm">{catalogFile ? catalogFile.name : 'Seleccionar foto...'}</span>
+                                        <input type="file" accept="image/*" className="hidden"
+                                            onChange={e => handleFileChange(e, setCatalogFile, setCatalogPreview)} />
+                                    </label>
+                                    <div className="mt-2 text-center text-steel text-xs uppercase font-bold">O</div>
+                                    <input type="text" placeholder="https://ejemplo.com/foto.jpg o /images/catalogo/1.jpg" value={catalogPhotoUrl}
+                                        onChange={e => {
+                                            setCatalogPhotoUrl(e.target.value);
+                                            if (e.target.value) setCatalogPreview(e.target.value);
+                                        }}
+                                        className="w-full mt-2 bg-carbon border border-white/10 rounded-xl px-3.5 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-all" />
                                 </div>
                             </div>
                         }
