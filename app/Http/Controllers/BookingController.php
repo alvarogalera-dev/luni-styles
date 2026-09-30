@@ -194,6 +194,30 @@ class BookingController extends Controller
         ]);
     }
 
+    public function clientLoyaltyByPhone(Request $request)
+    {
+        $request->validate(['phone' => 'required|string']);
+        $cleanPhone = str_replace(' ', '', $request->phone);
+        
+        $client = Client::where(DB::raw("REPLACE(phone, ' ', '')"), $cleanPhone)
+                    ->orWhere(DB::raw("REPLACE(known_phones, ' ', '')"), 'LIKE', '%' . $cleanPhone . '%')
+                    ->first();
+
+        if ($client) {
+            return response()->json([
+                'exists' => true,
+                'loyalty_points' => $client->loyalty_points,
+                'penalty_flag' => $client->penalty_flag,
+            ]);
+        }
+
+        return response()->json([
+            'exists' => false,
+            'loyalty_points' => 0,
+            'penalty_flag' => false,
+        ]);
+    }
+
     public function getAvailableSlots(Request $request)
     {
         $request->validate([

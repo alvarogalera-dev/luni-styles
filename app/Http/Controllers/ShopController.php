@@ -85,10 +85,11 @@ class ShopController extends Controller
             'description'      => 'required|string|max:1000',
             'duration_label'   => 'required|string|max:50',
             'duration_minutes' => 'required|integer|min:5|max:480',
-            'price'            => 'required|numeric|min:0',
+            'price'            => 'nullable|numeric|min:0',
             'promo_price'      => 'nullable|numeric|min:0',
             'photo'            => 'nullable|file|image|max:5120',
             'photo_url'        => 'nullable|string|max:500',
+            'etiqueta'         => 'nullable|string|max:150',
         ]);
 
         $photoUrl = null;
@@ -109,6 +110,7 @@ class ShopController extends Controller
             'price'            => isset($validated['price']) ? (float) $validated['price'] : null,
             'promo_price'      => isset($validated['promo_price']) ? (float) $validated['promo_price'] : null,
             'photo_url'        => $photoUrl,
+            'etiqueta'         => isset($validated['etiqueta']) ? strip_tags($validated['etiqueta']) : null,
             'sort_order'       => $maxOrder + 1,
             'active'           => true,
         ]);
@@ -128,10 +130,11 @@ class ShopController extends Controller
             'description'      => 'required|string|max:1000',
             'duration_label'   => 'required|string|max:50',
             'duration_minutes' => 'required|integer|min:5|max:480',
-            'price'            => 'required|numeric|min:0',
+            'price'            => 'nullable|numeric|min:0',
             'promo_price'      => 'nullable|numeric|min:0',
             'photo'            => 'nullable|file|image|max:5120',
             'photo_url'        => 'nullable|max:500',
+            'etiqueta'         => 'nullable|string|max:150',
         ]);
 
         $photoUrl = $service->photo_url;
@@ -147,6 +150,7 @@ class ShopController extends Controller
             'duration_label'   => isset($validated['duration_label']) ? strip_tags($validated['duration_label']) : null,
             'duration_minutes' => (int) $validated['duration_minutes'],
             'photo_url'        => $photoUrl,
+            'etiqueta'         => isset($validated['etiqueta']) ? strip_tags($validated['etiqueta']) : null,
         ];
 
         // Solo actualizar precio en barberia (peluqueria no puede editar precio)

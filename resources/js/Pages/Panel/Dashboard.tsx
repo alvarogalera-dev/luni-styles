@@ -479,7 +479,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                 <div className={cn(
                     "p-3 rounded-2xl border flex justify-center mb-3 overflow-hidden transition-colors duration-300",
                     formData.tipo_servicio === 'peluqueria_infantil' 
-                        ? "bg-white border-white/20 rdp-panel-peluqueria" 
+                        ? "bg-white border-emerald-100 rdp-panel-peluqueria" 
                         : "bg-carbon/50 border-white/10 rdp-panel-barberia"
                 )}>
                     <DayPicker
@@ -777,7 +777,10 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 10 }}
-                                                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:top-full sm:left-0 sm:right-auto sm:translate-x-0 sm:translate-y-0 sm:mt-2 bg-[#161616] border border-white/10 rounded-2xl p-3 z-50 shadow-2xl"
+                                                className={cn(
+                                                    "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:top-full sm:left-0 sm:right-auto sm:translate-x-0 sm:translate-y-0 sm:mt-2 border border-white/10 rounded-2xl p-3 z-50 shadow-2xl",
+                                                    localFilters.service_type === 'peluqueria_infantil' ? "bg-white border-emerald-100" : "bg-[#161616]"
+                                                )}
                                             >
                                                 <DayPicker
                                                     mode="single"
