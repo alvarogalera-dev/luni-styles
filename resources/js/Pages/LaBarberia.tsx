@@ -88,7 +88,7 @@ function GalleryCarousel({ localMedia }: { localMedia: any[] }) {
           return (
             <div
               key={i}
-              className="group shrink-0 w-[78vw] sm:w-[55vw] md:w-[38vw] lg:w-[30vw] h-[220px] md:h-[380px] rounded-2xl overflow-hidden relative bg-carbon"
+              className="shrink-0 w-[78vw] sm:w-[55vw] md:w-[38vw] lg:w-[30vw] h-[220px] md:h-[380px] rounded-2xl overflow-hidden relative bg-carbon"
             >
               {(item.media_type === 'photo' || item.type === 'image') ? (
                 <img
@@ -107,14 +107,7 @@ function GalleryCarousel({ localMedia }: { localMedia: any[] }) {
                   className="w-full h-full object-cover"
                 />
               )}
-              <div className="absolute inset-0 bg-void/10 group-hover:bg-void/40 transition-colors duration-500" />
-              {(item.caption || item.alt) && (
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                  <p className="text-white font-bold text-sm md:text-base tracking-wide drop-shadow-md">
-                    {item.caption || item.alt}
-                  </p>
-                </div>
-              )}
+              <div className="absolute inset-0 bg-void/10" />
             </div>
           );
         })}

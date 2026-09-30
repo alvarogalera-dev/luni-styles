@@ -165,20 +165,12 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
                     return (
                     <div
                       key={i}
-                      className="group w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg relative"
+                      className="w-[80vw] md:w-[550px] h-[280px] md:h-[420px] shrink-0 rounded-2xl overflow-hidden shadow-lg"
                     >
                       {media.media_type === 'video' || media.type === 'video' ? (
                         <video src={src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
                       ) : (
                         <img src={src} alt={media.caption || "Galería local peluquería infantil"} className="w-full h-full object-cover" loading="lazy" />
-                      )}
-                      <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-emerald-900/30 transition-colors duration-500" />
-                      {media.caption && (
-                        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                          <p className="text-white font-bold text-sm md:text-base tracking-wide drop-shadow-md">
-                            {media.caption}
-                          </p>
-                        </div>
                       )}
                     </div>
                   );
