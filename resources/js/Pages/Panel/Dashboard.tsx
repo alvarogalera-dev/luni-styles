@@ -155,7 +155,7 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
                 </div>
             ) : (
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {getAvailableTimeSlots(formData.fecha).map((t) => {
+                    {getAvailableTimeSlots(fecha).map((t) => {
                         const isAvailable = slots.includes(t);
                         return (
                             <button type="button" key={t}

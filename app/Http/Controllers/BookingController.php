@@ -264,9 +264,17 @@ class BookingController extends Controller
         $serviceType = $request->service_type;
         $duration = (int) $request->duration;
 
-        $slots = [
-            '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
-        ];
+        $isSaturday = \Carbon\Carbon::parse($date)->dayOfWeek === \Carbon\Carbon::SATURDAY;
+        if ($isSaturday) {
+            $slots = [
+                '10:00', '10:30', '11:00', '11:30',
+                '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
+            ];
+        } else {
+            $slots = [
+                '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
+            ];
+        }
 
         $availableSlots = [];
         $now = \Carbon\Carbon::now('Europe/Madrid');
