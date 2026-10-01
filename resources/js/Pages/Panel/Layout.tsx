@@ -61,27 +61,80 @@ export default function PanelLayout({ children, title, user }: Props) {
             {/* ESTADÍSTICAS */}
             {user.role === 'superadmin' ? (
                 <>
+                    {/* SECCIÓN BARBERÍA */}
+                    <div className="pt-4 mt-2 border-t border-white/5">
+                        <p className="text-[10px] text-steel/40 uppercase tracking-widest font-bold px-4 mb-2">LA BARBERÍA</p>
+                    </div>
                     <Link
                         href="/panel/estadisticas/barberia"
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                            url.includes('barberia')
+                            url.startsWith('/panel/estadisticas/barberia')
                                 ? 'bg-amber-400/10 text-amber-400 font-bold border border-amber-400/20'
                                 : 'text-steel hover:text-amber-400 hover:bg-amber-400/5'
                         }`}
                     >
                         <BarChart3 className="w-5 h-5" />
-                        <span className="text-sm">Estadísticas (Barbería)</span>
+                        <span className="text-sm">Estadísticas</span>
                     </Link>
+                    <Link
+                        href="/panel/tienda?shop=barberia"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/tienda') && !url.includes('peluqueria_infantil')
+                                ? 'bg-amber-400/10 text-amber-400 font-bold border border-amber-400/20'
+                                : 'text-steel hover:text-amber-400 hover:bg-amber-400/5'
+                        }`}
+                    >
+                        <ShoppingBag className="w-5 h-5" />
+                        <span className="text-sm">Servicios y Productos</span>
+                    </Link>
+                    <Link
+                        href="/panel/local?shop=barberia"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/local') && !url.includes('peluqueria_infantil')
+                                ? 'bg-amber-400/10 text-amber-400 font-bold border border-amber-400/20'
+                                : 'text-steel hover:text-amber-400 hover:bg-amber-400/5'
+                        }`}
+                    >
+                        <MapPin className="w-5 h-5" />
+                        <span className="text-sm">Local</span>
+                    </Link>
+
+                    {/* SECCIÓN PELUQUERÍA INFANTIL */}
+                    <div className="pt-4 mt-2 border-t border-white/5">
+                        <p className="text-[10px] text-emerald-500/40 uppercase tracking-widest font-bold px-4 mb-2">PELUQUERÍA INFANTIL</p>
+                    </div>
                     <Link
                         href="/panel/estadisticas/peluqueria_infantil"
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                            url.includes('peluqueria_infantil')
+                            url.startsWith('/panel/estadisticas/peluqueria_infantil')
                                 ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20'
                                 : 'text-steel hover:text-emerald-400 hover:bg-emerald-500/5'
                         }`}
                     >
                         <BarChart3 className="w-5 h-5" />
-                        <span className="text-sm">Estadísticas (Infantil)</span>
+                        <span className="text-sm">Estadísticas</span>
+                    </Link>
+                    <Link
+                        href="/panel/tienda?shop=peluqueria_infantil"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/tienda') && url.includes('peluqueria_infantil')
+                                ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20'
+                                : 'text-steel hover:text-emerald-400 hover:bg-emerald-500/5'
+                        }`}
+                    >
+                        <ShoppingBag className="w-5 h-5" />
+                        <span className="text-sm">Servicios y Catálogo</span>
+                    </Link>
+                    <Link
+                        href="/panel/local?shop=peluqueria_infantil"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                            url.startsWith('/panel/local') && url.includes('peluqueria_infantil')
+                                ? 'bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20'
+                                : 'text-steel hover:text-emerald-400 hover:bg-emerald-500/5'
+                        }`}
+                    >
+                        <MapPin className="w-5 h-5" />
+                        <span className="text-sm">Local</span>
                     </Link>
                 </>
             ) : (
@@ -98,7 +151,7 @@ export default function PanelLayout({ children, title, user }: Props) {
                 </Link>
             )}
 
-            {/* PRODUCTOS Y SERVICIOS (solo barber/hairdresser/superadmin) */}
+            {/* PRODUCTOS Y SERVICIOS (solo barber/hairdresser) */}
             {user.role !== 'superadmin' && (
                 <>
                     <Link
@@ -123,36 +176,6 @@ export default function PanelLayout({ children, title, user }: Props) {
                     >
                         <MapPin className="w-5 h-5" />
                         <span>Local</span>
-                    </Link>
-                </>
-            )}
-
-            {/* Para superadmin también mostramos tienda */}
-            {user.role === 'superadmin' && (
-                <>
-                    <div className="border-t border-white/5 my-2" />
-                    <p className="px-4 text-[9px] uppercase tracking-widest text-steel/50 font-bold">Barbería</p>
-                    <Link
-                        href="/panel/tienda"
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                            url.startsWith('/panel/tienda')
-                                ? 'bg-white/10 text-white font-bold'
-                                : 'text-steel hover:text-white hover:bg-white/5'
-                        }`}
-                    >
-                        <ShoppingBag className="w-5 h-5" />
-                        <span className="text-sm">Productos y Servicios</span>
-                    </Link>
-                    <Link
-                        href="/panel/local"
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                            url.startsWith('/panel/local')
-                                ? 'bg-white/10 text-white font-bold'
-                                : 'text-steel hover:text-white hover:bg-white/5'
-                        }`}
-                    >
-                        <MapPin className="w-5 h-5" />
-                        <span className="text-sm">Local</span>
                     </Link>
                 </>
             )}
