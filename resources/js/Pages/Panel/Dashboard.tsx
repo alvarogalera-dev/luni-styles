@@ -829,6 +829,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                     captionLayout="dropdown-buttons"
                                                     fromYear={2026}
                                                     toYear={2035}
+                                                    disabled={[{ dayOfWeek: [0] }]}
                                                     className={cn(
                                                         "text-sm font-medium",
                                                         (localFilters.service_type === 'peluqueria_infantil' || user.role === 'hairdresser') ? "text-black" : "text-bone"
