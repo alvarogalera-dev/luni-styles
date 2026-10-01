@@ -526,7 +526,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         captionLayout="dropdown-buttons"
                         fromYear={2026}
                         toYear={2035}
-                        disabled={[{ before: new Date() }, { dayOfWeek: [0, 6] }]}
+                        disabled={[{ before: new Date() }, { dayOfWeek: [0] }]}
                         className={cn("text-sm font-medium", formData.tipo_servicio === 'peluqueria_infantil' ? "text-black" : "")}
                     />
                 </div>
