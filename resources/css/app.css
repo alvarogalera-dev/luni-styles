@@ -221,10 +221,10 @@ body:has([data-theme="kids"]) {
 [data-theme="kids"] .rdp-dropdown option { background-color: #ffffff !important; color: #111827 !important; }
 [data-theme="kids"] .rdp-button { color: #111827 !important; }
 [data-theme="kids"] .rdp-button[disabled] { color: #9ca3af !important; }
-[data-theme="kids"] .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #fbbf24 !important; }
-[data-theme="kids"] .rdp-selected .rdp-button, [data-theme="kids"] button.rdp-selected { color: #ffffff !important; border-color: #fbbf24 !important; }
-[data-theme="kids"] .rdp-today .rdp-button, [data-theme="kids"] button.rdp-today { color: #ffffff !important; }
-[data-theme="kids"] .rdp-nav_button, [data-theme="kids"] .rdp-chevron { color: #fbbf24 !important; fill: #fbbf24 !important; }
+[data-theme="kids"] .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
+[data-theme="kids"] .rdp-selected .rdp-button, [data-theme="kids"] button.rdp-selected { color: #000000 !important; font-weight: bold !important; border-color: #10b981 !important; }
+[data-theme="kids"] .rdp-today .rdp-button, [data-theme="kids"] button.rdp-today, [data-theme="kids"] button.rdp-day_today:not(.rdp-day_selected) { color: #10b981 !important; font-weight: bold !important; }
+[data-theme="kids"] .rdp-nav_button, [data-theme="kids"] .rdp-chevron, [data-theme="kids"] .rdp-nav_icon, [data-theme="kids"] svg.rdp-nav_icon { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
 
 /* ── Split Theme Overrides ── */
 [data-theme="split"] {
