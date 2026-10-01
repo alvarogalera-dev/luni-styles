@@ -19,7 +19,7 @@ function MediaCard({ media, onDelete, onEdit }: any) {
             )}
             {media.media_type === 'video' && (
                 <>
-                    <div className="absolute top-2 right-2 bg-red-500/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1 z-10">
+                    <div className="absolute top-2 left-2 bg-red-500/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1 z-10">
                         <Video className="w-3 h-3 text-white" />
                         <span className="text-white text-[10px] font-bold uppercase tracking-wider">Vídeo</span>
                     </div>
@@ -33,13 +33,11 @@ function MediaCard({ media, onDelete, onEdit }: any) {
                     <p className="text-slate-900 text-xs font-bold truncate text-center">{media.caption}</p>
                 </div>
             )}
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <button onClick={() => onEdit(media)}
-                    className="p-2.5 rounded-xl bg-blue-500 text-white hover:bg-blue-400 transition-all">
+            <div className="absolute top-2 right-2 flex items-center gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity z-20">
+                <button onClick={() => onEdit(media)} className="p-2 rounded-lg bg-blue-500/90 text-white shadow-lg backdrop-blur-sm hover:bg-blue-400 transition-all">
                     <Edit2 className="w-4 h-4" />
                 </button>
-                <button onClick={() => onDelete(media.id)}
-                    className="p-2.5 rounded-xl bg-red-500 text-white hover:bg-red-400 transition-all">
+                <button onClick={() => onDelete(media.id)} className="p-2 rounded-lg bg-red-500/90 text-white shadow-lg backdrop-blur-sm hover:bg-red-400 transition-all">
                     <Trash2 className="w-4 h-4" />
                 </button>
             </div>

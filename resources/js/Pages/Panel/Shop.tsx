@@ -480,11 +480,11 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                                         return (
                                         <div key={c.id} className="relative group rounded-xl overflow-hidden aspect-[3/4] border border-white/10 bg-carbon">
                                             <img src={cUrl} alt="catalog" className="w-full h-full object-cover" />
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                                                <button onClick={() => openEditCatalog(c)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-amber-400 hover:text-void transition-colors">
+                                            <div className="absolute top-2 right-2 flex items-center gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity z-20">
+                                                <button onClick={() => openEditCatalog(c)} className="p-2 rounded-lg bg-blue-500/90 text-white shadow-lg backdrop-blur-sm hover:bg-blue-400 transition-colors">
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
-                                                <button onClick={() => deleteCatalog(c.id)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-red-500 transition-colors">
+                                                <button onClick={() => deleteCatalog(c.id)} className="p-2 rounded-lg bg-red-500/90 text-white shadow-lg backdrop-blur-sm hover:bg-red-500 transition-colors">
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
