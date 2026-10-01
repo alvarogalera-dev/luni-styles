@@ -45,7 +45,7 @@ function MediaCard({ media, onDelete, onEdit }: any) {
     );
 }
 
-export default function Local({ localMedia, user }: any) {
+export default function Local({ localMedia, shopType, user }: any) {
     const [mediaModal, setMediaModal] = useState(false);
     const [mediaFile, setMediaFile] = useState<File | null>(null);
     const [mediaCaption, setMediaCaption] = useState('');
@@ -89,9 +89,9 @@ export default function Local({ localMedia, user }: any) {
     };
 
     const saveMedia = () => {
-        if (!mediaCaption.trim()) return alert('El pie de foto es obligatorio');
-        if (inputMode === 'file' && !mediaFile && !editMediaId) return alert('Sube un archivo o pega una URL');
-        if (inputMode === 'url' && !mediaUrl) return alert('Sube un archivo o pega una URL');
+        if (!mediaCaption.trim()) return;
+        if (inputMode === 'file' && !mediaFile && !editMediaId) return;
+        if (inputMode === 'url' && !mediaUrl) return;
 
         setIsSubmitting(true);
         const fd = new FormData();

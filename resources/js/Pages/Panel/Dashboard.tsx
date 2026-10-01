@@ -136,7 +136,6 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
         })
         .catch((e) => {
             console.error("Error fetching slots:", e);
-            alert("Error fetching available slots: " + e.message);
             setSlots([]);
         })
         .finally(() => setLoading(false));
@@ -219,7 +218,6 @@ function BarberPicker({ fecha, hora, duration, value, onChange, appointment_id, 
         })
         .catch((e) => {
             console.error("Error fetching barbers:", e);
-            alert("Error fetching barbers: " + e.message);
             setBarbers([]);
         })
         .finally(() => setLoading(false));
@@ -709,7 +707,6 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
             onSuccess: () => { setIsEditMode(false); setSelectedAppt(null); },
             onError: (errors) => {
                 console.error("Validation errors:", errors);
-                alert("Validation errors: " + JSON.stringify(errors));
             }
         });
     };
@@ -727,7 +724,6 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
             onSuccess: () => { setShowNewModal(false); setFormData(emptyForm); },
             onError: (errors) => {
                 console.error('Error al crear cita:', errors);
-                alert("Validation errors: " + JSON.stringify(errors));
             },
         });
     };

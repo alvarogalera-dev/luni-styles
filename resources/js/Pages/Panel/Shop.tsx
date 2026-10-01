@@ -214,6 +214,16 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     const [catalogPreview, setCatalogPreview] = useState<string | null>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [deleteConfirm, setDeleteConfirm] = useState<{type: string, id: number, text: string} | null>(null);
+
+    const executeDelete = () => {
+        if (!deleteConfirm) return;
+        const { type, id } = deleteConfirm;
+        const query = shopType ? `?shop=${shopType}` : '';
+        if (type === 'service') router.delete(`/panel/tienda/servicios/${id}${query}`, { preserveScroll: true, onSuccess: () => setDeleteConfirm(null) });
+        if (type === 'product') router.delete(`/panel/tienda/productos/${id}${query}`, { preserveScroll: true, onSuccess: () => setDeleteConfirm(null) });
+        if (type === 'catalog') router.delete(`/panel/tienda/catalogo/${id}${query}`, { onSuccess: () => setDeleteConfirm(null) });
+    };
 
     const isBarber = shopType === 'barberia';
     const isHairdresser = shopType === 'peluqueria_infantil';
@@ -267,9 +277,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     };
 
     const deleteService = (id: number) => {
-        if (!confirm('¿Eliminar este servicio?')) return;
-        const query = shopType ? `?shop=${shopType}` : '';
-        router.delete(`/panel/tienda/servicios/${id}${query}`, { preserveScroll: true });
+        setDeleteConfirm({ type: 'service', id, text: '¿Eliminar este servicio?' });
     };
 
     // ── Products ──────────────────────────────────────────────────────────────
@@ -314,9 +322,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     };
 
     const deleteProduct = (id: number) => {
-        if (!confirm('¿Eliminar este producto?')) return;
-        const query = shopType ? `?shop=${shopType}` : '';
-        router.delete(`/panel/tienda/productos/${id}${query}`, { preserveScroll: true });
+        setDeleteConfirm({ type: 'product', id, text: '¿Eliminar este producto?' });
     };
 
     // ── Catalog ──────────────────────────────────────────────────────────────
@@ -337,7 +343,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     };
 
     const saveCatalog = () => {
-        if (!catalogCaption.trim()) return alert('El pie de foto es obligatorio para el catálogo.');
+        if (!catalogCaption.trim()) return;
         setIsSubmitting(true);
         const fd = new FormData();
         fd.append('caption', catalogCaption);
@@ -353,8 +359,7 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     };
 
     const deleteCatalog = (id: number) => {
-        const query = shopType ? `?shop=${shopType}` : '';
-        if (confirm('¿Eliminar foto del catálogo?')) router.delete(`/panel/tienda/catalogo/${id}${query}`);
+        setDeleteConfirm({ type: 'catalog', id, text: '¿Eliminar foto del catálogo?' });
     };
 
     // ── Helper: File Input ────────────────────────────────────────────────────
@@ -695,6 +700,25 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
                             </div>
                         }
                     />
+                )}
+            </AnimatePresence>
+            {/* Modal de Confirmar Borrado */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                            className="relative w-full max-w-sm bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl text-center">
+                            <Trash2 className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-white mb-2">{deleteConfirm.text}</h3>
+                            <p className="text-steel text-sm mb-6">Esta acción no se puede deshacer.</p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3 bg-carbon text-white rounded-xl font-bold hover:bg-white/10 transition-colors">Cancelar</button>
+                                <button onClick={executeDelete} className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-400 transition-colors">Eliminar</button>
+                            </div>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </PanelLayout>
