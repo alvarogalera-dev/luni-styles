@@ -82,9 +82,13 @@ const esCapitalized = {
 };
 
 // Servicies are now dynamic from DB
-const TIME_SLOTS = [
-    '16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'
-];
+const getAvailableTimeSlots = (date: Date | undefined) => {
+    if (!date) return [];
+    if (date.getDay() === 6) {
+        return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+    }
+    return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+};
 const EMPLOYEE_NAMES: Record<number, string> = {
     1: 'Luis (Barbero)', 2: 'Carlos (Barbero)', 3: 'Mariely (Infantil)'
 };
@@ -151,7 +155,7 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
                 </div>
             ) : (
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {TIME_SLOTS.map((t) => {
+                    {getAvailableTimeSlots(formData.fecha).map((t) => {
                         const isAvailable = slots.includes(t);
                         return (
                             <button type="button" key={t}

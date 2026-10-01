@@ -104,9 +104,13 @@ const COUNTRY_CODES = [
   { code: 'Otro', iso: 'other', maxLength: 15, isOther: true },
 ];
 
-const TIME_SLOTS = [
-  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
-];
+const getAvailableTimeSlots = (date: Date | undefined) => {
+  if (!date) return [];
+  if (date.getDay() === 6) {
+    return ['10:00', '10:30', '11:00', '11:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+  }
+  return ['16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+};
 
 export default function BookingModal({ isOpen, onClose, initialServiceType }: BookingModalProps) {
   const [step, setStep] = useState(1);
@@ -544,7 +548,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                               toYear={2035}
                               disabled={[
                                 { before: new Date() },
-                                { dayOfWeek: [0, 6] }
+                                { dayOfWeek: [0] }
                               ]}
                               className="text-sm font-medium text-bone"
                             />
@@ -571,7 +575,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 </div>
                               ) : (
                                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                                  {TIME_SLOTS.map((t) => {
+                                  {getAvailableTimeSlots(date).map((t) => {
                                     const isAvailable = availableSlots.includes(t);
                                     return (
                                       <button
