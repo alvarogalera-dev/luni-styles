@@ -154,7 +154,7 @@ export default function PeluqueriaInfantil({ meta, services = [], catalogPhotos 
               <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-emerald-50/30 to-transparent z-10 pointer-events-none" />
               <motion.div
                 animate={{ x: ['0%', '-50%'] }}
-                transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
+                transition={{ duration: 28, ease: 'linear', repeat: Infinity }}
                 className="flex gap-4 md:gap-6 w-max"
               >
                 {(() => {

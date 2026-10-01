@@ -172,7 +172,10 @@ class PanelController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $validated = $request->validate(['status' => 'required|in:completed,no-show']);
+        $validated = $request->validate([
+            'status' => 'required|in:completed,no-show',
+            'final_price' => 'nullable|string'
+        ]);
 
         $appointment = Appointment::with('client')->findOrFail((int) $id);
         $this->authorizeAppointment($appointment);
@@ -183,6 +186,9 @@ class PanelController extends Controller
 
         $client = $appointment->client;
         $appointment->status = $validated['status'];
+        if ($validated['status'] === 'completed' && isset($validated['final_price'])) {
+            $appointment->price = $validated['final_price'];
+        }
         $appointment->save();
 
         if ($validated['status'] === 'completed') {

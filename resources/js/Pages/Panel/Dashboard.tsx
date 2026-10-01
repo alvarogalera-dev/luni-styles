@@ -311,7 +311,9 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
     useEffect(() => {
         const found = currentServices.find(s => s.name === formData.servicio);
         if (found) {
-            if (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9 && formData.tipo_servicio === 'barberia') {
+            if (formData.tipo_servicio === 'peluqueria_infantil') {
+                setFormData((p: any) => ({ ...p, precio: 'Variable' }));
+            } else if (loyaltyData?.loyalty_points && loyaltyData.loyalty_points >= 9 && formData.tipo_servicio === 'barberia') {
                 setFormData((p: any) => ({ ...p, precio: 'Gratis' }));
             } else {
                 setFormData((p: any) => ({ ...p, precio: found.price }));
@@ -337,7 +339,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         </div>
                     )}
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Nombre *</label>
                         <input required type="text" maxLength={100}
@@ -352,6 +354,8 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                             value={formData.apellidos}
                             onChange={e => setFormData((p: any) => ({...p, apellidos: e.target.value}))} />
                     </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label className="text-xs text-steel/70 mb-1 block">Teléfono *</label>
                         <div className="flex gap-2 relative">
@@ -500,10 +504,12 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         </div>
                     )}
                     <div className="col-span-2">
-                        <label className="text-xs text-steel/70 mb-1 block">Precio (automático)</label>
-                        <input type="text" readOnly
-                            className="w-full bg-[#0a0a0a] border border-white/5 rounded-xl p-3 text-steel text-sm cursor-not-allowed"
-                            value={formData.precio ? formData.precio + '€' : '—'} />
+                        <label className="text-xs text-steel/70 mb-1 block">Precio {formData.tipo_servicio === 'peluqueria_infantil' ? '' : '(Editable)'}</label>
+                        <input type="text"
+                            className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400"
+                            value={formData.precio || ''}
+                            placeholder={formData.tipo_servicio === 'peluqueria_infantil' ? 'Variable' : '—'}
+                            onChange={e => setFormData((p: any) => ({...p, precio: e.target.value}))} />
                     </div>
                 </div>
             </div>
@@ -574,6 +580,7 @@ function StatusBadge({ status }: { status: string }) {
 
 // ─── CONFIRM MINI-MODAL ───
 function ConfirmModal({ data, onCancel, onConfirm }: any) {
+    const [price, setPrice] = useState('');
     if (!data) return null;
     const colors: Record<string, string> = {
         emerald: 'bg-emerald-500', amber: 'bg-amber-400', red: 'bg-red-500'
@@ -598,11 +605,22 @@ function ConfirmModal({ data, onCancel, onConfirm }: any) {
                         <h3 className="font-display font-bold text-base text-white">{data.title}</h3>
                     </div>
                     <p className="text-steel text-sm leading-relaxed mb-5">{data.text}</p>
+                    {data.needsPrice && (
+                        <div className="mb-5 text-left">
+                            <label className="text-xs text-steel/70 mb-1 block">Precio final cobrado</label>
+                            <input type="text"
+                                className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-emerald-400"
+                                placeholder="Ej. 10€"
+                                value={price}
+                                onChange={e => setPrice(e.target.value)}
+                            />
+                        </div>
+                    )}
                     <div className="flex gap-3">
                         <button onClick={onCancel} className="flex-1 bg-carbon text-white font-bold py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-sm">
                             Cancelar
                         </button>
-                        <button onClick={onConfirm} className={`flex-1 font-bold py-2.5 rounded-xl text-sm ${btnColors[data.color] || 'bg-steel text-white'}`}>
+                        <button onClick={() => onConfirm(price)} className={`flex-1 font-bold py-2.5 rounded-xl text-sm ${btnColors[data.color] || 'bg-steel text-white'}`}>
                             Confirmar
                         </button>
                     </div>
@@ -728,11 +746,11 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
         });
     };
 
-    const doConfirm = (action: string, id: number, title: string, text: string, color: string) => {
-        setConfirmModal({ action, id, title, text, color });
+    const doConfirm = (action: string, id: number, title: string, text: string, color: string, needsPrice: boolean = false) => {
+        setConfirmModal({ action, id, title, text, color, needsPrice });
     };
 
-    const executeConfirm = () => {
+    const executeConfirm = (price?: string) => {
         if (!confirmModal) return;
         const { action, id } = confirmModal;
         setConfirmModal(null);
@@ -742,7 +760,9 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                 onSuccess: () => setSelectedAppt(null),
             });
         } else if (action === 'completed' || action === 'no-show') {
-            router.put(`/panel/citas/${id}/status`, { status: action }, {
+            const payload: any = { status: action };
+            if (price) payload.final_price = price;
+            router.put(`/panel/citas/${id}/status`, payload, {
                 preserveScroll: true,
                 onSuccess: () => setSelectedAppt(null),
             });
@@ -1182,7 +1202,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                         {selectedAppt.estado === 'pending' && (
                                             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
                                                 <button
-                                                    onClick={() => doConfirm('completed', selectedAppt.id, '¿Marcar como Terminada?', 'Se actualizará el estado y se sumará al historial del cliente.', 'emerald')}
+                                                    onClick={() => doConfirm('completed', selectedAppt.id, '¿Marcar como Terminada?', 'Se actualizará el estado y se sumará al historial del cliente.', 'emerald', selectedAppt.tipo_servicio === 'peluqueria_infantil')}
                                                     className="flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/10 text-emerald-400 font-bold hover:bg-emerald-500 hover:text-white transition-all text-sm">
                                                     <CheckCircle2 className="w-5 h-5" /> Terminada
                                                 </button>
