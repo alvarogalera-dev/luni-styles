@@ -45,23 +45,25 @@ const panelCalendarCss = `
   .rdp-vhidden { display: none !important; }
 
   /* PELUQUERIA OVERRIDES */
-  .rdp-panel-peluqueria .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
-  .rdp-panel-peluqueria .rdp-selected, .rdp-panel-peluqueria .rdp-day_selected, .rdp-panel-peluqueria .rdp-day_selected:hover, .rdp-panel-peluqueria .rdp-day_selected:focus {
+  .peluqueria-calendar .rdp-button:hover:not([disabled]) { background-color: #f3f4f6 !important; color: #10b981 !important; }
+  .peluqueria-calendar .rdp-selected, .peluqueria-calendar .rdp-day_selected, .peluqueria-calendar .rdp-day_selected:hover, .peluqueria-calendar .rdp-day_selected:focus {
       background-color: transparent !important;
   }
-  .rdp-panel-peluqueria button.rdp-day_selected, .rdp-panel-peluqueria button.rdp-selected, .rdp-panel-peluqueria .rdp-selected .rdp-button, .rdp-panel-peluqueria .rdp-selected .rdp-day_button { 
+  .peluqueria-calendar button.rdp-day_selected, .peluqueria-calendar button.rdp-selected, .peluqueria-calendar .rdp-selected .rdp-button, .peluqueria-calendar .rdp-selected .rdp-day_button,
+  div.peluqueria-calendar button.rdp-day_selected, div.peluqueria-calendar .rdp-day_selected { 
       color: #000000 !important; font-weight: bold !important; border: 2px solid #10b981 !important; 
   }
-  .rdp-panel-peluqueria button.rdp-day_today:not(.rdp-day_selected), .rdp-panel-peluqueria button.rdp-today:not(.rdp-day_selected), .rdp-panel-peluqueria .rdp-today:not(.rdp-selected) .rdp-button, .rdp-panel-peluqueria .rdp-today:not(.rdp-selected) .rdp-day_button { 
+  .peluqueria-calendar button.rdp-day_today:not(.rdp-day_selected), .peluqueria-calendar button.rdp-today:not(.rdp-day_selected), .peluqueria-calendar .rdp-today:not(.rdp-selected) .rdp-button, .peluqueria-calendar .rdp-today:not(.rdp-selected) .rdp-day_button,
+  div.peluqueria-calendar button.rdp-day_today:not(.rdp-day_selected) { 
       color: #10b981 !important; font-weight: bold !important; 
   }
-  .rdp-panel-peluqueria .rdp-nav_button, .rdp-panel-peluqueria .rdp-nav_icon, .rdp-panel-peluqueria .rdp-chevron,
-  .rdp-panel-peluqueria svg.rdp-nav_icon { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
-  .rdp-panel-peluqueria .rdp-dropdown { background-color: transparent !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1) !important; }
-  .rdp-panel-peluqueria .rdp-dropdown option { background-color: #fff !important; color: #000 !important; }
-  .rdp-panel-peluqueria .rdp-head_cell { color: #10b981 !important; }
-  .rdp-panel-peluqueria .rdp-day:not(.rdp-day_disabled) { color: #000000 !important; }
-  .rdp-panel-peluqueria .rdp-day_disabled { color: #a1a1aa !important; }
+  .peluqueria-calendar .rdp-nav_button, .peluqueria-calendar .rdp-nav_icon, .peluqueria-calendar .rdp-chevron,
+  .peluqueria-calendar svg.rdp-nav_icon, div.peluqueria-calendar .rdp-nav_icon { color: #10b981 !important; fill: #10b981 !important; stroke: #10b981 !important; }
+  .peluqueria-calendar .rdp-dropdown { background-color: transparent !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1) !important; }
+  .peluqueria-calendar .rdp-dropdown option { background-color: #fff !important; color: #000 !important; }
+  .peluqueria-calendar .rdp-head_cell { color: #10b981 !important; }
+  .peluqueria-calendar .rdp-day:not(.rdp-day_disabled) { color: #000000 !important; }
+  .peluqueria-calendar .rdp-day_disabled { color: #a1a1aa !important; }
 `;
 
 function cn(...inputs: (string | undefined | null | false)[]) {
@@ -509,7 +511,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                 <div className={cn(
                     "p-3 rounded-2xl border flex justify-center mb-3 overflow-hidden transition-colors duration-300",
                     formData.tipo_servicio === 'peluqueria_infantil' 
-                        ? "bg-white border-emerald-100 rdp-panel-peluqueria" 
+                        ? "bg-white border-emerald-100 peluqueria-calendar" 
                         : "bg-carbon/50 border-white/10 rdp-panel-barberia"
                 )}>
                     <DayPicker
@@ -809,7 +811,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                 exit={{ opacity: 0, y: 10 }}
                                                 className={cn(
                                                     "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:top-full sm:left-0 sm:right-auto sm:translate-x-0 sm:translate-y-0 sm:mt-2 border border-white/10 rounded-2xl p-3 z-50 shadow-2xl",
-                                                    localFilters.service_type === 'peluqueria_infantil' ? "bg-white border-emerald-100 rdp-panel-peluqueria" : "bg-[#161616] rdp-panel-barberia"
+                                                    localFilters.service_type === 'peluqueria_infantil' ? "bg-white border-emerald-100 peluqueria-calendar" : "bg-[#161616] rdp-panel-barberia"
                                                 )}
                                             >
                                                 <DayPicker
