@@ -106,7 +106,8 @@ export default function Local({ localMedia, user }: any) {
         fd.append('caption', mediaCaption);
         if (editMediaId) fd.append('id', editMediaId.toString());
 
-        const targetUrl = editMediaId ? `/panel/tienda/local/${editMediaId}` : '/panel/tienda/local';
+        const query = shopType ? `?shop=${shopType}` : '';
+        const targetUrl = editMediaId ? `/panel/tienda/local/${editMediaId}${query}` : `/panel/tienda/local${query}`;
 
         router.post(targetUrl, fd as any, {
             onSuccess: () => setMediaModal(false),
@@ -116,7 +117,8 @@ export default function Local({ localMedia, user }: any) {
 
     const deleteMedia = () => {
         if (deleteConfirmId) {
-            router.delete(`/panel/tienda/local/${deleteConfirmId}`, {
+            const query = shopType ? `?shop=${shopType}` : '';
+            router.delete(`/panel/tienda/local/${deleteConfirmId}${query}`, {
                 onSuccess: () => setDeleteConfirmId(null)
             });
         }

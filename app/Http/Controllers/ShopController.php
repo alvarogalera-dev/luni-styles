@@ -18,7 +18,7 @@ class ShopController extends Controller
     // SHOP PAGE (Services, Products, Local)
     // ─────────────────────────────────────
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $shopType = $this->getShopType($user);
@@ -53,7 +53,7 @@ class ShopController extends Controller
         ]);
     }
 
-    public function local()
+    public function local(Request $request)
     {
         $user = Auth::user();
         $shopType = $this->getShopType($user);
@@ -437,6 +437,9 @@ class ShopController extends Controller
     {
         if ($user->role === 'barber') return 'barberia';
         if ($user->role === 'hairdresser') return 'peluqueria_infantil';
+        if ($user->role === 'superadmin' && request()->query('shop')) {
+            return request()->query('shop');
+        }
         return 'barberia'; // superadmin default
     }
 

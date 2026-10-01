@@ -253,9 +253,10 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
         Object.entries(serviceForm).forEach(([k, v]) => { if (v !== '') fd.append(k, String(v)); });
         if (servicePhoto) fd.append('photo', servicePhoto);
 
+        const query = shopType ? `?shop=${shopType}` : '';
         const url = serviceModal?.mode === 'edit'
-            ? `/panel/tienda/servicios/${serviceModal.item.id}`
-            : '/panel/tienda/servicios';
+            ? `/panel/tienda/servicios/${serviceModal.item.id}${query}`
+            : `/panel/tienda/servicios${query}`;
 
         router.post(url, fd as any, {
             preserveScroll: true,
@@ -267,7 +268,8 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
 
     const deleteService = (id: number) => {
         if (!confirm('¿Eliminar este servicio?')) return;
-        router.delete(`/panel/tienda/servicios/${id}`, { preserveScroll: true });
+        const query = shopType ? `?shop=${shopType}` : '';
+        router.delete(`/panel/tienda/servicios/${id}${query}`, { preserveScroll: true });
     };
 
     // ── Products ──────────────────────────────────────────────────────────────
@@ -298,9 +300,10 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
         Object.entries(productForm).forEach(([k, v]) => { if (v !== '') fd.append(k, String(v)); });
         if (productPhoto) fd.append('photo', productPhoto);
 
+        const query = shopType ? `?shop=${shopType}` : '';
         const url = productModal?.mode === 'edit'
-            ? `/panel/tienda/productos/${productModal.item.id}`
-            : '/panel/tienda/productos';
+            ? `/panel/tienda/productos/${productModal.item.id}${query}`
+            : `/panel/tienda/productos${query}`;
 
         router.post(url, fd as any, {
             preserveScroll: true,
@@ -312,7 +315,8 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
 
     const deleteProduct = (id: number) => {
         if (!confirm('¿Eliminar este producto?')) return;
-        router.delete(`/panel/tienda/productos/${id}`, { preserveScroll: true });
+        const query = shopType ? `?shop=${shopType}` : '';
+        router.delete(`/panel/tienda/productos/${id}${query}`, { preserveScroll: true });
     };
 
     // ── Catalog ──────────────────────────────────────────────────────────────
@@ -340,7 +344,8 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
         if (catalogPhotoUrl) fd.append('photo_url', catalogPhotoUrl);
         if (catalogFile) fd.append('photo', catalogFile);
 
-        const url = catalogModal?.mode === 'edit' ? `/panel/tienda/catalogo/${catalogModal.item.id}` : '/panel/tienda/catalogo';
+        const query = shopType ? `?shop=${shopType}` : '';
+        const url = catalogModal?.mode === 'edit' ? `/panel/tienda/catalogo/${catalogModal.item.id}${query}` : `/panel/tienda/catalogo${query}`;
         router.post(url, fd as any, {
             onSuccess: () => setCatalogModal(null),
             onFinish: () => setIsSubmitting(false),
@@ -348,7 +353,8 @@ export default function Shop({ services, products, catalogPhotos, shopType, user
     };
 
     const deleteCatalog = (id: number) => {
-        if (confirm('¿Eliminar foto del catálogo?')) router.delete(`/panel/tienda/catalogo/${id}`);
+        const query = shopType ? `?shop=${shopType}` : '';
+        if (confirm('¿Eliminar foto del catálogo?')) router.delete(`/panel/tienda/catalogo/${id}${query}`);
     };
 
     // ── Helper: File Input ────────────────────────────────────────────────────
