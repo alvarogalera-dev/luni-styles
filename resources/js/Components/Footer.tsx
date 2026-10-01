@@ -162,8 +162,10 @@ export default function Footer() {
                 <p className="text-steel text-sm leading-relaxed">
                   Lun – Vie: <span className="text-bone/80 font-medium">16:00 – 21:00</span>
                 </p>
-                <p className="text-steel/50 text-xs mt-0.5">Sábado: 10:00 - 12:00 | 16:00 - 21:00</p>
-                <p className="text-steel/50 text-xs mt-0.5">Domingo: Cerrado</p>
+                <p className="text-steel text-sm leading-relaxed mt-1">
+                  Sábado: <span className="text-bone/80 font-medium">10:00 – 12:00 | 16:00 – 21:00</span>
+                </p>
+                <p className="text-steel/50 text-xs mt-1">Domingo: Cerrado</p>
               </li>
             </ul>
           </div>
