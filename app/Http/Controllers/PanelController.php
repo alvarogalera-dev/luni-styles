@@ -360,7 +360,7 @@ class PanelController extends Controller
         if ($user->role === 'barber' && $appointment->service_type !== 'barberia') {
             abort(403, 'No autorizado.');
         }
-        if ($user->role === 'hairdresser' && $appointment->service_type !== 'peluqueria_infantil') {
+        if ($user->role === 'hairdresser' && !in_array($appointment->service_type, ['peluqueria_infantil', 'infantil'])) {
             abort(403, 'No autorizado.');
         }
     }

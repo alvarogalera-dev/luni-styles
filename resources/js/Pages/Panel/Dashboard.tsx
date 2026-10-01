@@ -309,6 +309,10 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
 
     // Auto-precio cuando cambia servicio
     useEffect(() => {
+        if (selectedAppt && formData.servicio === selectedAppt.servicio && formData.tipo_servicio === (selectedAppt.tipo_servicio === 'infantil' ? 'peluqueria_infantil' : selectedAppt.tipo_servicio)) {
+            // En modo edición, si no ha cambiado el servicio original, no sobrescribimos el precio
+            return;
+        }
         const found = currentServices.find(s => s.name === formData.servicio);
         if (found) {
             if (formData.tipo_servicio === 'peluqueria_infantil') {
@@ -319,7 +323,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                 setFormData((p: any) => ({ ...p, precio: found.price }));
             }
         }
-    }, [formData.servicio, formData.tipo_servicio, loyaltyData]);
+    }, [formData.servicio, formData.tipo_servicio, loyaltyData, selectedAppt]);
 
     return (
         <div className="space-y-5">
@@ -525,7 +529,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     <DayPicker
                         mode="single"
                         selected={formData.fecha}
-                        onSelect={(d) => setFormData((p: any) => ({...p, fecha: d, hora: null}))}
+                        onSelect={(d) => { if (d) setFormData((p: any) => ({...p, fecha: d, hora: null})); }}
                         locale={esCapitalized}
                         captionLayout="dropdown-buttons"
                         fromYear={2026}
@@ -539,8 +543,8 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     servicio={formData.servicio}
                     tipo_servicio={formData.tipo_servicio}
                     value={formData.hora}
-                    onChange={(t: string) => setFormData((p: any) => ({...p, hora: t, empleado_id: null}))}
-                    existingHora={appointment_id && selectedAppt && format(new Date(selectedAppt.fecha), 'yyyy-MM-dd') === format(formData.fecha, 'yyyy-MM-dd') ? selectedAppt.hora : null}
+                    onChange={(t: string) => setFormData((p: any) => ({...p, hora: t, empleado_id: p.tipo_servicio === 'peluqueria_infantil' ? 3 : null}))}
+                    existingHora={appointment_id && selectedAppt && formData.fecha && format(new Date(selectedAppt.fecha), 'yyyy-MM-dd') === format(formData.fecha, 'yyyy-MM-dd') ? selectedAppt.hora : null}
                     dbServices={dbServices}
                 />
                 {formData.tipo_servicio === 'barberia' && (
