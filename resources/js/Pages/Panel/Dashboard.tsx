@@ -811,7 +811,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                 exit={{ opacity: 0, y: 10 }}
                                                 className={cn(
                                                     "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:top-full sm:left-0 sm:right-auto sm:translate-x-0 sm:translate-y-0 sm:mt-2 border border-white/10 rounded-2xl p-3 z-50 shadow-2xl",
-                                                    localFilters.service_type === 'peluqueria_infantil' ? "bg-white border-emerald-100 peluqueria-calendar" : "bg-[#161616] rdp-panel-barberia"
+                                                    (localFilters.service_type === 'peluqueria_infantil' || user.role === 'hairdresser') ? "bg-white border-emerald-100 peluqueria-calendar" : "bg-[#161616] rdp-panel-barberia"
                                                 )}
                                             >
                                                 <DayPicker
@@ -827,7 +827,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                     toYear={2035}
                                                     className={cn(
                                                         "text-sm font-medium",
-                                                        localFilters.service_type === 'peluqueria_infantil' ? "text-black" : "text-bone"
+                                                        (localFilters.service_type === 'peluqueria_infantil' || user.role === 'hairdresser') ? "text-black" : "text-bone"
                                                     )}
                                                 />
                                             </motion.div>
