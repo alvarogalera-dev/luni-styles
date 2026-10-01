@@ -604,28 +604,64 @@ class PanelController extends Controller
         if ($user->role === 'barber') $type = 'barberia';
         if ($user->role === 'hairdresser') $type = 'peluqueria_infantil';
 
-        $query = Client::where('penalty_flag', true);
-        if ($type !== 'general') {
-            $query->whereHas('appointments', fn($q) => $q->where('service_type', $type));
+        // 1. Encontrar clientes que tengan al menos un no-show en este local
+        $clientsWithNoShows = Client::whereHas('appointments', function($q) use ($type) {
+            $q->where('status', 'no-show');
+            if ($type !== 'general') {
+                if ($type === 'peluqueria_infantil') {
+                    $q->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+                } else {
+                    $q->where('service_type', $type);
+                }
+            }
+        })->with(['appointments' => function($q) use ($type) {
+            $q->whereIn('status', ['completed', 'no-show'])
+              ->orderBy('appointment_date', 'desc');
+            if ($type !== 'general') {
+                if ($type === 'peluqueria_infantil') {
+                    $q->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+                } else {
+                    $q->where('service_type', $type);
+                }
+            }
+        }])->get();
+
+        $penalizados = [];
+
+        foreach ($clientsWithNoShows as $c) {
+            $isPenalized = false;
+            $consecutiveAttendances = 0;
+            $consecutiveMisses = 0;
+
+            foreach ($c->appointments as $appt) {
+                if ($appt->status === 'no-show') {
+                    $isPenalized = true;
+                    $consecutiveMisses++;
+                    break;
+                } else if ($appt->status === 'completed') {
+                    $consecutiveAttendances++;
+                    if ($consecutiveAttendances >= 2) {
+                        break;
+                    }
+                }
+            }
+
+            if ($isPenalized) {
+                $penalizados[] = [
+                    'id'                  => $c->id,
+                    'nombre'              => $c->name . ' ' . $c->surname,
+                    'email'               => $c->email,
+                    'telefono'            => $c->phone,
+                    'total_citas'         => $c->appointments->count(),
+                    'citas_completadas'   => $c->appointments->where('status', 'completed')->count(),
+                    'citas_no_show'       => $c->appointments->where('status', 'no-show')->count(),
+                    'missed_appointments' => $c->missed_appointments ?? 0,
+                    'loyalty_points'      => $c->loyalty_points ?? 0,
+                    'consecutive_misses'  => $consecutiveMisses,
+                ];
+            }
         }
 
-        $penalizados = $query->withCount([
-            'appointments as total_citas',
-            'appointments as citas_completadas' => fn($q) => $q->where('status', 'completed'),
-            'appointments as citas_no_show'     => fn($q) => $q->where('status', 'no-show'),
-        ])->get()->map(fn($c) => [
-            'id'                  => $c->id,
-            'nombre'              => $c->name . ' ' . $c->surname,
-            'email'               => $c->email,
-            'telefono'            => $c->phone,
-            'total_citas'         => $c->total_citas,
-            'citas_completadas'   => $c->citas_completadas,
-            'citas_no_show'       => $c->citas_no_show,
-            'missed_appointments' => $c->missed_appointments ?? 0,
-            'loyalty_points'      => $c->loyalty_points ?? 0,
-            'consecutive_misses'  => $c->consecutive_misses ?? 0,
-        ]);
-
-        return response()->json(['penalizados' => $penalizados]);
+        return response()->json(['penalizados' => collect($penalizados)->values()]);
     }
 }

@@ -252,7 +252,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': csrfToken || ''
           },
-          body: JSON.stringify({ email: contactData.email })
+          body: JSON.stringify({ email: contactData.email, service_type: serviceType })
         });
         const data = await res.json();
         setLoyaltyData(data);

@@ -291,7 +291,8 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                     phone: formData.telefono ? formData.telefono.replace(/\D/g, '') : '',
                     email: formData.email || '',
                     nombre: formData.nombre || '',
-                    apellidos: formData.apellidos || ''
+                    apellidos: formData.apellidos || '',
+                    service_type: formData.tipo_servicio
                 })
             })
             .then(res => res.json())

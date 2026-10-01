@@ -174,16 +174,54 @@ class BookingController extends Controller
         }
     }
 
+    private function isClientPenalized($client, $serviceType)
+    {
+        if (!$client || !$serviceType) return false;
+        
+        $appointments = $client->appointments()
+            ->whereIn('status', ['completed', 'no-show'])
+            ->where(function($q) use ($serviceType) {
+                if ($serviceType === 'peluqueria_infantil') {
+                    $q->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+                } else {
+                    $q->where('service_type', $serviceType);
+                }
+            })
+            ->orderBy('appointment_date', 'desc')
+            ->get();
+
+        $isPenalized = false;
+        $consecutiveAttendances = 0;
+
+        foreach ($appointments as $appt) {
+            if ($appt->status === 'no-show') {
+                $isPenalized = true;
+                break;
+            } else if ($appt->status === 'completed') {
+                $consecutiveAttendances++;
+                if ($consecutiveAttendances >= 2) {
+                    break;
+                }
+            }
+        }
+        return $isPenalized;
+    }
+
     public function checkLoyalty(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate([
+            'email' => 'required|email',
+            'service_type' => 'nullable|string'
+        ]);
+        
         $client = Client::where('email', $request->email)->first();
 
         if ($client) {
+            $isPenalized = $this->isClientPenalized($client, $request->service_type);
             return response()->json([
                 'exists' => true,
                 'loyalty_points' => $client->loyalty_points,
-                'penalty_flag' => $client->penalty_flag,
+                'penalty_flag' => $isPenalized,
             ]);
         }
 
@@ -238,10 +276,11 @@ class BookingController extends Controller
         }
 
         if ($client) {
+            $isPenalized = $this->isClientPenalized($client, $request->service_type);
             return response()->json([
                 'exists' => true,
                 'loyalty_points' => $client->loyalty_points,
-                'penalty_flag' => $client->penalty_flag,
+                'penalty_flag' => $isPenalized,
             ]);
         }
 
