@@ -85,25 +85,19 @@ const esCapitalized = {
 const getAvailableTimeSlots = (date: Date | undefined, tipo_servicio?: string) => {
     if (!date) return [];
     const dayOfWeek = date.getDay(); // 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
-    if (tipo_servicio === 'peluqueria_infantil') {
-        // Peluquería Infantil:
-        // Lun(1) y Mié(3): 16:00-19:00
-        // Mar(2), Jue(4), Vie(5): 16:00-20:00
-        // Sab(6): 10:00-12:00 y 16:00-20:00
-        if (dayOfWeek === 6) { // Sábado
-            return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
-        } else if (dayOfWeek === 1 || dayOfWeek === 3) { // Lunes y Miércoles
-            return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
-        } else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) { // Mar, Jue, Vie
-            return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
-        }
-        return [];
+
+    // Horario unificado:
+    // Lun(1) y Mié(3): 16:00-19:00
+    // Mar(2), Jue(4), Vie(5): 16:00-20:00
+    // Sab(6): 10:00-12:00 y 16:00-20:00
+    if (dayOfWeek === 6) { // Sábado
+        return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+    } else if (dayOfWeek === 1 || dayOfWeek === 3) { // Lunes y Miércoles
+        return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
+    } else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) { // Mar, Jue, Vie
+        return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
     }
-    // Barbería: L-V 16:00-21:00, Sab 10:00-12:00 y 16:00-21:00
-    if (dayOfWeek === 6) {
-        return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
-    }
-    return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+    return [];
 };
 const EMPLOYEE_NAMES: Record<number, string> = {
     1: 'Luis (Barbero)', 2: 'Carlos (Barbero)', 3: 'Mariely (Infantil)'
@@ -1225,7 +1219,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                         {selectedAppt.estado === 'pending' && (
                                             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
                                                 <button
-                                                    onClick={() => doConfirm('completed', selectedAppt.id, '¿Marcar como Terminada?', 'Se actualizará el estado y se sumará al historial del cliente.', 'emerald', selectedAppt.tipo_servicio === 'peluqueria_infantil')}
+                                                    onClick={() => doConfirm('completed', selectedAppt.id, '¿Marcar como Terminada?', 'Se actualizará el estado y se sumará al historial del cliente.', 'emerald', ['peluqueria_infantil', 'infantil'].includes(selectedAppt.service_type) || ['peluqueria_infantil', 'infantil'].includes(selectedAppt.tipo_servicio))}
                                                     className="flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/10 text-emerald-400 font-bold hover:bg-emerald-500 hover:text-white transition-all text-sm">
                                                     <CheckCircle2 className="w-5 h-5" /> Terminada
                                                 </button>

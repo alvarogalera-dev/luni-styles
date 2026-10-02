@@ -312,19 +312,17 @@ export default function Statistics({ stats, user }: any) {
                 </div>
 
                 {/* ── INGRESOS ── */}
-                {isBarber && (
-                    <div className="mb-8">
-                        <p className="text-[10px] uppercase tracking-widest text-steel/60 font-bold mb-3 flex items-center gap-2">
-                            <TrendingUp className="w-3.5 h-3.5" /> Ingresos (€)
-                        </p>
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                            <StatCard title="Hoy" value={`${stats?.ingresos?.hoy ?? 0}€`} icon={TrendingUp} color="amber" />
-                            <StatCard title="Esta semana" value={`${stats?.ingresos?.semana ?? 0}€`} icon={TrendingUp} color="amber" />
-                            <StatCard title="Este mes" value={`${stats?.ingresos?.mes ?? 0}€`} icon={TrendingUp} color="amber" />
-                            <StatCard title="Este año" value={`${stats?.ingresos?.ano ?? 0}€`} icon={TrendingUp} color="amber" />
-                        </div>
+                <div className="mb-8">
+                    <p className="text-[10px] uppercase tracking-widest text-steel/60 font-bold mb-3 flex items-center gap-2">
+                        <TrendingUp className="w-3.5 h-3.5" /> Ingresos (€)
+                    </p>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <StatCard title="Hoy" value={`${stats?.ingresos?.hoy ?? 0}€`} icon={TrendingUp} color={accentColor} />
+                        <StatCard title="Esta semana" value={`${stats?.ingresos?.semana ?? 0}€`} icon={TrendingUp} color={accentColor} />
+                        <StatCard title="Este mes" value={`${stats?.ingresos?.mes ?? 0}€`} icon={TrendingUp} color={accentColor} />
+                        <StatCard title="Este año" value={`${stats?.ingresos?.ano ?? 0}€`} icon={TrendingUp} color={accentColor} />
                     </div>
-                )}
+                </div>
 
                 {/* ── PENALIZADOS ── */}
                 <div className="mb-8">

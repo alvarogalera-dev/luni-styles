@@ -158,26 +158,17 @@ export default function Footer() {
                 </a>
               </li>
               <li className="pt-2">
-                <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block mb-1">Horario Barbería</span>
-                <p className="text-steel text-sm leading-relaxed">
-                  Lun – Vie: <span className="text-bone/80 font-medium">16:00 – 21:00</span>
-                </p>
-                <p className="text-steel text-sm leading-relaxed mt-0.5">
-                  Sábado: <span className="text-bone/80 font-medium">10:00 – 12:00 | 16:00 – 21:00</span>
-                </p>
-              </li>
-              <li className="pt-1">
-                <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-1">Horario Peluquería Infantil</span>
+                <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block mb-2">Horario</span>
                 <p className="text-steel text-sm leading-relaxed">
                   Lun y Mié: <span className="text-bone/80 font-medium">16:00 – 19:00</span>
                 </p>
-                <p className="text-steel text-sm leading-relaxed mt-0.5">
+                <p className="text-steel text-sm leading-relaxed mt-1">
                   Mar, Jue y Vie: <span className="text-bone/80 font-medium">16:00 – 20:00</span>
                 </p>
-                <p className="text-steel text-sm leading-relaxed mt-0.5">
+                <p className="text-steel text-sm leading-relaxed mt-1">
                   Sábado: <span className="text-bone/80 font-medium">10:00 – 12:00 | 16:00 – 20:00</span>
                 </p>
-                <p className="text-steel/50 text-xs mt-1">Domingo: Cerrado</p>
+                <p className="text-steel/50 text-xs mt-2">Domingo: Cerrado</p>
               </li>
             </ul>
           </div>
