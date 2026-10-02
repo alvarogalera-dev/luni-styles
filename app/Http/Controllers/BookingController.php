@@ -303,16 +303,29 @@ class BookingController extends Controller
         $serviceType = $request->service_type;
         $duration = (int) $request->duration;
 
-        $isSaturday = \Carbon\Carbon::parse($date)->dayOfWeek === \Carbon\Carbon::SATURDAY;
-        if ($isSaturday) {
-            $slots = [
-                '10:00', '10:30', '11:00', '11:30',
-                '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
-            ];
+        $dayOfWeek = \Carbon\Carbon::parse($date)->dayOfWeek; // 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+
+        if ($serviceType === 'peluqueria_infantil' || $serviceType === 'infantil') {
+            // Peluquería Infantil:
+            // Lun(1) y Mié(3): 16:00-19:00
+            // Mar(2), Jue(4), Vie(5): 16:00-20:00
+            // Sab(6): 10:00-12:00 y 16:00-20:00
+            if ($dayOfWeek === 6) { // Sábado
+                $slots = ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+            } elseif ($dayOfWeek === 1 || $dayOfWeek === 3) { // Lunes y Miércoles
+                $slots = ['16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
+            } elseif ($dayOfWeek === 2 || $dayOfWeek === 4 || $dayOfWeek === 5) { // Mar, Jue, Vie
+                $slots = ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+            } else { // Domingo u otro día cerrado
+                $slots = [];
+            }
         } else {
-            $slots = [
-                '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'
-            ];
+            // Barbería: L-V 16:00-21:00, Sáb 10:00-12:00 y 16:00-21:00
+            if ($dayOfWeek === 6) {
+                $slots = ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+            } else {
+                $slots = ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+            }
         }
 
         $availableSlots = [];

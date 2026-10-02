@@ -82,9 +82,25 @@ const esCapitalized = {
 };
 
 // Servicies are now dynamic from DB
-const getAvailableTimeSlots = (date: Date | undefined) => {
+const getAvailableTimeSlots = (date: Date | undefined, tipo_servicio?: string) => {
     if (!date) return [];
-    if (date.getDay() === 6) {
+    const dayOfWeek = date.getDay(); // 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+    if (tipo_servicio === 'peluqueria_infantil') {
+        // Peluquería Infantil:
+        // Lun(1) y Mié(3): 16:00-19:00
+        // Mar(2), Jue(4), Vie(5): 16:00-20:00
+        // Sab(6): 10:00-12:00 y 16:00-20:00
+        if (dayOfWeek === 6) { // Sábado
+            return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+        } else if (dayOfWeek === 1 || dayOfWeek === 3) { // Lunes y Miércoles
+            return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
+        } else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) { // Mar, Jue, Vie
+            return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+        }
+        return [];
+    }
+    // Barbería: L-V 16:00-21:00, Sab 10:00-12:00 y 16:00-21:00
+    if (dayOfWeek === 6) {
         return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
     }
     return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
@@ -154,7 +170,7 @@ function SlotPicker({ fecha, servicio, tipo_servicio, value, onChange, existingH
                 </div>
             ) : (
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {getAvailableTimeSlots(fecha).map((t) => {
+                    {getAvailableTimeSlots(fecha, tipo_servicio).map((t) => {
                         const isAvailable = slots.includes(t);
                         return (
                             <button type="button" key={t}
@@ -584,8 +600,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 // ─── CONFIRM MINI-MODAL ───
-function ConfirmModal({ data, onCancel, onConfirm }: any) {
-    const [price, setPrice] = useState('');
+function ConfirmModal({ data, onCancel, onConfirm, price, onPriceChange }: any) {
     if (!data) return null;
     const colors: Record<string, string> = {
         emerald: 'bg-emerald-500', amber: 'bg-amber-400', red: 'bg-red-500'
@@ -616,8 +631,9 @@ function ConfirmModal({ data, onCancel, onConfirm }: any) {
                             <input type="text"
                                 className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-emerald-400"
                                 placeholder="Ej. 10€"
-                                value={price}
-                                onChange={e => setPrice(e.target.value)}
+                                value={price || ''}
+                                onChange={e => onPriceChange(e.target.value)}
+                                autoFocus
                             />
                         </div>
                     )}
@@ -643,6 +659,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     const [showFilters, setShowFilters] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [confirmModal, setConfirmModal] = useState<any>(null);
+    const [confirmPrice, setConfirmPrice] = useState('');
 
     const todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -752,6 +769,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     };
 
     const doConfirm = (action: string, id: number, title: string, text: string, color: string, needsPrice: boolean = false) => {
+        setConfirmPrice('');
         setConfirmModal({ action, id, title, text, color, needsPrice });
     };
 
@@ -1275,6 +1293,8 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                         data={confirmModal}
                         onCancel={() => setConfirmModal(null)}
                         onConfirm={executeConfirm}
+                        price={confirmPrice}
+                        onPriceChange={setConfirmPrice}
                     />
                 )}
             </AnimatePresence>

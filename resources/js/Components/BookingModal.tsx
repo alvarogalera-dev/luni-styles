@@ -104,9 +104,25 @@ const COUNTRY_CODES = [
   { code: 'Otro', iso: 'other', maxLength: 15, isOther: true },
 ];
 
-const getAvailableTimeSlots = (date: Date | undefined) => {
+const getAvailableTimeSlots = (date: Date | undefined, tipo?: string) => {
   if (!date) return [];
-  if (date.getDay() === 6) {
+  const dayOfWeek = date.getDay(); // 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+  if (tipo === 'infantil') {
+    // Peluquería Infantil:
+    // Lun(1) y Mié(3): 16:00-19:00
+    // Mar(2), Jue(4), Vie(5): 16:00-20:00
+    // Sab(6): 10:00-12:00 y 16:00-20:00
+    if (dayOfWeek === 6) {
+      return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+    } else if (dayOfWeek === 1 || dayOfWeek === 3) {
+      return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
+    } else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) {
+      return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+    }
+    return [];
+  }
+  // Barbería: L-V 16:00-21:00, Sáb 10:00-12:00 y 16:00-21:00
+  if (dayOfWeek === 6) {
     return ['10:00', '10:30', '11:00', '11:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
   }
   return ['16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
@@ -575,7 +591,7 @@ export default function BookingModal({ isOpen, onClose, initialServiceType }: Bo
                                 </div>
                               ) : (
                                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                                  {getAvailableTimeSlots(date).map((t) => {
+                                  {getAvailableTimeSlots(date, serviceType ?? undefined).map((t) => {
                                     const isAvailable = availableSlots.includes(t);
                                     return (
                                       <button

@@ -469,14 +469,43 @@ class PanelController extends Controller
                 ];
             });
 
-        // 5. Clientes penalizados (datos resumidos para el badge)
-        $clientesPenalizadosQuery = Client::where('penalty_flag', true);
-        if ($serviceTypeFilter) {
-            $clientesPenalizadosQuery->whereHas('appointments', function ($q) use ($serviceTypeFilter) {
-                $q->where('service_type', $serviceTypeFilter);
-            });
+        // 5. Clientes penalizados (cálculo dinámico por local, igual que el endpoint de detalle)
+        $clientesPenalizados = 0;
+        $clientsWithNoShows = Client::whereHas('appointments', function($q) use ($serviceTypeFilter) {
+            $q->where('status', 'no-show');
+            if ($serviceTypeFilter) {
+                if ($serviceTypeFilter === 'peluqueria_infantil') {
+                    $q->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+                } else {
+                    $q->where('service_type', $serviceTypeFilter);
+                }
+            }
+        })->with(['appointments' => function($q) use ($serviceTypeFilter) {
+            $q->whereIn('status', ['completed', 'no-show'])
+              ->orderBy('appointment_date', 'desc');
+            if ($serviceTypeFilter) {
+                if ($serviceTypeFilter === 'peluqueria_infantil') {
+                    $q->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+                } else {
+                    $q->where('service_type', $serviceTypeFilter);
+                }
+            }
+        }])->get();
+
+        foreach ($clientsWithNoShows as $c) {
+            $consecutiveAttendances = 0;
+            $isPenalized = false;
+            foreach ($c->appointments as $appt) {
+                if ($appt->status === 'no-show') {
+                    $isPenalized = true;
+                    break;
+                } else if ($appt->status === 'completed') {
+                    $consecutiveAttendances++;
+                    if ($consecutiveAttendances >= 2) break;
+                }
+            }
+            if ($isPenalized) $clientesPenalizados++;
         }
-        $clientesPenalizados = $clientesPenalizadosQuery->count();
 
         // 6. Tasa de asistencia (de todos los tiempos)
         $totalCitas       = (clone $allQuery)->count();
