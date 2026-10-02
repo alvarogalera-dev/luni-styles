@@ -50,7 +50,7 @@ export default function PoliticaPrivacidad({ meta }: Props) {
                 <li><strong>Correo electrónico:</strong> contacto@lunistyles.com</li>
                 <li><strong>Teléfono Barbería:</strong> +34 623 59 98 90</li>
                 <li><strong>Teléfono Peluquería Infantil:</strong> +34 675 37 28 13</li>
-                <li><strong>Web:</strong> https://luni-styles-production.up.railway.app</li>
+                <li><strong>Web:</strong> https://lunistyles.com</li>
               </ul>
             </Section>
 

@@ -49,7 +49,7 @@ export default function AvisoLegal({ meta }: Props) {
                 <li><strong>Teléfono Peluquería Infantil:</strong> +34 675 37 28 13</li>
                 <li><strong>Instagram:</strong> @luni_styles</li>
                 <li><strong>TikTok:</strong> @luni_styles</li>
-                <li><strong>Web:</strong> https://luni-styles-production.up.railway.app</li>
+                <li><strong>Web:</strong> https://lunistyles.com</li>
               </ul>
             </Section>
 
