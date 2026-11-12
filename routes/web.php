@@ -31,6 +31,8 @@ Route::post('/api/available-slots', [BookingController::class, 'getAvailableSlot
 // API para disponibilidad de barberos por hora (tiempo real en BookingModal)
 Route::post('/api/barbers-availability', [BookingController::class, 'getBarbersAvailability'])->name('api.barbers-availability');
 Route::post('/api/contact', [ContactController::class, 'send'])->name('api.contact.send');
+// API client lookup (autorelleno panel)
+Route::post('/api/client-lookup', [BookingController::class, 'clientLookup'])->name('api.client-lookup');
 
 // Webhook para despliegues
 use App\Http\Controllers\WebhookController;
@@ -83,4 +85,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/panel/tienda/catalogo', [ShopController::class, 'storeCatalogPhoto'])->name('panel.tienda.catalogo.store');
     Route::post('/panel/tienda/catalogo/{id}', [ShopController::class, 'updateCatalogPhoto'])->name('panel.tienda.catalogo.update');
     Route::delete('/panel/tienda/catalogo/{id}', [ShopController::class, 'destroyCatalogPhoto'])->name('panel.tienda.catalogo.destroy');
+
+    // Barber Blocks
+    Route::get('/panel/api/barber-blocks', [BookingController::class, 'getBarberBlocks'])->name('panel.barber-blocks.index');
+    Route::post('/panel/api/barber-blocks', [BookingController::class, 'createBarberBlock'])->name('panel.barber-blocks.store');
+    Route::post('/panel/api/check-barber-conflicts', [BookingController::class, 'checkBarberConflicts'])->name('panel.barber-blocks.check');
+    Route::delete('/panel/api/barber-blocks/{id}', [BookingController::class, 'deleteBarberBlock'])->name('panel.barber-blocks.destroy');
 });

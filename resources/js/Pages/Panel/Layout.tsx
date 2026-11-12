@@ -9,12 +9,14 @@ interface Props {
     user: {
         name: string;
         role: string;
+        is_luis?: boolean;
     };
 }
 
 export default function PanelLayout({ children, title, user }: Props) {
     const { url } = usePage();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const isSuperOrLuis = user.role === 'superadmin' || user.is_luis;
 
     const handleLogout = () => {
         router.post('/panel/logout');
@@ -30,6 +32,7 @@ export default function PanelLayout({ children, title, user }: Props) {
     }, [isSidebarOpen]);
 
     const getRoleLabel = (role: string) => {
+        if (user.is_luis) return 'BARBERÍA (ACCESO TOTAL)';
         if (role === 'superadmin') return 'MIXTO';
         if (role === 'barber') return 'BARBERÍA';
         if (role === 'hairdresser') return 'PELUQUERÍA INFANTIL';
@@ -59,7 +62,7 @@ export default function PanelLayout({ children, title, user }: Props) {
             </Link>
             
             {/* ESTADÍSTICAS */}
-            {user.role === 'superadmin' ? (
+            {isSuperOrLuis ? (
                 <>
                     {/* SECCIÓN BARBERÍA */}
                     <div className="pt-4 mt-2 border-t border-white/5">
@@ -151,8 +154,8 @@ export default function PanelLayout({ children, title, user }: Props) {
                 </Link>
             )}
 
-            {/* PRODUCTOS Y SERVICIOS (solo barber/hairdresser) */}
-            {user.role !== 'superadmin' && (
+            {/* PRODUCTOS Y SERVICIOS (solo barber/hairdresser estándar) */}
+            {!isSuperOrLuis && (
                 <>
                     <Link
                         href="/panel/tienda"

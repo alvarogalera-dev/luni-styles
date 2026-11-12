@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Appointment;
+use App\Models\BarberBlock;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -406,6 +407,19 @@ class BookingController extends Controller
         $start = Carbon::parse($date . ' ' . $time);
         $end = $start->copy()->addMinutes($durationMinutes);
 
+        // Check barber blocks first
+        $blocks = BarberBlock::where('employee_id', $employeeId)
+            ->where('block_date', $date)
+            ->get();
+
+        foreach ($blocks as $block) {
+            $blockStart = Carbon::parse($date . ' ' . $block->block_start);
+            $blockEnd   = Carbon::parse($date . ' ' . $block->block_end);
+            if ($start->lt($blockEnd) && $end->gt($blockStart)) {
+                return false; // blocked
+            }
+        }
+
         // Check if there are any appointments for this employee that overlap with [start, end)
         $query = Appointment::where('employee_id', $employeeId)
             ->whereDate('appointment_date', $date)
@@ -429,5 +443,177 @@ class BookingController extends Controller
         }
 
         return true;
+    }
+
+    // ─────────────────────────────────────────────────
+    // BARBER BLOCKS
+    // ─────────────────────────────────────────────────
+
+    public function createBarberBlock(Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!in_array($user->role, ['barber', 'superadmin'])) {
+            return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+        }
+
+        $validated = $request->validate([
+            'employee_id' => 'required|integer|between:1,2',
+            'block_date'  => 'required|date_format:Y-m-d',
+            'block_start' => 'required|date_format:H:i',
+            'block_end'   => 'required|date_format:H:i|after:block_start',
+            'reason'      => 'nullable|string|max:255',
+        ]);
+
+        // Check for conflicting appointments
+        $start = Carbon::parse($validated['block_date'] . ' ' . $validated['block_start']);
+        $end   = Carbon::parse($validated['block_date'] . ' ' . $validated['block_end']);
+
+        $conflictingAppts = Appointment::with('client')
+            ->where('employee_id', $validated['employee_id'])
+            ->whereDate('appointment_date', $validated['block_date'])
+            ->whereIn('status', ['pending'])
+            ->get()
+            ->filter(function ($appt) use ($start, $end) {
+                $apptStart = Carbon::parse($appt->appointment_date);
+                $duration  = $this->getServiceDuration($appt->service_name);
+                $apptEnd   = $apptStart->copy()->addMinutes($duration);
+                return $start->lt($apptEnd) && $end->gt($apptStart);
+            });
+
+        $block = BarberBlock::create($validated);
+
+        return response()->json([
+            'success'              => true,
+            'block'                => $block,
+            'conflicting_appointments' => $conflictingAppts->values()->map(fn($a) => [
+                'id'       => $a->id,
+                'hora'     => Carbon::parse($a->appointment_date)->format('H:i'),
+                'nombre'   => trim((optional($a->client)->name ?? '') . ' ' . (optional($a->client)->surname ?? '')),
+                'servicio' => $a->service_name,
+                'telefono' => optional($a->client)->phone ?? '',
+            ]),
+        ]);
+    }
+
+    public function checkBarberConflicts(Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!in_array($user->role, ['barber', 'superadmin'])) {
+            return response()->json(['conflicts' => []]);
+        }
+
+        $employeeId = $request->integer('employee_id');
+        $date       = $request->string('block_date', '')->toString();
+        $startStr   = $request->string('block_start', '')->toString();
+        $endStr     = $request->string('block_end', '')->toString();
+
+        if (!$employeeId || !$date || !$startStr || !$endStr) {
+            return response()->json(['conflicts' => []]);
+        }
+
+        $start = Carbon::parse($date . ' ' . $startStr);
+        $end   = Carbon::parse($date . ' ' . $endStr);
+
+        $conflicts = Appointment::with('client')
+            ->where('employee_id', $employeeId)
+            ->whereDate('appointment_date', $date)
+            ->whereIn('status', ['pending'])
+            ->get()
+            ->filter(function ($appt) use ($start, $end) {
+                $apptStart = Carbon::parse($appt->appointment_date);
+                $duration  = $this->getServiceDuration($appt->service_name);
+                $apptEnd   = $apptStart->copy()->addMinutes($duration);
+                return $start->lt($apptEnd) && $end->gt($apptStart);
+            })
+            ->values()
+            ->map(fn($a) => [
+                'id'       => $a->id,
+                'hora'     => Carbon::parse($a->appointment_date)->format('H:i'),
+                'nombre'   => trim((optional($a->client)->name ?? '') . ' ' . (optional($a->client)->surname ?? '')),
+                'servicio' => $a->service_name,
+                'telefono' => optional($a->client)->phone ?? '',
+            ]);
+
+        return response()->json(['conflicts' => $conflicts]);
+    }
+
+    public function deleteBarberBlock(Request $request, $id)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!in_array($user->role, ['barber', 'superadmin'])) {
+            return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+        }
+        $block = BarberBlock::findOrFail((int) $id);
+        $block->delete();
+        return response()->json(['success' => true]);
+    }
+
+    public function getBarberBlocks(Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!in_array($user->role, ['barber', 'superadmin'])) {
+            return response()->json(['blocks' => []]);
+        }
+        $date = $request->string('date', '')->toString();
+        $employeeId = $request->integer('employee_id', 0);
+
+        $query = BarberBlock::query();
+        if ($date) $query->where('block_date', $date);
+        if ($employeeId > 0) $query->where('employee_id', $employeeId);
+
+        return response()->json(['blocks' => $query->get()]);
+    }
+
+    // ─────────────────────────────────────────────────
+    // CLIENT LOOKUP (autorelleno en panel)
+    // ─────────────────────────────────────────────────
+
+    public function clientLookup(Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if (!$user) return response()->json(['found' => false]);
+
+        $email     = strtolower(trim($request->string('email', '')->toString()));
+        $phone     = trim($request->string('phone', '')->toString());
+        $cleanPhone = str_replace([' ', '-', '(', ')'], '', $phone);
+
+        $client = null;
+
+        // Búsqueda EXACTA por email
+        if (!empty($email) && str_contains($email, '@')) {
+            $client = Client::where('email', $email)->first();
+        }
+
+        // Búsqueda EXACTA por teléfono (coincidencia de número exacto)
+        if (!$client && !empty($phone)) {
+            $digits = preg_replace('/\D/', '', $phone);
+            if (strlen($digits) >= 8) {
+                $possibleMatches = [$digits];
+                if (str_starts_with($digits, '34') && strlen($digits) === 11) {
+                    $possibleMatches[] = substr($digits, 2);
+                } elseif (strlen($digits) === 9) {
+                    $possibleMatches[] = '34' . $digits;
+                }
+
+                $client = Client::where(function ($q) use ($possibleMatches, $cleanPhone) {
+                    $q->where('phone', $cleanPhone);
+                    foreach ($possibleMatches as $match) {
+                        $q->orWhereRaw("REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', ''), '(', '') = ?", [$match]);
+                    }
+                })->first();
+            }
+        }
+
+        if (!$client) {
+            return response()->json(['found' => false]);
+        }
+
+        return response()->json([
+            'found'     => true,
+            'nombre'    => $client->name,
+            'apellidos' => $client->surname ?? '',
+            'email'     => $client->email && !str_starts_with($client->email, 'sin-email-') ? $client->email : '',
+            'phone'     => $client->phone,
+        ]);
     }
 }

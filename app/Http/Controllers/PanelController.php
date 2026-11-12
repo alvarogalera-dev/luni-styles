@@ -78,11 +78,17 @@ class PanelController extends Controller
             ->orderBy('appointment_date', 'asc');
 
         // Control por rol
-        if ($user->role === 'barber') {
+        if ($user->role === 'barber' && strtolower($user->name) !== 'luis') {
             $query->where('service_type', 'barberia');
         } elseif ($user->role === 'hairdresser') {
             $query->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
         } elseif ($user->role === 'superadmin' && !empty($filterType)) {
+            if ($filterType === 'peluqueria_infantil') {
+                $query->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+            } else {
+                $query->where('service_type', $filterType);
+            }
+        } elseif ($user->role === 'barber' && strtolower($user->name) === 'luis' && !empty($filterType)) {
             if ($filterType === 'peluqueria_infantil') {
                 $query->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
             } else {
@@ -161,6 +167,7 @@ class PanelController extends Controller
             'user' => [
                 'name' => $user->name,
                 'role' => $user->role,
+                'is_luis' => strtolower($user->name) === 'luis' && $user->role === 'barber',
             ],
             'dbServices' => $dbServices,
         ]);
@@ -285,7 +292,7 @@ class PanelController extends Controller
             ]);
 
             // Restrict to appropriate service type
-            if ($user->role === 'barber') {
+            if ($user->role === 'barber' && strtolower($user->name) !== 'luis') {
                 $validated['tipo_servicio'] = 'barberia';
             } elseif ($user->role === 'hairdresser') {
                 $validated['tipo_servicio'] = 'peluqueria_infantil';
@@ -357,7 +364,7 @@ class PanelController extends Controller
     private function authorizeAppointment(Appointment $appointment): void
     {
         $user = Auth::user();
-        if ($user->role === 'barber' && $appointment->service_type !== 'barberia') {
+        if ($user->role === 'barber' && strtolower($user->name) !== 'luis' && $appointment->service_type !== 'barberia') {
             abort(403, 'No autorizado.');
         }
         if ($user->role === 'hairdresser' && !in_array($appointment->service_type, ['peluqueria_infantil', 'infantil'])) {
@@ -398,10 +405,21 @@ class PanelController extends Controller
             return redirect()->route('panel.estadisticas', ['type' => 'barberia']);
         }
 
+        // Luis (barber) tiene acceso completo igual que superadmin
+        $isLuis = strtolower($user->name) === 'luis' && $user->role === 'barber';
+        if ($isLuis && empty($type)) {
+            return redirect()->route('panel.estadisticas', ['type' => 'barberia']);
+        }
+
         $statType = 'general';
-        if ($user->role === 'barber' || $type === 'barberia') {
+        if ($user->role === 'hairdresser' || $type === 'peluqueria_infantil') {
+            $statType = 'peluqueria_infantil';
+        } elseif ($user->role === 'barber' || $type === 'barberia') {
             $statType = 'barberia';
-        } elseif ($user->role === 'hairdresser' || $type === 'peluqueria_infantil') {
+        }
+
+        // Si Luis pide peluquería_infantil, se lo permitimos
+        if ($isLuis && $type === 'peluqueria_infantil') {
             $statType = 'peluqueria_infantil';
         }
 
@@ -574,8 +592,9 @@ class PanelController extends Controller
                 'cortesHistorial'     => $cortesHistorial,
             ],
             'user' => [
-                'name' => $user->name,
-                'role' => $user->role,
+                'name'    => $user->name,
+                'role'    => $user->role,
+                'is_luis' => strtolower($user->name) === 'luis' && $user->role === 'barber',
             ],
         ]);
     }
@@ -595,10 +614,17 @@ class PanelController extends Controller
         $query = Appointment::with('client')
             ->where('status', $status);
 
-        if ($user->role === 'barber') $type = 'barberia';
+        $isLuis = strtolower($user->name) === 'luis' && $user->role === 'barber';
+        if ($user->role === 'barber' && !$isLuis) $type = 'barberia';
         if ($user->role === 'hairdresser') $type = 'peluqueria_infantil';
 
-        if ($type !== 'general') $query->where('service_type', $type);
+        if ($type !== 'general') {
+            if ($type === 'peluqueria_infantil') {
+                $query->whereIn('service_type', ['peluqueria_infantil', 'infantil']);
+            } else {
+                $query->where('service_type', $type);
+            }
+        }
 
         // Apply filter
         if ($period === 'month' && $filter) {
@@ -630,7 +656,8 @@ class PanelController extends Controller
         $user = Auth::user();
         $type = $request->string('type', 'barberia')->toString();
 
-        if ($user->role === 'barber') $type = 'barberia';
+        $isLuis = strtolower($user->name) === 'luis' && $user->role === 'barber';
+        if ($user->role === 'barber' && !$isLuis) $type = 'barberia';
         if ($user->role === 'hairdresser') $type = 'peluqueria_infantil';
 
         // 1. Encontrar clientes que tengan al menos un no-show en este local

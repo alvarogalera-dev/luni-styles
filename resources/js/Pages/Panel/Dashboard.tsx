@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { router } from '@inertiajs/react';
+import { useState, useEffect, useRef } from 'react';import { router } from '@inertiajs/react';
 import PanelLayout from './Layout';
 import {
     Plus, Search, X, Calendar as CalIcon, Clock, User,
     Phone, Mail, Edit2, Trash2, CheckCircle2, XCircle,
     Save, AlertTriangle, ChevronLeft, ChevronRight,
-    SlidersHorizontal, Tag, MapPin, Star
+    SlidersHorizontal, Tag, MapPin, Star, Ban, UserX
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from 'react-day-picker';
@@ -286,6 +285,59 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
     const currentServices = dbServices.filter((s: any) => s.shop_type === formData.tipo_servicio);
     const [loyaltyData, setLoyaltyData] = useState<{exists: boolean, loyalty_points: number, penalty_flag: boolean} | null>(null);
     const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
+    const [autofillMsg, setAutofillMsg] = useState('');
+
+    // ─── Autorrelleno por teléfono o email exacto ───
+    const lookupClient = async (field: 'phone' | 'email', value: string) => {
+        if (!value || value.length < 6) return;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        try {
+            const res = await fetch('/api/client-lookup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify(field === 'phone' ? { phone: value } : { email: value }),
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.found) {
+                setFormData((p: any) => ({
+                    ...p,
+                    nombre: data.nombre,
+                    apellidos: data.apellidos || '',
+                    ...(field === 'phone' && data.email ? { email: data.email } : {}),
+                    ...(field === 'email' && data.phone ? { telefono: data.phone.replace(/\D/g, '') } : {}),
+                }));
+                setAutofillMsg(`✓ Cliente registrado: ${data.nombre} ${data.apellidos || ''}`);
+                setTimeout(() => setAutofillMsg(''), 4000);
+            }
+        } catch {}
+    };
+
+    const prevPhone = useRef('');
+    const prevEmail = useRef('');
+
+    // Detectar cuando el teléfono está completo (9 dígitos o más) y buscar
+    useEffect(() => {
+        const digits = formData.telefono ? formData.telefono.replace(/\D/g, '') : '';
+        const minLen = COUNTRY_CODES.find(c => c.code === formData.phonePrefix)?.maxLength || 9;
+        if (digits.length >= minLen && digits !== prevPhone.current) {
+            prevPhone.current = digits;
+            const full = (formData.phonePrefix === 'Otro' ? formData.customPrefix : formData.phonePrefix) + ' ' + digits;
+            lookupClient('phone', full.trim());
+        }
+        if (digits.length < (minLen - 1)) prevPhone.current = '';
+    }, [formData.telefono, formData.phonePrefix]);
+
+    // Detectar cuando el email es válido y buscar
+    useEffect(() => {
+        const email = formData.email?.trim() || '';
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (isValid && email !== prevEmail.current) {
+            prevEmail.current = email;
+            lookupClient('email', email);
+        }
+        if (!isValid) prevEmail.current = '';
+    }, [formData.email]);
 
     useEffect(() => {
         if (formData.tipo_servicio === 'barberia' && (
@@ -393,6 +445,13 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                                 maxLength={formData.phonePrefix === 'Otro' ? 15 : COUNTRY_CODES.find(c => c.code === formData.phonePrefix)?.maxLength || 9}
                                 className="flex-1 bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                                 value={formData.telefono}
+                                onBlur={() => {
+                                    const digits = formData.telefono ? formData.telefono.replace(/\D/g, '') : '';
+                                    if (digits.length >= 8) {
+                                        const full = (formData.phonePrefix === 'Otro' ? formData.customPrefix : formData.phonePrefix) + ' ' + digits;
+                                        lookupClient('phone', full.trim());
+                                    }
+                                }}
                                 onChange={e => {
                                     const val = e.target.value.replace(/\D/g, '');
                                     setFormData((p: any) => ({...p, telefono: val}));
@@ -442,9 +501,19 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
                         <input type="email" maxLength={255}
                             className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
                             value={formData.email}
+                            onBlur={() => {
+                                if (formData.email && formData.email.includes('@')) {
+                                    lookupClient('email', formData.email.trim());
+                                }
+                            }}
                             onChange={e => setFormData((p: any) => ({...p, email: e.target.value}))} />
                     </div>
                 </div>
+                {autofillMsg && (
+                    <div className="mt-2 text-xs text-emerald-400 font-medium flex items-center gap-1.5 animate-fade-in">
+                        <span>{autofillMsg}</span>
+                    </div>
+                )}
                 {loyaltyData && formData.tipo_servicio === 'barberia' && (
                     <motion.div
                         initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
@@ -473,7 +542,7 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
             <div>
                 <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-3">Servicio</p>
                 <div className="grid grid-cols-2 gap-3">
-                    {user.role === 'superadmin' && (
+                    {(user.role === 'superadmin' || user.is_luis) && (
                         <div className="col-span-2">
                             <label className="text-xs text-steel/70 mb-1 block">Local</label>
                             <select
@@ -583,6 +652,384 @@ function AppointmentForm({ formData, setFormData, user, dbServices = [], appoint
     );
 }
 
+// ─── BARBER BLOCK MODAL ───
+const BARBERS_LIST = [
+    { id: 1, name: 'Luis' },
+    { id: 2, name: 'Carlos' },
+];
+
+function BarberBlockModal({ onClose, user }: { onClose: () => void; user: any }) {
+    const isCarlos = user.name?.toLowerCase().includes('carlos');
+    const [selectedBarber, setSelectedBarber] = useState<number>(isCarlos ? 2 : 1);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [blockStart, setBlockStart] = useState<string | null>(null);
+    const [blockEnd, setBlockEnd] = useState<string | null>(null);
+    const [reason, setReason] = useState('');
+    const [step, setStep] = useState<'config' | 'done'>('config');
+    const [conflicts, setConflicts] = useState<any[]>([]);
+    const [liveConflicts, setLiveConflicts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [existingBlocks, setExistingBlocks] = useState<any[]>([]);
+
+    const isSuperOrLuis = user.role === 'superadmin' || user.is_luis;
+
+    useEffect(() => {
+        if (!selectedDate) return;
+        const dateStr = format(selectedDate, 'yyyy-MM-dd');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        fetch(`/panel/api/barber-blocks?date=${dateStr}&employee_id=${selectedBarber}`, {
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+        })
+        .then(r => r.json())
+        .then(d => setExistingBlocks(d.blocks || []))
+        .catch(() => setExistingBlocks([]));
+    }, [selectedDate, selectedBarber]);
+
+    const availableSlots = selectedDate ? (() => {
+        const dow = selectedDate.getDay();
+        if (dow === 6) return ['10:00','10:30','11:00','11:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+        if (dow === 1 || dow === 3) return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
+        if (dow === 2 || dow === 4 || dow === 5) return ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+        return [];
+    })() : [];
+
+    const allEndSlots = selectedDate ? (() => {
+        const dow = selectedDate.getDay();
+        if (dow === 6) return ['10:30','11:00','11:30','12:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+        if (dow === 1 || dow === 3) return ['16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+        if (dow === 2 || dow === 4 || dow === 5) return ['16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
+        return [];
+    })() : [];
+
+    const endSlots = blockStart ? allEndSlots.filter(s => s > blockStart) : [];
+
+    const setFullDay = () => {
+        if (!availableSlots.length || !allEndSlots.length) return;
+        setBlockStart(availableSlots[0]);
+        setBlockEnd(allEndSlots[allEndSlots.length - 1]);
+    };
+
+    // Live conflict detection
+    useEffect(() => {
+        if (!selectedDate || !blockStart || !blockEnd) {
+            setLiveConflicts([]);
+            return;
+        }
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        fetch('/panel/api/check-barber-conflicts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({
+                employee_id: selectedBarber,
+                block_date: format(selectedDate, 'yyyy-MM-dd'),
+                block_start: blockStart,
+                block_end: blockEnd,
+            }),
+        })
+        .then(r => r.json())
+        .then(d => setLiveConflicts(d.conflicts || []))
+        .catch(() => setLiveConflicts([]));
+    }, [selectedDate, selectedBarber, blockStart, blockEnd]);
+
+    const isSlotBlocked = (slot: string) =>
+        existingBlocks.some(b => slot >= b.block_start.slice(0,5) && slot < b.block_end.slice(0,5));
+
+    const handleSubmit = async () => {
+        if (!selectedDate || !blockStart || !blockEnd) return;
+        setLoading(true);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        try {
+            const res = await fetch('/panel/api/barber-blocks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({
+                    employee_id: selectedBarber,
+                    block_date: format(selectedDate, 'yyyy-MM-dd'),
+                    block_start: blockStart,
+                    block_end: blockEnd,
+                    reason,
+                }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setConflicts(data.conflicting_appointments || []);
+                setStep('done');
+            }
+        } catch {}
+        setLoading(false);
+    };
+
+    const handleDeleteBlock = async (id: number) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        await fetch(`/panel/api/barber-blocks/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+        });
+        setExistingBlocks(prev => prev.filter(b => b.id !== id));
+    };
+
+    return (
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+            <motion.div
+                initial={{opacity:0, y:60}} animate={{opacity:1, y:0}} exit={{opacity:0, y:60}}
+                transition={{type:'spring', stiffness:300, damping:30}}
+                className="bg-[#111] border-t sm:border border-white/10 sm:rounded-3xl rounded-t-3xl w-full sm:max-w-lg max-h-[92vh] overflow-y-auto relative z-10 shadow-2xl"
+            >
+                <div className="sm:hidden w-10 h-1 bg-white/20 rounded-full mx-auto mt-3 mb-1" />
+                <div className="sticky top-0 bg-[#111]/95 backdrop-blur-md border-b border-white/5 p-4 flex items-center justify-between z-20">
+                    <div>
+                        <h3 className="font-display font-black text-lg text-white flex items-center gap-2">
+                            <Ban className="w-5 h-5 text-red-500" />
+                            Deshabilitar Barbero
+                        </h3>
+                        <p className="text-steel text-xs mt-0.5">Bloquea un horario para que no aparezca disponible en la web</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 text-steel hover:text-white bg-carbon rounded-full border border-white/5 transition-colors">
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+
+                <div className="p-4 space-y-5">
+                    {step === 'done' ? (
+                        <div className="text-center py-6">
+                            <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                                <Ban className="w-8 h-8 text-red-500" />
+                            </div>
+                            <h4 className="font-bold text-white text-lg mb-1">¡Bloqueo Creado con Éxito!</h4>
+                            <p className="text-steel text-sm mb-4">
+                                <strong className="text-white">{BARBERS_LIST.find(b => b.id === selectedBarber)?.name}</strong> quedará deshabilitado el{' '}
+                                <strong className="text-white">{selectedDate ? format(selectedDate, "EEEE d 'de' MMMM", { locale: es }) : ''}</strong>{' '}
+                                de <strong className="text-red-400">{blockStart}</strong> a <strong className="text-red-400">{blockEnd}</strong>.
+                            </p>
+                            {conflicts.length > 0 && (
+                                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4 text-left">
+                                    <p className="text-amber-400 font-bold text-sm mb-2 flex items-center gap-1.5">
+                                        <AlertTriangle className="w-4 h-4" />
+                                        ¡Atención! Hay {conflicts.length} cita{conflicts.length > 1 ? 's' : ''} pendiente{conflicts.length > 1 ? 's' : ''} en ese horario:
+                                    </p>
+                                    <div className="space-y-1.5 mt-2">
+                                        {conflicts.map((c: any) => (
+                                            <div key={c.id} className="text-xs text-bone bg-black/40 p-2 rounded-lg flex justify-between items-center">
+                                                <span><strong>{c.hora}</strong> — {c.nombre} {c.servicio ? `(${c.servicio})` : ''}</span>
+                                                {c.telefono && <span className="text-steel">{c.telefono}</span>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-amber-400/80 text-[11px] mt-2">Recuerda contactar con estos clientes para reubicar la cita.</p>
+                                </div>
+                            )}
+                            <button onClick={onClose}
+                                className="w-full bg-amber-400 text-void font-bold py-3 rounded-xl hover:bg-amber-300 transition-colors text-sm">
+                                Entendido
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            {isSuperOrLuis && (
+                                <div>
+                                    <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-2">Barbero a deshabilitar</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {BARBERS_LIST.map(b => (
+                                            <button key={b.id} type="button"
+                                                onClick={() => { setSelectedBarber(b.id); setBlockStart(null); setBlockEnd(null); }}
+                                                className={cn(
+                                                    'py-3 rounded-xl font-bold text-sm border transition-all flex items-center justify-center gap-2',
+                                                    selectedBarber === b.id
+                                                        ? 'bg-red-500/20 text-red-400 border-red-500/40'
+                                                        : 'bg-carbon border-white/10 text-steel hover:border-white/30 hover:text-white'
+                                                )}>
+                                                <UserX className="w-4 h-4" />
+                                                {b.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div>
+                                <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-2">Día a bloquear</p>
+                                <div className="bg-carbon/50 p-3 rounded-2xl border border-white/10 flex justify-center overflow-hidden">
+                                    <DayPicker
+                                        mode="single"
+                                        selected={selectedDate}
+                                        onSelect={(d) => { if (d) { setSelectedDate(d); setBlockStart(null); setBlockEnd(null); } }}
+                                        locale={esCapitalized}
+                                        captionLayout="dropdown-buttons"
+                                        fromYear={2026}
+                                        toYear={2035}
+                                        disabled={[{ before: new Date() }, { dayOfWeek: [0] }]}
+                                        className="text-sm font-medium"
+                                    />
+                                </div>
+
+                                {/* Botones rápidos de selección */}
+                                {selectedDate && availableSlots.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-3">
+                                        <button type="button" onClick={setFullDay}
+                                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all">
+                                            ⚡ Todo el día ({availableSlots[0]} – {allEndSlots[allEndSlots.length - 1]})
+                                        </button>
+                                        {selectedDate.getDay() === 6 && (
+                                            <>
+                                                <button type="button" onClick={() => { setBlockStart('10:00'); setBlockEnd('12:00'); }}
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-carbon text-steel border border-white/10 hover:border-red-400/50 hover:text-white transition-all">
+                                                    Turno Mañana (10:00 – 12:00)
+                                                </button>
+                                                <button type="button" onClick={() => { setBlockStart('16:00'); setBlockEnd('20:30'); }}
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-carbon text-steel border border-white/10 hover:border-red-400/50 hover:text-white transition-all">
+                                                    Turno Tarde (16:00 – 20:30)
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {existingBlocks.length > 0 && (
+                                <div>
+                                    <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-2">Bloqueos existentes en este día</p>
+                                    <div className="space-y-2">
+                                        {existingBlocks.map((b: any) => (
+                                            <div key={b.id} className="flex items-center justify-between bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2.5">
+                                                <div>
+                                                    <span className="text-red-400 text-sm font-bold">{b.block_start.slice(0,5)} – {b.block_end.slice(0,5)}</span>
+                                                    {b.reason && <span className="ml-2 text-steel text-xs">({b.reason})</span>}
+                                                </div>
+                                                <button onClick={() => handleDeleteBlock(b.id)}
+                                                    className="ml-2 p-1.5 text-steel hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedDate && availableSlots.length > 0 && (
+                                <div>
+                                    <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-2">Hora de inicio del bloqueo</p>
+                                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                                        {availableSlots.map(slot => {
+                                            const blocked = isSlotBlocked(slot);
+                                            return (
+                                                <button key={slot} type="button"
+                                                    disabled={blocked}
+                                                    onClick={() => { setBlockStart(slot); setBlockEnd(null); }}
+                                                    className={cn(
+                                                        'py-2.5 rounded-lg text-xs font-medium border transition-all',
+                                                        blocked ? 'opacity-40 cursor-not-allowed bg-[#0a0a0a] border-white/5 text-steel/50 line-through' :
+                                                        blockStart === slot ? 'bg-red-600 text-white border-red-600 font-bold shadow-md' :
+                                                        'bg-[#111] text-ash border-white/10 hover:border-red-400/50 hover:text-white'
+                                                    )}>
+                                                    {slot}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedDate && availableSlots.length === 0 && (
+                                <p className="text-steel text-sm text-center py-4">El local está cerrado los domingos.</p>
+                            )}
+
+                            {blockStart && endSlots.length > 0 && (
+                                <div>
+                                    <p className="text-[10px] uppercase text-steel font-bold tracking-widest mb-2">Hora de fin del bloqueo</p>
+                                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                                        {endSlots.map(slot => (
+                                            <button key={slot} type="button"
+                                                onClick={() => setBlockEnd(slot)}
+                                                className={cn(
+                                                    'py-2.5 rounded-lg text-xs font-medium border transition-all',
+                                                    blockEnd === slot ? 'bg-red-600 text-white border-red-600 font-bold shadow-md' :
+                                                    'bg-[#111] text-ash border-white/10 hover:border-red-400/50 hover:text-white'
+                                                )}>
+                                                {slot}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Alerta de aviso si hay citas asignadas en esas horas */}
+                            {liveConflicts.length > 0 && (
+                                <div className="bg-amber-500/10 border-2 border-amber-500/40 rounded-2xl p-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+                                        <h5 className="font-bold text-amber-400 text-sm">¡Aviso! Citas asignadas en este horario</h5>
+                                    </div>
+                                    <p className="text-steel text-xs mb-3">
+                                        {BARBERS_LIST.find(b => b.id === selectedBarber)?.name} ya tiene {liveConflicts.length} cita{liveConflicts.length > 1 ? 's' : ''} asignada{liveConflicts.length > 1 ? 's' : ''} entre las {blockStart} y las {blockEnd}:
+                                    </p>
+                                    <div className="space-y-1.5">
+                                        {liveConflicts.map((c: any) => (
+                                            <div key={c.id} className="bg-black/60 border border-amber-500/20 rounded-xl p-2.5 flex items-center justify-between text-xs">
+                                                <div>
+                                                    <span className="font-bold text-white text-sm mr-2">{c.hora}</span>
+                                                    <span className="text-amber-200 font-medium">{c.nombre}</span>
+                                                    <span className="text-steel ml-1">({c.servicio})</span>
+                                                </div>
+                                                {c.telefono && (
+                                                    <a href={`tel:${c.telefono}`} className="text-amber-400 font-bold hover:underline shrink-0 flex items-center gap-1">
+                                                        <Phone className="w-3 h-3" /> {c.telefono}
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-[11px] text-amber-400/80 mt-2.5">
+                                        ⚠️ Si deshabilitas al barbero, en la web no se podrán hacer reservas nuevas en ese hueco.
+                                    </p>
+                                </div>
+                            )}
+
+                            {blockStart && blockEnd && (
+                                <div>
+                                    <label className="text-xs text-steel/70 mb-1 block">Motivo <span className="text-steel/40">(opcional)</span></label>
+                                    <input type="text" maxLength={255}
+                                        className="w-full bg-carbon border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-red-400 transition-colors"
+                                        placeholder="Ej: Descanso, cita médica, asunto personal..."
+                                        value={reason}
+                                        onChange={e => setReason(e.target.value)} />
+                                </div>
+                            )}
+
+                            {selectedDate && blockStart && blockEnd && (
+                                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                                    <p className="text-red-400 font-bold text-sm mb-1 flex items-center gap-1.5">
+                                        <Ban className="w-4 h-4" />
+                                        Resumen del bloqueo
+                                    </p>
+                                    <p className="text-white text-sm">
+                                        <strong>{BARBERS_LIST.find(b => b.id === selectedBarber)?.name}</strong> deshabilitado el{' '}
+                                        <strong>{format(selectedDate, "EEEE d 'de' MMMM", { locale: es })}</strong>{' '}
+                                        de <strong className="text-red-400">{blockStart}</strong> a <strong className="text-red-400">{blockEnd}</strong>
+                                    </p>
+                                </div>
+                            )}
+
+                            <button
+                                disabled={!selectedDate || !blockStart || !blockEnd || loading}
+                                onClick={handleSubmit}
+                                className="w-full bg-red-600 text-white font-bold py-3.5 rounded-xl hover:bg-red-500 mt-2 shadow-xl shadow-red-600/20 disabled:opacity-40 disabled:cursor-not-allowed text-sm transition-colors flex items-center justify-center gap-2"
+                            >
+                                {loading ? (
+                                    <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <><Ban className="w-4 h-4" /> Confirmar Deshabilitación</>
+                                )}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </motion.div>
+        </div>
+    );
+}
+
 // ─── ESTADO BADGE ───
 function StatusBadge({ status }: { status: string }) {
     switch (status) {
@@ -654,6 +1101,11 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [confirmModal, setConfirmModal] = useState<any>(null);
     const [confirmPrice, setConfirmPrice] = useState('');
+    const [showBarberBlockModal, setShowBarberBlockModal] = useState(false);
+
+    // is_luis: barber que ve todo
+    const isLuis = user.is_luis === true;
+    const effectiveRole = isLuis ? 'superadmin' : user.role;
 
     const todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -800,10 +1252,19 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                             {localFilters.date ? ` · ${localFilters.date}` : ' · todos los días'}
                         </p>
                     </div>
-                    <button onClick={() => { setFormData(emptyForm); setShowNewModal(true); }}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-colors shadow-lg shadow-amber-400/20 text-sm w-full sm:w-auto">
-                        <Plus className="w-4 h-4" /> Nueva Cita
-                    </button>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        {/* Botón Deshabilitar Barbero — solo en panel barbería */}
+                        {(user.role === 'barber' || user.role === 'superadmin') && (
+                            <button onClick={() => setShowBarberBlockModal(true)}
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 text-red-400 font-bold rounded-xl hover:bg-red-500 hover:text-white transition-colors border border-red-500/30 text-sm flex-1 sm:flex-none">
+                                <Ban className="w-4 h-4" /> Deshabilitar Barbero
+                            </button>
+                        )}
+                        <button onClick={() => { setFormData(emptyForm); setShowNewModal(true); }}
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-400 text-void font-bold rounded-xl hover:bg-amber-300 transition-colors shadow-lg shadow-amber-400/20 text-sm flex-1 sm:flex-none">
+                            <Plus className="w-4 h-4" /> Nueva Cita
+                        </button>
+                    </div>
                 </div>
 
                 {/* Búsqueda + filtros */}
@@ -913,12 +1374,12 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                                     <option value={2}>Carlos (Barbero)</option>
                                                 </>
                                             )}
-                                            {user.role !== 'barber' && (
+                                            {(user.role !== 'barber' || user.is_luis) && (
                                                 <option value={3}>Mariely (Infantil)</option>
                                             )}
                                         </select>
                                     </div>
-                                    {user.role === 'superadmin' && (
+                                    {(user.role === 'superadmin' || user.is_luis) && (
                                         <div>
                                             <label className="text-[10px] uppercase text-steel font-bold mb-1 block">Local</label>
                                             <select value={localFilters.service_type}
@@ -1289,6 +1750,16 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                         onConfirm={executeConfirm}
                         price={confirmPrice}
                         onPriceChange={setConfirmPrice}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* ── DESHABILITAR BARBERO MODAL ── */}
+            <AnimatePresence>
+                {showBarberBlockModal && (
+                    <BarberBlockModal
+                        user={user}
+                        onClose={() => setShowBarberBlockModal(false)}
                     />
                 )}
             </AnimatePresence>

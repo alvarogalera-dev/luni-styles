@@ -49,7 +49,11 @@ class ShopController extends Controller
             'products'      => $products,
             'catalogPhotos' => $catalogPhotos,
             'shopType'      => $shopType,
-            'user'          => ['name' => $user->name, 'role' => $user->role],
+            'user'          => [
+                'name'    => $user->name,
+                'role'    => $user->role,
+                'is_luis' => strtolower($user->name) === 'luis' && $user->role === 'barber',
+            ],
         ]);
     }
 
@@ -67,7 +71,11 @@ class ShopController extends Controller
         return Inertia::render('Panel/Local', [
             'localMedia' => $localMedia,
             'shopType'   => $shopType,
-            'user'       => ['name' => $user->name, 'role' => $user->role],
+            'user'       => [
+                'name'    => $user->name,
+                'role'    => $user->role,
+                'is_luis' => strtolower($user->name) === 'luis' && $user->role === 'barber',
+            ],
         ]);
     }
 
@@ -359,7 +367,7 @@ class ShopController extends Controller
     public function storeCatalogPhoto(Request $request)
     {
         $user = Auth::user();
-        if ($user->role === 'barber') abort(403);
+        if ($user->role === 'barber' && strtolower($user->name) !== 'luis') abort(403);
         $shopType = 'peluqueria_infantil';
 
         $validated = $request->validate([
@@ -393,7 +401,7 @@ class ShopController extends Controller
     public function updateCatalogPhoto(Request $request, $id)
     {
         $user = Auth::user();
-        if ($user->role === 'barber') abort(403);
+        if ($user->role === 'barber' && strtolower($user->name) !== 'luis') abort(403);
 
         $photo = CatalogPhoto::findOrFail((int) $id);
 
@@ -423,7 +431,7 @@ class ShopController extends Controller
     public function destroyCatalogPhoto($id)
     {
         $user = Auth::user();
-        if ($user->role === 'barber') abort(403);
+        if ($user->role === 'barber' && strtolower($user->name) !== 'luis') abort(403);
         $photo = CatalogPhoto::findOrFail((int) $id);
         $photo->delete();
         return back();
@@ -435,7 +443,11 @@ class ShopController extends Controller
 
     private function getShopType($user): string
     {
-        if ($user->role === 'barber') return 'barberia';
+        $isLuis = strtolower($user->name) === 'luis' && $user->role === 'barber';
+        if ($isLuis && request()->query('shop')) {
+            return request()->query('shop');
+        }
+        if ($user->role === 'barber' && !$isLuis) return 'barberia';
         if ($user->role === 'hairdresser') return 'peluqueria_infantil';
         if ($user->role === 'superadmin' && request()->query('shop')) {
             return request()->query('shop');
