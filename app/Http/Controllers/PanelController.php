@@ -65,17 +65,11 @@ class PanelController extends Controller
         $page         = max(1, $request->integer('page', 1));
         $perPage      = 20;
 
-        // Por defecto: hoy (si no hay filtro de fecha y no se ha solicitado explícitamente sin filtro)
-        if (!$request->has('date')) {
-            $filterDate = Carbon::today()->format('Y-m-d');
-        }
+        // Por defecto: mostrar todas las citas si no se especifica fecha
+        // (si se pasa ?date=YYYY-MM-DD se filtra por ese día)
 
         $query = Appointment::with('client')
-            ->whereBetween('appointment_date', [
-                Carbon::now()->subMonths(3)->startOfDay(),
-                Carbon::now()->addMonths(12)->endOfDay(),
-            ])
-            ->orderBy('appointment_date', 'asc');
+            ->orderBy('appointment_date', 'desc');
 
         // Control por rol
         if ($user->role === 'barber' && strtolower($user->name) !== 'luis') {

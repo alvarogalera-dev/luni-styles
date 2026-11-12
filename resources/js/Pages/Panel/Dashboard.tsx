@@ -1111,7 +1111,7 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
 
     const [localFilters, setLocalFilters] = useState<Filters>({
         search:       filters?.search       || '',
-        date:         filters?.date         || todayStr,
+        date:         filters?.date         || '',
         employee_id:  filters?.employee_id  || 0,
         status:       filters?.status       || '',
         service_type: filters?.service_type || '',
