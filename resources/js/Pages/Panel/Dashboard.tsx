@@ -1429,7 +1429,13 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                                 {appointments.length === 0 ? (
                                     <tr><td colSpan={6} className="px-6 py-16 text-center text-steel">
                                         <CalIcon className="w-8 h-8 text-steel/30 mx-auto mb-2" />
-                                        No hay citas con los filtros aplicados.
+                                        <p className="font-bold text-white text-base mb-1">{localFilters.date ? 'No hay citas para esta fecha' : 'No hay citas registradas'}</p>
+                                        <p className="text-steel text-xs mb-3">{localFilters.date ? `No hay ninguna cita programada para el día ${localFilters.date}.` : 'No hay citas con los filtros aplicados.'}</p>
+                                        {localFilters.date && (
+                                            <button onClick={clearDateFilter} className="px-4 py-2.5 bg-amber-400 text-void text-xs font-bold rounded-xl hover:bg-amber-300 transition-all inline-flex items-center gap-1.5 shadow-lg">
+                                                <CalIcon className="w-3.5 h-3.5" /> Ver todas las fechas
+                                            </button>
+                                        )}
                                     </td></tr>
                                 ) : appointments.map((appt: any) => (
                                     <tr key={appt.id}
@@ -1483,7 +1489,13 @@ export default function Dashboard({ appointments, total, page, perPage, filters,
                         {appointments.length === 0 ? (
                             <div className="px-4 py-12 text-center text-steel">
                                 <CalIcon className="w-8 h-8 text-steel/30 mx-auto mb-2" />
-                                <p>No hay citas con los filtros aplicados.</p>
+                                <p className="font-bold text-white text-base mb-1">{localFilters.date ? 'No hay citas para esta fecha' : 'No hay citas registradas'}</p>
+                                <p className="text-steel text-xs mb-3">{localFilters.date ? `No hay ninguna cita programada para el día ${localFilters.date}.` : 'No hay citas con los filtros aplicados.'}</p>
+                                {localFilters.date && (
+                                    <button onClick={clearDateFilter} className="px-4 py-2.5 bg-amber-400 text-void text-xs font-bold rounded-xl hover:bg-amber-300 transition-all inline-flex items-center gap-1.5 shadow-lg">
+                                        <CalIcon className="w-3.5 h-3.5" /> Ver todas las fechas
+                                    </button>
+                                )}
                             </div>
                         ) : appointments.map((appt: any) => (
                             <button key={appt.id}
